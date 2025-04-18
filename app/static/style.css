@@ -1,10 +1,32 @@
-div.header {
-    background-color: palegreen;
-    padding: 5px;
+
+div.navbox {
+    background-color: lightblue;
+    align-items: center;
+    justify-content: center;
+    width: 25%;
+    border: 1px solid black;
+    display: flex;
+    font-size: 20px;
 }
 
 div.navbar {
     background-color: lightblue;
-    padding: 5px;
+    justify-content: center;
+    display: flex;
+    height: 30px;
 }
-   
+
+.container-fluid_h1 {
+    background-color: lightblue;
+    justify-content: center;
+    border-color: black;
+    border-width: 2px;
+    text-align: center;
+}
+
+div.body {
+    background-color: lightyellow;
+    padding: 5px;
+    border-color: black;
+    border-width: 2px;
+}

@@ -1,15 +1,24 @@
 from flask import render_template, flash, redirect, url_for
 from app import app
 from app.forms import LoginForm
+from app.forms import SignUpForm
+from flask import flash, redirect, url_for
 
 @app.route('/')
 @app.route('/index')
 def home():
-    return render_template('index.html', title='Home')
+    return render_template('index.html', title='Home', show_auth_links=True)
 
-@app.route('/signup')
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    return render_template('signup.html', title='Sign Up')
+    form= SignUpForm()
+    show_success_modal = False
+    if form.validate_on_submit():
+        # Registration occurs here
+        flash('Registration successful!', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('signup.html', form=form, title='Sign Up')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

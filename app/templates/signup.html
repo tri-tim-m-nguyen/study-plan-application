@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Sign Up</h1>
+    <form action="" method="POST" novalidate>
+        {{ form.hidden_tag() }}
+
+        {{ form.username.label(class = "form-label") }}
+        {{ form.username(class = "form-control")}}
+        {% for error in form.username.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+
+        {{ form.password.label(class = "form-label") }}
+        {{ form.password(class = "form-control") }}
+        {% for error in form.password.errors %}
+            {% if error != 'invalid_password_complexity' %}
+                <div class="text-danger">{{ error }}</div>
+            {% endif %}
+        {% endfor %}
+
+        {{ form.confirm_password.label(class = "form-label") }}
+        {{ form.confirm_password(class = "form-control") }}
+        {% for error in form.confirm_password.errors %}
+            <div class="text-danger">{{ error }}</div>
+        {% endfor %}
+
+        {{ form.submit(class="btn btn-info") }}
+    </form>
+
+
+{% endblock %}

@@ -12,7 +12,6 @@ def home():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form= SignUpForm()
-    show_success_modal = False
     if form.validate_on_submit():
         # Registration occurs here
         flash('Registration successful!', 'success')

@@ -1,0 +1,91 @@
+/* ===== GLOBAL STYLES ===== */
+:root {
+    --primary-color: #4e73df;       /* Bootstrap primary blue */
+    --secondary-color: #858796;     /* Bootstrap gray */
+    --light-bg: #f8f9fa;            /* Light background */
+    --dark-text: #212529;           /* Dark text for readability */
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+  
+  /* === Base Elements === */
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dark-text);
+    background-color: var(--light-bg);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* === Navbar Customization === */
+  .navbar {
+    background-color: white;
+    box-shadow: var(--shadow-sm);
+    padding: 0.5rem 1rem;
+  }
+  
+  .nav-link {
+    font-weight: 500;
+    color: var(--secondary-color) !important;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-link:hover {
+    color: var(--primary-color) !important;
+    transform: translateY(-2px);
+  }
+  
+  /* === Content Area === */
+  .container {
+    padding: 2rem;
+    flex: 1;
+  }
+  
+  h1, h2, h3 {
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+  }
+  
+  h1 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.5rem;
+  }
+  
+  /* === Cards/Sections === */
+  #About, #Purpose {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease;
+  }
+  
+  #About:hover, #Purpose:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  /* === Buttons === */
+  .btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1.5rem;
+  }
+  
+  .btn-primary:hover {
+    background-color: #3a5ccc;
+    transform: translateY(-2px);
+  }
+  
+  /* === Footer (add to base.html if needed) === */
+  footer {
+    background-color: var(--dark-text);
+    color: white;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: auto;
+  }

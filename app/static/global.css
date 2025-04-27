@@ -126,11 +126,11 @@
 }
 
 .theme-switch .moon {
-    left: 2px;
+    right: 2px;
 }
 
 .theme-switch .sun {
-    right: 2px;
+    left: 2px;
     opacity: 0;
 }
 
@@ -143,11 +143,11 @@
 }
 
 #theme-toggle:checked + .theme-switch .moon {
-    opacity: 0;
+    opacity: 1;
 }
 
 #theme-toggle:checked + .theme-switch .sun {
-    opacity: 1;
+    opacity: 0;
 }
 
 /* ===== Dark Mode Styles ===== */

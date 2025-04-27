@@ -1,5 +1,3 @@
-/* Auth Forms CSS - Save as static/css/auth_forms.css */
-
 /* ===== Form Container ===== */
 .auth-form-container {
     display: flex;
@@ -83,4 +81,37 @@
         box-shadow: none;
         border: 1px solid #eee;
     }
+}
+
+/* ===== Dark Mode Support ===== */
+body.dark-mode .auth-form-card {
+    background-color: #1e1e2f; /* Dark background */
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .auth-form-title,
+body.dark-mode .form-label,
+body.dark-mode .account-link,
+body.dark-mode .auth-form .error-message,
+body.dark-mode .form-check-label {
+    color: #e0e0e0; /* Light text for dark background */
+}
+
+body.dark-mode .form-control {
+    background-color: #2b2b3d;
+    color: #ffffff;
+    border-color: #555;
+}
+
+body.dark-mode .form-control:focus {
+    border-color: #66afe9;
+    box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.6);
+}
+
+body.dark-mode .btn-submit {
+    background-color: #0dcaf0; /* Lighter color for button */
+}
+
+body.dark-mode .btn-submit:hover {
+    background-color: #31d2f2;
 }

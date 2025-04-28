@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         {% if title %}
@@ -5,17 +6,23 @@
         {% else %}
         <title>Study Plan Tool</title>
         {% endif %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        {% block head_scripts %}{% endblock %}
     </head>
     <body>
-        <div class="container-fluid_h1"><h1>Study Plan Tool</h1></div>
-        <div class="navbar">
-            <div class="navbox"><a href="{{ url_for('home') }}">Home</a></div>
-            <div class="navbox"><a href="{{ url_for('create') }}">Create Plan</a></div>
-            <div class="navbox"><a href="{{ url_for('view') }}">View Plan</a></div>
-            <div class="navbox"><a href="{{ url_for('compare') }}">Compare Plan</a></div>
-            <!-- Add inbox here??? -->
+        <div class ="container">
+            <div class="container-fluid_h1"><h1>Study Plan Tool</h1></div>
+            <hr>
+            <div class="navbar">
+                <div class="navbox"><a href="{{ url_for('home') }}">Home</a></div>
+                <div class="navbox"><a href="{{ url_for('create') }}">Create Plan</a></div>
+                <div class="navbox"><a href="{{ url_for('view') }}">View Plan</a></div>
+                <div class="navbox"><a href="{{ url_for('compare') }}">Compare Plan</a></div>
+                <!-- Add inbox here??? -->
+            </div>
+            <hr>
+            {% block content %}{% endblock %}
         </div>
-        {% block content %}{% endblock %}
     </body>
 </html>

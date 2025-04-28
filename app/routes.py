@@ -22,12 +22,12 @@ def login():
 
 @app.route('/create')
 def create():
-    return render_template('create.html', title='Create')
+    return render_template('create.html', title='Create Timetable')
 
 @app.route('/view')
 def view():
-    return render_template('view.html', title='View')
+    return render_template('view.html', title='View Timetable')
 
 @app.route('/compare')
 def compare():
-    return render_template('compare.html', title='Compare')
+    return render_template('compare.html', title='Compare Timetables')

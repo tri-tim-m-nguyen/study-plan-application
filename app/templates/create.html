@@ -5,8 +5,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='timetable.css') }}">
 {% endblock %}
 
-{% block title %}Create Plan{% endblock %}
-
 {% block content %}
 
 <div class="row">
@@ -331,9 +329,7 @@
     <button class="toggle" id="toggle-selected">Fully Unavailable</button>
     
     <button class="toggle" id="toggle-pselected">Partially Unavailable</button>
-  </div>
 
-  <div class="col-md-4">
     <form>
       <div class="assessment-form">
         <label for="assessment-name">Assessment Name</label>
@@ -346,5 +342,7 @@
       <button type="submit">Submit</button>
     </form>
   </div>
+
+
 </div>
 {% endblock %}

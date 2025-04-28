@@ -54,23 +54,23 @@
     padding-bottom: 0.5rem;
   }
   
-  /* === Cards/Sections === */
-  #About, #Purpose {
+  .info-card {
     background: white;
     border-radius: 0.5rem;
     padding: 2rem;
     margin-bottom: 2rem;
     box-shadow: var(--shadow-sm);
     transition: transform 0.3s ease;
+    cursor: pointer; /* optional: makes it feel clickable */
+}
+
+  .info-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
   }
 
   #Header{
     padding: 2rem;
-  }
-  
-  #About:hover, #Purpose:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
   }
   
   /* === Buttons === */
@@ -170,10 +170,9 @@ body.dark-mode h3 {
     color: #f8f9fa;
 }
 
-body.dark-mode #About, 
-body.dark-mode #Purpose {
-    background: #1f1f1f;
-    color: #f8f9fa;
+body.dark-mode .info-card {
+  background: #1f1f1f;
+  color: #f8f9fa;
 }
 
 body.dark-mode footer {

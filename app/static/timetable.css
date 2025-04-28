@@ -1,0 +1,49 @@
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    justify-self: left;
+}
+
+.timetable th {
+    border: 1px solid #ddd;
+    background-color: lightgreen;
+    border: 1px solid black;
+    height: 40px;
+    text-align: center;
+}
+
+.timetable td {
+    border: 1px solid black;
+}
+
+.timeslot {
+    width: 10%;
+    background-color: #fff;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+    height: 20px;
+}
+
+.timeslot.selected {
+    background-color: grey;
+}
+
+.timeslot.pselected {
+    background-color: lightblue;
+}
+
+.timeslot:hover {
+    border: 3px dotted black; /* Change border to dotted on hover */
+}
+
+.toggle {
+    background-color:gray;
+    color: black;
+    border: 1px solid black;
+}
+
+.toggle.active {
+    background-color: lightgreen;
+    border: 1px solid green;
+}

@@ -2,16 +2,85 @@
 
 {% block content %}
     <!-- Work In Progress -->
-    <h1>Welcome to the Study Plan Tool</h1>
-    <p>This is a tool to help you create and manage your study plans.</p>
-    <div id = "About">
-        <h1><b>About</b></h1>
-        <p>The study plan application has been designed to generate a suitable study plan for students, where their  -->
-            study schedule can be organised ... </p>
+    <div id = "Header">
+        <h1><b>Welcome to the Study Plan Tool</b></h1>
+        <p>This is a tool to help you create and manage your study plans.</p>
     </div>
-    <div id = "Purpose">
+
+    <div class="info-card" id="About" onclick="toggleAbout()">
+        <h1><b>About</b></h1>
+        <p>A helpful website for students to help plan out their schedule...</p>
+        <div id="about-details" style="display: none; margin-top: 1rem;">
+            <p>This website will help you:</p>
+            <ul>
+                <li>Help analyse how much time you spend on each assessment</li>
+                <li>Visually plan out your schedules</li>
+                <li>Allow you to compare your schedules with your friends</li>
+                <li>Help you find free time in your busy life</li>
+                <li>Provide insight on how much time you should put into each activity</li>
+                <li>Help you keep ontop of all your assessments</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="info-card" id="Purpose" onclick="togglePurpose()">
         <h1><b>Purpose</b></h1>
-        <p> The purpose of this application is to help students manage their study time effectively and efficiently ... </p>
+        <p>The purpose of this application is to help students manage their study time effectively and efficiently ... </p>
+        <div id="purpose-details" style="display: none; margin-top: 1rem;">
+            <ul>
+                <li>Manage their study time effectively and efficiently</li>
+                <li>Organize tasks and assignments based on priority</li>
+                <li>Visualize workload and deadlines clearly</li>
+                <li>Reduce stress by planning ahead</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="info-card" id="HowToStart" onclick="toggleHowToStart()">
+        <h1><b>How to Start</b></h1>
+        <p>Click to learn how to begin using the Study Plan Tool...</p>
+        <div id="howtostart-details" style="display: none; margin-top: 1rem;">
+            <p>Getting started is easy! Follow these steps:</p>
+            <ol>
+                <li>Go to the <a href="/signup">Signup Page</a> and create your account.</li>
+                <li>Once signed in, navigate to the "Create Timetable" page.</li>
+                <li>Fill in the spots on your timetable with different activities you plan to do.</li>
+                <li>Save and create your new timetable.</li>
+                <li>After creating timetables, go to the "View Timetable" page.</li>
+                <li>From there, you can:
+                    <ul>
+                        <li>Edit your existing timetables.</li>
+                        <li>Send compare requests to your friends to compare timetables.</li>
+                    </ul>
+                </li>
+                <li>When your friend accepts the compare request, they can choose which of their timetables they want to compare with yours!</li>
+            </ol>
+        </div>
     </div>
     
+    <script>
+        function toggleAbout() {
+            var details = document.getElementById('about-details');
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+        }
+
+        function togglePurpose() {
+            var details = document.getElementById('purpose-details');
+            if (details.style.display === 'none') {
+                details.style.display = 'block';
+            } else {
+                details.style.display = 'none';
+            }
+        }
+
+        function toggleHowToStart() {
+            var details = document.getElementById('howtostart-details');
+            details.style.display = (details.style.display === 'none') ? 'block' : 'none';
+        }
+    </script>
+
 {% endblock %}

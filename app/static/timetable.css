@@ -34,16 +34,61 @@
 }
 
 .timeslot:hover {
-    border: 3px dotted black; /* Change border to dotted on hover */
+    border: 3px dotted black; 
 }
 
-.toggle {
-    background-color:gray;
-    color: black;
-    border: 1px solid black;
+.timeslot.toggle-1 {
+    background-color: red;
 }
 
-.toggle.active {
-    background-color: lightgreen;
-    border: 1px solid green;
+.timeslot.toggle-2 {
+    background-color: blue;
 }
+
+.timeslot.toggle-3 {
+    background-color: green;
+}
+
+.timeslot.toggle-4 {
+    background-color: yellow;
+}
+
+.timeslot.toggle-5 {
+    background-color: purple;
+}
+
+.timeslot.toggle-6 {
+    background-color: orange;
+}
+
+.timeslot.toggle-7 {
+    background-color: pink;
+}
+
+.timeslot.toggle-8 {
+    background-color: brown;
+}
+
+.timeslot.toggle-9 {
+    background-color: cyan;
+}
+
+.timeslot.toggle-10 {
+    background-color: lime;
+}
+
+.event {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.event button {
+    font-size: 0.8rem;
+}
+

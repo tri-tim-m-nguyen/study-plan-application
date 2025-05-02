@@ -4,16 +4,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const addEventForm = document.getElementById("add-event-form");
     const eventInput = document.getElementById("event");
     let toggleMode = null;
-    let eventCounter = 0;
     let activeEvent = null;
 
-    // List of all possible colors
-    const allColors = [
-        "red", "blue", "green", "yellow", "purple",
-        "orange", "pink", "brown", "cyan", "lime"
-    ];
-    let availableColors = [...allColors]; // Clone the list of all colors
-    let usedColors = {}; // Map to track used colors by toggle class
+    // Pool of available toggle numbers
+    const availableToggles = Array.from({ length: 10 }, (_, i) => i + 1); // [1, 2, ..., 10]
 
     // Handle the "Add Event" form submission
     addEventForm.addEventListener("submit", function (e) {
@@ -21,22 +15,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const eventString = eventInput.value.trim();
 
         if (eventString) {
-            if (availableColors.length === 0) {
-                alert("No more colors available. Please delete an event to free up a color.");
+            if (availableToggles.length === 0) {
+                alert("You can only have up to 10 events at once.");
                 return;
             }
 
-            eventCounter++;
-            const toggleClass = `toggle-${eventCounter}`; // Unique class for this event
-            const toggleColor = availableColors.shift(); // Get the first available color
-
-            // Track the used color
-            usedColors[toggleClass] = toggleColor;
+            // Get the next available toggle number
+            const toggleNumber = availableToggles.shift(); // Remove the first available toggle number
+            const toggleClass = `toggle-${toggleNumber}`; // Unique class for this event
 
             // Create a new event in the Event section
             const event = document.createElement("div");
-            event.className = `event mb-2 p-2 border d-flex justify-content-between align-items-center ${toggleClass}`;
-            event.style.backgroundColor = "#f8f9fa"; // Default grey background for event box
+            event.className = `event mb-2 p-2 border d-flex justify-content-between align-items-center`; // Default .event class
             event.innerHTML = `
                 <span>${eventString}</span>
                 <button class="btn btn-sm btn-danger delete-event">Delete</button>
@@ -44,16 +34,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // When event is clicked, set it as active
             event.addEventListener("click", function () {
-                // Reset the previous active event to default color
+                // Reset the previous active event
                 if (activeEvent) {
-                    activeEvent.style.backgroundColor = "#f8f9fa"; // Reset to default grey
-                    activeEvent.style.color = "#000"; // Reset text color to black
+                    activeEvent.classList.remove(`event-${toggleMode}`); // Remove toggle class from previous active event
+                    activeEvent.classList.add("event"); // Reset to default .event class
                 }
 
                 // Set the current event box as active
                 toggleMode = toggleClass;
-                event.style.backgroundColor = toggleColor; // Set background color to the toggle color
-                event.style.color = "#fff"; // Set text color to white
+                event.classList.remove("event"); // Remove default .event class
+                event.classList.add(`event-${toggleClass}`); // Add the toggle class
                 activeEvent = event;
             });
 
@@ -67,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 timeslots.forEach(function (slot) {
                     if (slot.classList.contains(toggleClass)) {
                         slot.className = "timeslot"; // Reset to default class
-                        slot.style.backgroundColor = ""; // Reset background color
                     }
                 });
 
@@ -77,15 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     toggleMode = null;
                 }
 
-                // Return the color to the available pool
-                availableColors.push(usedColors[toggleClass]);
-                delete usedColors[toggleClass]; // Remove the color from the used map
+                // Return the toggle number to the pool
+                availableToggles.push(toggleNumber);
+                availableToggles.sort((a, b) => a - b); // Keep the pool sorted
 
-                // Decrement the event counter
-                eventCounter--;
-
-                // Show the form again if the event count is below the limit
-                if (eventCounter < 10) {
+                // Unhide the form if there are available toggles
+                if (availableToggles.length > 0) {
                     addEventForm.style.display = "block";
                 }
             });
@@ -93,8 +79,8 @@ document.addEventListener("DOMContentLoaded", function () {
             eventsContainer.appendChild(event);
             eventInput.value = "";
 
-            // Hide the form if the event count reaches the limit
-            if (eventCounter >= 10) {
+            // Hide the form if no toggles are available
+            if (availableToggles.length === 0) {
                 addEventForm.style.display = "none";
             }
         } else {
@@ -109,11 +95,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Resets to default if already toggled to selected event
                 if (slot.classList.contains(toggleMode)) {
                     slot.className = "timeslot";
-                    slot.style.backgroundColor = ""; // Reset background color
                 } else {
                     slot.className = "timeslot";
                     slot.classList.add(toggleMode); // Add the toggle class to the timeslot
-                    slot.style.backgroundColor = usedColors[toggleMode]; // Set background color to toggle color
                 }
             }
         });

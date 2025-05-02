@@ -10,17 +10,9 @@
 <div class="row">
   {% include 'timetable.html' %}
   <div class="col-md-4">
-    <form id="add-event-form" class="mb-3">
-      <div class="form-group">
-        <label for="event">Timetable Events</label>
-        <input type="text" id="event" class="form" placeholder="Enter event" required>
-      </div>
-      <button type="submit" class="btn btn-primary">Add Event</button>
-    </form>  
-
-    <div id="events" class="mb-3">
-      <h5>Events</h5>
-    </div>
+    <button class="toggle" id="toggle-selected">Fully Unavailable</button>
+    
+    <button class="toggle" id="toggle-pselected">Partially Unavailable</button>
 
     <form>
       <div class="assessment-form">

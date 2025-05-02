@@ -15,6 +15,9 @@
       }
       return color;
     }
+    
+    // Store activity-to-cells mapping
+    const activityCellMap = new Map();
 
     function addActivity() {
         if (activityCount >= 10) return;
@@ -31,11 +34,21 @@
         deleteIcon.className = 'delete-icon';
         deleteIcon.title = 'Delete activity';
         deleteIcon.onclick = () => {
+            // Clear any mapping of cells for this activity
+            if (activityCellMap.has(activityBox)) {
+                activityCellMap.delete(activityBox);
+            }
+            
+            // If this was the focused activity, clear the focus
+            if (focusedActivity === activityBox) {
+                focusedActivity = null;
+            }
+            
             activityBox.remove();
             activityCount -= 1;
             // Show add button again if below limit
             if (activityCount < 10) {
-            document.getElementById('add-button').style.display = 'inline-block';
+                document.getElementById('add-button').style.display = 'inline-block';
             }
         };
 
@@ -57,7 +70,16 @@
         };
 
         colorInput.addEventListener('input', () => {
-            colorBox.style.backgroundColor = colorInput.value;
+            const newColor = colorInput.value;
+            colorBox.style.backgroundColor = newColor;
+            
+            // Update all cells associated with this activity
+            if (activityCellMap.has(activityBox)) {
+                const cells = activityCellMap.get(activityBox);
+                cells.forEach(cell => {
+                    cell.style.backgroundColor = newColor;
+                });
+            }
         });
 
         // Focus on activity box on click
@@ -109,8 +131,15 @@
         timeslots.forEach(function (slot) {
             slot.addEventListener("click", function () {
                 if (focusedActivity) {
-                    const activityColor = focusedActivity.querySelector('.activity-color-box').style.backgroundColor; // Get the color of the focused activity
+                    // Get the color from the color box within the focused activity box
+                    const activityColor = focusedActivity.querySelector('.activity-color-box').style.backgroundColor;
                     slot.style.backgroundColor = activityColor; // Fill the clicked cell with the color
+                    
+                    // Store this cell as associated with the current activity
+                    if (!activityCellMap.has(focusedActivity)) {
+                        activityCellMap.set(focusedActivity, new Set());
+                    }
+                    activityCellMap.get(focusedActivity).add(slot);
                 }
             });
         });

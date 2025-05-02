@@ -5,6 +5,7 @@ from app.forms import LoginForm
 from app.forms import SignUpForm
 from flask import flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import session
 
 @app.route('/')
 @app.route('/index')
@@ -13,6 +14,9 @@ def home():
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if 'username' in session:
+        flash('Logout before creating a new account.', 'warning')
+        return redirect(url_for('home'))
     form= SignUpForm()
     if form.validate_on_submit():
         # Registration occurs here
@@ -39,15 +43,30 @@ def signup():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
+        #check if someone is already logged in
+        if 'username' in session:
+            flash('Another user is already logged in. Please log out first.', 'warning')
+            return redirect(url_for('home'))
+        
         #check if username exists in the database
         user = UserDetails.query.filter_by(username=form.username.data).first()
         #if username exists and password matches
         if user and check_password_hash(user.password, form.password.data):
+            session['username'] = user.username
             flash(f'Welcome, {user.username}! Login successfull', 'success')
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login.html', title='Sign In', form=form)
+
+@app.route('/logout')
+def logout():
+    if 'username' in session:
+        session.pop('username', None)
+        flash('You have been logged out.', 'success')
+    else:
+        flash('No user is currently logged in.', 'warning')
+    return redirect(url_for('home'))
 
 @app.route('/create')
 def create():

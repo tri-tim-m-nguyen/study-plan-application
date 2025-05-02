@@ -174,4 +174,4 @@ cython_debug/
 .pypirc
 
 # app database with username and password table
-app/app.db
+#app/app.db

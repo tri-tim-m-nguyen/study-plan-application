@@ -33,7 +33,26 @@
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('compare') }}">Compare Plan</a></li>
                             </ul>
 
-                            {% if show_auth_links %}
+                            {% if session.username %}
+                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
+                                <li class="nav-item mx-2">
+                                    <div class="theme-switch-wrapper">
+                                        <input type="checkbox" id="theme-toggle" />
+                                        <label for="theme-toggle" class="theme-switch">
+                                            <span class="icon sun"><i class="bi bi-sun-fill"></i></span>
+                                            <span class="icon moon"><i class="bi bi-moon-fill"></i></span>
+                                        </label>
+                                    </div>
+                                <li class="nav-item mx-2">
+                                    <span class="navbar-text">Logged in as {{ session.username }}</span>
+                                </li>
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right"></i> Logout
+                                    </a>
+                                </li>
+                            </ul>
+                            {% else %}
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
                                 <li class="nav-item mx-2">
                                     <div class="theme-switch-wrapper">
@@ -44,17 +63,17 @@
                                         </label>
                                     </div>
                                 </li>
-                                <li><a class = "nav-link" href="{{ url_for('login') }}"><i class="bi bi-box-arrow-in-right"></i>Login</a></li>
-                                <li><a class = "nav-link" href="{{ url_for('signup') }}"><i class="bi bi-person"></i>Register</a></li>
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" href="{{ url_for('login') }}">
+                                        <i class="bi bi-box-arrow-in-right"></i> Login
+                                    </a>
+                                </li>
+                                <li class="nav-item mx-2">
+                                    <a class="nav-link" href="{{ url_for('signup') }}">
+                                        <i class="bi bi-person"></i> Register
+                                    </a>
+                                </li>
                             </ul>
-                            {% else %}
-                            <div class="theme-switch-wrapper">
-                                        <input type="checkbox" id="theme-toggle" />
-                                        <label for="theme-toggle" class="theme-switch">
-                                            <span class="icon sun"><i class="bi bi-sun-fill"></i></span>
-                                            <span class="icon moon"><i class="bi bi-moon-fill"></i></span>
-                                        </label>
-                                    </div>
                             {% endif %}
                         </div>
                     </div>

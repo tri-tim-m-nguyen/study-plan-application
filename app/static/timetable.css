@@ -25,113 +25,22 @@
     height: 20px;
 }
 
+.timeslot.selected {
+    background-color: grey;
+}
+
+.timeslot.pselected {
+    background-color: lightblue;
+}
+
 .timeslot:hover {
-    border: 3px dotted black; 
+    border: 3px dotted black; /* Change border to dotted on hover */
 }
 
-.timeslot.toggle-1 {
-    background-color: red;
-}
-
-.timeslot.toggle-2 {
-    background-color: blue;
-}
-
-.timeslot.toggle-3 {
-    background-color: green;
-}
-
-.timeslot.toggle-4 {
-    background-color: yellow;
-}
-
-.timeslot.toggle-5 {
-    background-color: purple;
-}
-
-.timeslot.toggle-6 {
-    background-color: orange;
-}
-
-.timeslot.toggle-7 {
-    background-color: pink;
-}
-
-.timeslot.toggle-8 {
-    background-color: brown;
-}
-
-.timeslot.toggle-9 {
-    background-color: cyan;
-}
-
-.timeslot.toggle-10 {
-    background-color: lime;
-}
-
-.event {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: #f8f9fa;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.event-toggle-1 {
-    background-color: red;
-    color: white;
-}
-
-.event-toggle-2 {
-    background-color: blue;
-    color: white;
-}
-
-.event-toggle-3 {
-    background-color: green;
-    color: white;
-}
-
-.event-toggle-4 {
-    background-color: yellow;
-    color: black; /* Ensure text is readable on yellow */
-}
-
-.event-toggle-5 {
-    background-color: purple;
-    color: white;
-}
-
-.event-toggle-6 {
-    background-color: orange;
-    color: white;
-}
-
-.event-toggle-7 {
-    background-color: pink;
-    color: black; /* Ensure text is readable on pink */
-}
-
-.event-toggle-8 {
-    background-color: brown;
-    color: white;
-}
-
-.event-toggle-9 {
-    background-color: cyan;
-    color: black; /* Ensure text is readable on cyan */
-}
-
-.event-toggle-10 {
-    background-color: lime;
-    color: black; /* Ensure text is readable on lime */
-}
-
-.event button {
-    font-size: 0.8rem;
+.toggle {
+    background-color:gray;
+    color: black;
+    border: 1px solid black;
 }
 
 .toggle.active {

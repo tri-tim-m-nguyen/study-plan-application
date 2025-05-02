@@ -47,3 +47,86 @@
     background-color: lightgreen;
     border: 1px solid green;
 }
+
+.activity-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: #f0f0f0;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    gap: 8px; /* Add spacing between elements */
+}
+
+.activity-text {
+    flex-grow: 1;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.activity-color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+}
+
+#add-button {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 26px;
+    padding: 0;
+}
+
+.hidden-color-input {
+    display: none;
+}
+
+.delete-icon {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s ease;
+    margin-right: 8px;
+  }
+
+.activity-box:hover .delete-icon {
+    display: inline;
+  }
+  
+.activity-box.focused {
+    border: 2px solid blue;  /* Highlight the focused activity */
+}
+
+.timeslot {
+    width: 10%;
+    background-color: #fff;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+    height: 20px;
+    cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+}
+
+.timeslot.selected {
+    background-color: grey;
+}
+
+.timeslot.pselected {
+    background-color: lightblue;
+}
+
+.timeslot:hover {
+    border: 3px dotted black;
+}
+
+.timeslot:active {
+    background-color: lightgray; /* Color change on cell click */
+}

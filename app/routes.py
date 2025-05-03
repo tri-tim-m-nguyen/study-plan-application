@@ -6,6 +6,8 @@ from app.forms import SignUpForm
 from flask import flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
+from flask import request, jsonify
+from app.models import UserDetails, UserActivity, ActivityTimeSlot
 
 @app.route('/')
 @app.route('/index')
@@ -67,6 +69,42 @@ def logout():
     else:
         flash('No user is currently logged in.', 'warning')
     return redirect(url_for('home'))
+
+@app.route('/save_timetable', methods=['POST'])
+def save_timetable():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 403
+
+    user = UserDetails.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    data = request.get_json()
+    activity_map = {}
+
+    for item in data.get('activities', []):
+        act_no = item['activity_number']
+        day = item['day_of_week']
+        start = item['start_time']
+        end = item['end_time']
+
+        if act_no not in activity_map:
+            new_act = UserActivity(user_id=user.id, activity_number=act_no)
+            db.session.add(new_act)
+            db.session.flush()
+            activity_map[act_no] = new_act.activity_id
+
+        db.session.add(ActivityTimeSlot(
+            user_id=user.id,
+            activity_id=activity_map[act_no],
+            activity_number=act_no,
+            day_of_week=day,
+            start_time=start,
+            end_time=end
+        ))
+
+    db.session.commit()
+    return jsonify({'status': 'success'})
 
 @app.route('/create')
 def create():

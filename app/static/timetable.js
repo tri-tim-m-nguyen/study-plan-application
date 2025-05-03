@@ -1,10 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
     const timeslots = document.querySelectorAll(".timeslot");
     let toggleMode = "selected"; // Default mode
-    toggleSelectedButton.classList.add("active");
+    
 
     const toggleSelectedButton = document.getElementById("toggle-selected");
     const togglePSelectedButton = document.getElementById("toggle-pselected");
+
+    toggleSelectedButton.classList.add("active");
 
     // Add event listeners to the buttons
     toggleSelectedButton.addEventListener("click", function () {

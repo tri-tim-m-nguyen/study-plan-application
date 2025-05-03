@@ -174,5 +174,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# app database with username and password table
-#app/app.db
+# app database with UserDetails, ActivityTimeSlot, UserActivity table
+app/app.db

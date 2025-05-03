@@ -12,6 +12,7 @@ class UserActivity(db.Model):
     activity_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)
     activity_number = db.Column(db.String(200), nullable=False)
+    color = db.Column(db.String(20), nullable=True)  # Store the hex color code
 
     user = db.relationship('UserDetails', backref=db.backref('activities', lazy=True))
     time_slots = db.relationship('ActivityTimeSlot', backref='activity', lazy=True)

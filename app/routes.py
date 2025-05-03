@@ -55,7 +55,8 @@ def login():
         #if username exists and password matches
         if user and check_password_hash(user.password, form.password.data):
             session['username'] = user.username
-            flash(f'Welcome, {user.username}! Login successfull', 'success')
+            session['user_id'] = user.id  # Store user ID in session
+            flash(f'Welcome, {user.username}! Login successful', 'success')
             return redirect(url_for('home'))
         else:
             flash('Invalid username or password', 'danger')
@@ -65,6 +66,7 @@ def login():
 def logout():
     if 'username' in session:
         session.pop('username', None)
+        session.pop('user_id', None)  # Also remove user_id from session
         flash('You have been logged out.', 'success')
     else:
         flash('No user is currently logged in.', 'warning')
@@ -79,9 +81,23 @@ def save_timetable():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
+    # Delete existing activities and time slots for this user
+    user_activities = UserActivity.query.filter_by(user_id=user.id).all()
+    for activity in user_activities:
+        ActivityTimeSlot.query.filter_by(activity_id=activity.activity_id).delete()
+    UserActivity.query.filter_by(user_id=user.id).delete()
+    
     data = request.get_json()
     activity_map = {}
+    activity_colors = {}  # Track colors for each activity
 
+    # First pass to get all activities and their colors
+    for item in data.get('activities', []):
+        act_no = item['activity_number']
+        if 'color' in item and item['color']:
+            activity_colors[act_no] = item['color']
+
+    # Second pass to create activities and time slots
     for item in data.get('activities', []):
         act_no = item['activity_number']
         day = item['day_of_week']
@@ -89,7 +105,11 @@ def save_timetable():
         end = item['end_time']
 
         if act_no not in activity_map:
-            new_act = UserActivity(user_id=user.id, activity_number=act_no)
+            new_act = UserActivity(
+                user_id=user.id, 
+                activity_number=act_no,
+                color=activity_colors.get(act_no, None)  # Add color if available
+            )
             db.session.add(new_act)
             db.session.flush()
             activity_map[act_no] = new_act.activity_id
@@ -108,7 +128,30 @@ def save_timetable():
 
 @app.route('/create')
 def create():
-    return render_template('create.html', title='Create')
+    user_activities = []
+    
+    # If user is logged in, fetch their saved activities
+    if 'user_id' in session:
+        user_id = session['user_id']
+        
+        # Query all activities for this user
+        activities = UserActivity.query.filter_by(user_id=user_id).all()
+        activity_colors = {act.activity_number: act.color for act in activities}
+        
+        # Get all time slots
+        time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
+        
+        # Convert time slots to a format the frontend can use
+        for slot in time_slots:
+            user_activities.append({
+                'activity_number': slot.activity_number,
+                'day_of_week': slot.day_of_week,
+                'start_time': slot.start_time,
+                'end_time': slot.end_time,
+                'color': activity_colors.get(slot.activity_number)
+            })
+    
+    return render_template('create.html', title='Create', user_activities=user_activities)
 
 @app.route('/view')
 def view():

@@ -3,6 +3,8 @@ let focusedActivity = null;
 
 // Store activity-to-cells mapping
 const activityCellMap = new Map();
+// NEW: Store cell-to-activity mapping to track which activity owns each cell
+const cellActivityMap = new Map();
 
 function getRandomColor() {
     const letters = '0123456789ABCDEF';
@@ -37,6 +39,8 @@ function addActivity(name = null, color = null) {
             const cells = activityCellMap.get(activityBox);
             cells.forEach(cell => {
                 cell.style.backgroundColor = ""; // remove color
+                // Remove this cell from the cell-to-activity mapping
+                cellActivityMap.delete(cell);
             });
             activityCellMap.delete(activityBox);
         }
@@ -188,6 +192,8 @@ function loadSavedActivities() {
             if (cell) {
                 cell.style.backgroundColor = actData.color;
                 activityCellMap.get(activityBox).add(cell);
+                // NEW: Track which activity owns this cell
+                cellActivityMap.set(cell, activityBox);
             }
         });
     }
@@ -210,13 +216,32 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (activityCellMap.has(focusedActivity)) {
                         activityCellMap.get(focusedActivity).delete(slot);
                     }
+                    
+                    // Remove from cell-to-activity mapping
+                    cellActivityMap.delete(slot);
                 } else {
+                    // NEW: Check if slot is already assigned to another activity
+                    if (cellActivityMap.has(slot)) {
+                        const previousActivity = cellActivityMap.get(slot);
+                        if (previousActivity !== focusedActivity) {
+                            // Remove this cell from the previous activity's set
+                            if (activityCellMap.has(previousActivity)) {
+                                activityCellMap.get(previousActivity).delete(slot);
+                            }
+                        }
+                    }
+                    
+                    // Set the new color
                     slot.style.backgroundColor = activityColor;
                     
+                    // Add to the focused activity's cell set
                     if (!activityCellMap.has(focusedActivity)) {
                         activityCellMap.set(focusedActivity, new Set());
                     }
                     activityCellMap.get(focusedActivity).add(slot);
+                    
+                    // Update cell-to-activity mapping
+                    cellActivityMap.set(slot, focusedActivity);
                 }
             }
         });

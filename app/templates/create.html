@@ -145,7 +145,46 @@
         });
         document.getElementById('add-button').addEventListener('click', addActivity);
     });
-  </script>
+    </script>
+
+    <script>
+        function collectTimetableData() {
+            const data = [];
+            activityCellMap.forEach((cellSet, activityBox) => {
+                const activityName = activityBox.querySelector('.activity-text').textContent.trim();
+                cellSet.forEach(cell => {
+                    const colIndex = cell.cellIndex;
+                    const rowIndex = cell.parentElement.rowIndex;
+                    const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][colIndex - 1];
+                    const startTime = cell.parentElement.cells[0].textContent.trim();
+                    const endRow = cell.parentElement.nextElementSibling;
+                    const endTime = endRow ? endRow.cells[0].textContent.trim() : startTime;
+        
+                    data.push({
+                        activity_number: activityName,
+                        day_of_week: day,
+                        start_time: startTime,
+                        end_time: endTime
+                    });
+                });
+            });
+            return data;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('save-timetable').addEventListener('click', () => {
+                const activityData = collectTimetableData();
+                fetch('/save_timetable', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activities: activityData }),
+                    credentials: 'include'
+                })
+                .then(response => response.ok ? alert('Saved!') : alert('Error saving timetable.'))
+                .catch(error => alert('Request failed: ' + error));
+            });
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -173,6 +212,7 @@
         <!-- New activities will be added here -->
         <button id="add-button">+</button>
     </div>
+    <button id="save-timetable" class="btn btn-primary mt-3">Save Timetable</button>
 
   </div>
 </div>

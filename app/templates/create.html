@@ -36,7 +36,11 @@
         deleteIcon.onclick = () => {
             // Clear any mapping of cells for this activity
             if (activityCellMap.has(activityBox)) {
-                activityCellMap.delete(activityBox);
+            const cells = activityCellMap.get(activityBox);
+            cells.forEach(cell => {
+                cell.style.backgroundColor = ""; // remove color
+            });
+            activityCellMap.delete(activityBox);
             }
             
             // If this was the focused activity, clear the focus
@@ -131,18 +135,28 @@
         timeslots.forEach(function (slot) {
             slot.addEventListener("click", function () {
                 if (focusedActivity) {
-                    // Get the color from the color box within the focused activity box
-                    const activityColor = focusedActivity.querySelector('.activity-color-box').style.backgroundColor;
-                    slot.style.backgroundColor = activityColor; // Fill the clicked cell with the color
-                    
-                    // Store this cell as associated with the current activity
+                    const colorBox = focusedActivity.querySelector('.activity-color-box');
+                    const activityColor = colorBox.style.backgroundColor;
+
+                    // Toggle behavior: if slot is already colored with the focused activity's color, remove it
+                    if (slot.style.backgroundColor === activityColor) {
+                    slot.style.backgroundColor = "";
+
+                    if (activityCellMap.has(focusedActivity)) {
+                        activityCellMap.get(focusedActivity).delete(slot);
+                    }
+                    } else {
+                    slot.style.backgroundColor = activityColor;
+
                     if (!activityCellMap.has(focusedActivity)) {
                         activityCellMap.set(focusedActivity, new Set());
                     }
                     activityCellMap.get(focusedActivity).add(slot);
+                    }
                 }
             });
         });
+
         document.getElementById('add-button').addEventListener('click', addActivity);
     });
   </script>

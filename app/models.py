@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class UserDetails(db.Model):
     __tablename__ = 'user_details'
@@ -28,3 +29,16 @@ class ActivityTimeSlot(db.Model):
     end_time = db.Column(db.String(20), nullable=False)
 
     user = db.relationship('UserDetails', backref=db.backref('time_slots', lazy=True))
+
+class TimetableRequest(db.Model):
+    __tablename__ = 'timetable_request'
+    id = db.Column(db.Integer, primary_key=True)
+    from_user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)
+    to_user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, accepted, rejected
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships to get username easily
+    from_user = db.relationship('UserDetails', foreign_keys=[from_user_id], backref='sent_requests')
+    to_user = db.relationship('UserDetails', foreign_keys=[to_user_id], backref='received_requests')

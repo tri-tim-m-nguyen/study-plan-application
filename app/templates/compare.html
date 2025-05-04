@@ -2,10 +2,11 @@
 
 {% block head_scripts %}
   <script src="{{ url_for('static', filename='timetable.js') }}"></script>
+  <script src="{{ url_for('static', filename='compare.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='timetable.css') }}">
 {% endblock %}
 
-{% block title %}Create Plan{% endblock %}
+{% block title %}Compare Timetables{% endblock %}
 
 {% block content %}
 
@@ -14,17 +15,73 @@
 
   <div class="col-md-4">
     <button class="toggle" id="toggle-selected">Fully Unavailable</button>
-    
     <button class="toggle" id="toggle-pselected">Partially Unavailable</button>
 
-    <form>
-      <div class="request-table">
-        <label for="request-table">Request Timetable</label>
-        <input type="text" id="Id" name="Id" class="form-control" placeholder="Enter User Id" required>
+    <!-- Request timetable form -->
+    <div class="card mt-3 mb-3">
+      <div class="card-header">Request Timetable</div>
+      <div class="card-body">
+        <form id="request-timetable-form">
+          <div class="form-group">
+            <label for="request-username">Username</label>
+            <input type="text" id="request-username" name="username" class="form-control" placeholder="Enter username" required>
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">Send Request</button>
+        </form>
       </div>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
+    </div>
 
+    <!-- Pending requests section -->
+    <div class="card mt-3 mb-3">
+      <div class="card-header">Pending Requests</div>
+      <div class="card-body">
+        <div id="pending-requests-list">
+          <!-- Pending requests will be loaded here -->
+          {% if pending_requests %}
+            {% for request in pending_requests %}
+              <div class="pending-request">
+                <span>{{ request.from_username }}</span>
+                <button class="btn btn-sm btn-success accept-request" data-request-id="{{ request.id }}">Accept</button>
+                <button class="btn btn-sm btn-danger reject-request" data-request-id="{{ request.id }}">Reject</button>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>No pending requests</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Shared timetables section -->
+    <div class="card mt-3">
+      <div class="card-header">Shared Timetables</div>
+      <div class="card-body">
+        <div id="shared-timetables-list">
+          <!-- Shared timetables will be loaded here -->
+          {% if shared_timetables %}
+            {% for shared in shared_timetables %}
+              <div class="shared-timetable-item">
+                <button class="btn btn-outline-primary view-timetable" data-username="{{ shared.username }}">
+                  {{ shared.username }}
+                </button>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>No shared timetables</p>
+          {% endif %}
+        </div>
+        <!-- View own timetable button -->
+        <div class="mt-3">
+          <button id="view-own-timetable" class="btn btn-outline-secondary">View My Timetable</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<!-- Notification area -->
+<div id="notifications" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+  <!-- Notifications will be injected here -->
+</div>
+
 {% endblock %}

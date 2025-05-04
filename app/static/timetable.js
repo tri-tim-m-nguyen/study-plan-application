@@ -199,8 +199,32 @@ function loadSavedActivities() {
     }
 }
 
+let availabilityState = true;
+
 // Add event listener for cell clicks in timetable
 document.addEventListener("DOMContentLoaded", function () {
+
+    // event listeners for toggling fully available and partially available parameters. 
+    const fullyUnavailableToggle = document.getElementById('toggle-selected');
+    const partiallyUnavailableToggle = document.getElementById('toggle-pselected');
+    fullyUnavailableToggle.classList.add('active');
+
+    fullyUnavailableToggle.addEventListener('click', () => {
+        if (availabilityState !== true) {
+            availabilityState = true;
+            fullyUnavailableToggle.classList.add('active');
+            partiallyUnavailableToggle.classList.remove('active');
+        }
+    });
+
+    partiallyUnavailableToggle.addEventListener('click', () => {
+        if (availabilityState !== false) {
+            availabilityState = false;
+            partiallyUnavailableToggle.classList.add('active');
+            fullyUnavailableToggle.classList.remove('active');
+        }
+    });
+
     const timeslots = document.querySelectorAll(".timeslot");
 
     timeslots.forEach(function (slot) {
@@ -243,6 +267,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Update cell-to-activity mapping
                     cellActivityMap.set(slot, focusedActivity);
                 }
+            } else {
+                // Handle availability toggling based on the current state
+                const isAvailable = slot.classList.toggle('available');
+                updateAvailability(slot, isAvailable, availabilityState === false);
             }
         });
     });
@@ -252,6 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Load saved activities after DOM is loaded
     loadSavedActivities();
 });
+
 
 function collectTimetableData() {
     const data = [];
@@ -272,13 +301,15 @@ function collectTimetableData() {
             const startTime = cell.parentElement.cells[0].textContent.trim();
             const endRow = cell.parentElement.nextElementSibling;
             const endTime = endRow ? endRow.cells[0].textContent.trim() : startTime;
+            const availability = cell.classList.contains('available') ? true : false;
 
             data.push({
                 activity_number: activityName,
                 day_of_week: day,
                 start_time: startTime,
                 end_time: endTime,
-                color: rgbToHex(activityColor) // Add color information
+                color: rgbToHex(activityColor), // Add color information
+                full_availability: availability
             });
         });
     });

@@ -144,7 +144,8 @@ def create():
                 'day_of_week': slot.day_of_week,
                 'start_time': slot.start_time,
                 'end_time': slot.end_time,
-                'color': activity_colors.get(slot.activity_number)
+                'color': activity_colors.get(slot.activity_number),
+                'full_availability': slot.full_availability
             })
     
     return render_template('create.html', title='Create', user_activities=user_activities)

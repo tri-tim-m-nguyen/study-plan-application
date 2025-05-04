@@ -149,17 +149,29 @@ document.addEventListener('DOMContentLoaded', function() {
   function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const username = this.getAttribute('data-username');
-            loadUserTimetable(username);
-            
-            // Highlight the active button
-            document.querySelectorAll('.view-timetable').forEach(btn => {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-primary');
-            });
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-primary');
+
+            // Check if the button is already active
+            const isActive = this.classList.contains('btn-primary');
+
+            if (isActive) {
+                // If active, remove the timetable and reset the button
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-outline-primary');
+                removeUserTimetable(username);
+            } else {
+                // If not active, load the timetable and highlight the button
+                loadUserTimetable(username);
+
+                // Highlight the active button
+                document.querySelectorAll('.view-timetable').forEach(btn => {
+                    btn.classList.remove('btn-primary');
+                    btn.classList.add('btn-outline-primary');
+                });
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+            }
         });
     });
   
@@ -274,7 +286,8 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            displayTimetable(data.timetable_data);
+            const isUserTimetable = !username;
+            displayTimetable(data.timetable_data, isUserTimetable);
             showNotification(`Viewing ${username ? username + "'s" : 'your'} timetable`, 'info');
         } else {
             showNotification(data.error || 'Failed to load timetable', 'danger');
@@ -286,21 +299,110 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  function displayTimetable(timetableData) {
-    // Clear existing timetable
+
+  
+  let displayedTimetables = []; // Store all currently displayed timetables
+
+  function displayTimetable(timetableData, isUserTimetable = false) {
+    // Add the new timetable to the list of displayed timetables
+    displayedTimetables.push({ timetableData, isUserTimetable });
+
+    // Clear all timeslot styles
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
         slot.style.backgroundColor = '';
     });
-  
-    // Display the new timetable data
-    timetableData.forEach(slot => {
-        const cell = findCell(slot.day_of_week, slot.start_time);
+
+    // Merge all displayed timetables
+    const mergedTimetable = {};
+    displayedTimetables.forEach(({ timetableData, isUserTimetable }) => {
+        timetableData.forEach(slot => {
+            const key = `${slot.day_of_week}-${slot.start_time}`;
+            if (!mergedTimetable[key]) {
+                mergedTimetable[key] = {
+                    isGrayedOut: slot.full_availability || !isUserTimetable,
+                    color: isUserTimetable ? slot.color : null,
+                    fullAvailability: slot.full_availability
+                };
+            } else {
+                // If the slot is already grayed out, keep it grayed out
+                mergedTimetable[key].isGrayedOut =
+                    mergedTimetable[key].isGrayedOut || slot.full_availability || !isUserTimetable;
+                mergedTimetable[key].fullAvailability =
+                    mergedTimetable[key].fullAvailability || slot.full_availability;
+            }
+        });
+    });
+
+    // Apply the merged timetable to the UI
+    Object.entries(mergedTimetable).forEach(([key, { isGrayedOut, color, fullAvailability }]) => {
+        const [day, startTime] = key.split('-');
+        const cell = findCell(day, startTime);
         if (cell) {
-            cell.style.backgroundColor = slot.color || '#000000';
+            if (fullAvailability) {
+                // Override with gray if full_availability is true
+                cell.style.backgroundColor = 'gray';
+            } else if (isGrayedOut) {
+                // Set to light gray if not already gray
+                cell.style.backgroundColor = cell.style.backgroundColor === '' ? 'lightgray' : cell.style.backgroundColor;
+            } else {
+                // Use the user's color if not grayed out
+                cell.style.backgroundColor = color || '#000000';
+            }
         }
     });
-  }
+}
+
+function removeUserTimetable(username) {
+    // Remove the user's timetable from the displayedTimetables list
+    displayedTimetables = displayedTimetables.filter(({ timetableData }) => {
+        return timetableData.length === 0 || timetableData[0].username !== username;
+    });
+
+    // Reapply the merged timetable to the UI
+    const mergedTimetable = {};
+    displayedTimetables.forEach(({ timetableData, isUserTimetable }) => {
+        timetableData.forEach(slot => {
+            const key = `${slot.day_of_week}-${slot.start_time}`;
+            if (!mergedTimetable[key]) {
+                mergedTimetable[key] = {
+                    isGrayedOut: slot.full_availability || !isUserTimetable,
+                    color: isUserTimetable ? slot.color : null,
+                    fullAvailability: slot.full_availability
+                };
+            } else {
+                mergedTimetable[key].isGrayedOut =
+                    mergedTimetable[key].isGrayedOut || slot.full_availability || !isUserTimetable;
+                mergedTimetable[key].fullAvailability =
+                    mergedTimetable[key].fullAvailability || slot.full_availability;
+            }
+        });
+    });
+
+    // Apply the merged timetable to the UI
+    Object.entries(mergedTimetable).forEach(([key, { isGrayedOut, color, fullAvailability }]) => {
+        const [day, startTime] = key.split('-');
+        const cell = findCell(day, startTime);
+        if (cell) {
+            if (fullAvailability) {
+                cell.style.backgroundColor = 'gray';
+            } else if (isGrayedOut) {
+                cell.style.backgroundColor = cell.style.backgroundColor === '' ? 'lightgray' : cell.style.backgroundColor;
+            } else {
+                cell.style.backgroundColor = color || '#000000';
+            }
+        }
+    });
+
+    // Clear any cells that are no longer part of the merged timetable
+    const allKeys = Object.keys(mergedTimetable);
+    document.querySelectorAll('.timeslot').forEach(cell => {
+        const key = `${cell.dataset.day}-${cell.dataset.time}`;
+        if (!allKeys.includes(key)) {
+            cell.style.backgroundColor = '';
+        }
+    });
+}
   
   function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');

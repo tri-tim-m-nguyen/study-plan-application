@@ -440,3 +440,30 @@ def delink_timetable():
         'status': 'success',
         'message': f'Stopped sharing timetable with {username}'
     })
+
+@app.route('/analytics')
+def analytics():
+    user_activities = []
+    
+    # If user is logged in, fetch their saved activities
+    if 'user_id' in session:
+        user_id = session['user_id']
+        
+        # Query all activities for this user
+        activities = UserActivity.query.filter_by(user_id=user_id).all()
+        activity_colors = {act.activity_number: act.color for act in activities}
+        
+        # Get all time slots
+        time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
+        
+        # Convert time slots to a format the frontend can use
+        for slot in time_slots:
+            user_activities.append({
+                'activity_number': slot.activity_number,
+                'day_of_week': slot.day_of_week,
+                'start_time': slot.start_time,
+                'end_time': slot.end_time,
+                'color': activity_colors.get(slot.activity_number)
+            })
+    
+    return render_template('analytics.html', title='Analytics', user_activities=user_activities)

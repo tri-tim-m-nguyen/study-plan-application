@@ -8,19 +8,22 @@ document.addEventListener('DOMContentLoaded', function() {
             sendTimetableRequest(username);
         });
     }
-
+  
     // Setup event listeners for accepting/rejecting requests
     setupRequestButtons();
-
+  
     // Setup event listeners for viewing timetables
     setupTimetableViewButtons();
-
+  
+    // Setup event listeners for delinking timetables
+    setupDelinkButtons();
+  
     // Check for new requests periodically
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000); // Check every 30 seconds
-});
-
-function sendTimetableRequest(username) {
+  });
+  
+  function sendTimetableRequest(username) {
     fetch('/request_timetable', {
         method: 'POST',
         headers: {
@@ -42,11 +45,11 @@ function sendTimetableRequest(username) {
         console.error('Error:', error);
         showNotification('An error occurred while sending the request', 'danger');
     });
-}
-
-function checkForNewRequests() {
+  }
+  
+  function checkForNewRequests() {
     if (!document.getElementById('pending-requests-list')) return;
-
+  
     fetch('/check_requests', {
         method: 'GET',
         credentials: 'include'
@@ -56,7 +59,7 @@ function checkForNewRequests() {
         if (data.status === 'success') {
             updatePendingRequestsList(data.pending_requests);
             updateSharedTimetablesList(data.shared_timetables);
-
+  
             // Show notification if there are new requests
             if (data.new_requests && data.new_requests.length > 0) {
                 data.new_requests.forEach(req => {
@@ -68,17 +71,17 @@ function checkForNewRequests() {
     .catch(error => {
         console.error('Error checking for requests:', error);
     });
-}
-
-function updatePendingRequestsList(requests) {
+  }
+  
+  function updatePendingRequestsList(requests) {
     const container = document.getElementById('pending-requests-list');
     if (!container) return;
-
+  
     if (!requests || requests.length === 0) {
         container.innerHTML = '<p>No pending requests</p>';
         return;
     }
-
+  
     let html = '';
     requests.forEach(request => {
         html += `
@@ -89,20 +92,20 @@ function updatePendingRequestsList(requests) {
             </div>
         `;
     });
-
+  
     container.innerHTML = html;
     setupRequestButtons();
-}
-
-function updateSharedTimetablesList(shared) {
+  }
+  
+  function updateSharedTimetablesList(shared) {
     const container = document.getElementById('shared-timetables-list');
     if (!container) return;
-
+  
     if (!shared || shared.length === 0) {
         container.innerHTML = '<p>No shared timetables</p>';
         return;
     }
-
+  
     let html = '';
     shared.forEach(item => {
         html += `
@@ -110,15 +113,22 @@ function updateSharedTimetablesList(shared) {
                 <button class="btn btn-outline-primary view-timetable" data-username="${item.username}">
                     ${item.username}
                 </button>
+                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" 
+                     class="delink-button" 
+                     data-username="${item.username}"
+                     data-sharing-type="${item.type}"
+                     alt="Remove sharing" 
+                     title="Stop sharing timetable">
             </div>
         `;
     });
-
+  
     container.innerHTML = html;
     setupTimetableViewButtons();
-}
-
-function setupRequestButtons() {
+    setupDelinkButtons();
+  }
+  
+  function setupRequestButtons() {
     // Set up accept buttons
     document.querySelectorAll('.accept-request').forEach(button => {
         button.addEventListener('click', function() {
@@ -126,7 +136,7 @@ function setupRequestButtons() {
             respondToRequest(requestId, 'accept');
         });
     });
-
+  
     // Set up reject buttons
     document.querySelectorAll('.reject-request').forEach(button => {
         button.addEventListener('click', function() {
@@ -134,9 +144,9 @@ function setupRequestButtons() {
             respondToRequest(requestId, 'reject');
         });
     });
-}
-
-function setupTimetableViewButtons() {
+  }
+  
+  function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
         button.addEventListener('click', function() {
@@ -152,7 +162,7 @@ function setupTimetableViewButtons() {
             this.classList.add('btn-primary');
         });
     });
-
+  
     // View own timetable
     const ownTimetableBtn = document.getElementById('view-own-timetable');
     if (ownTimetableBtn) {
@@ -175,9 +185,57 @@ function setupTimetableViewButtons() {
             }, 500);
         });
     }
-}
-
-function respondToRequest(requestId, action) {
+  }
+  
+  function setupDelinkButtons() {
+    // Setup delink/trash buttons
+    document.querySelectorAll('.delink-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const username = this.getAttribute('data-username');
+            const sharingType = this.getAttribute('data-sharing-type');
+            
+            if (confirm(`Are you sure you want to stop sharing timetables with ${username}?`)) {
+                delinkTimetable(username, sharingType);
+            }
+        });
+    });
+  }
+  
+  function delinkTimetable(username, sharingType) {
+    fetch('/delink_timetable', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            username: username,
+            sharing_type: sharingType
+        }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showNotification(`Timetable sharing with ${username} has been stopped`, 'success');
+            // Refresh the shared timetables list
+            checkForNewRequests();
+            
+            // If currently viewing that user's timetable, switch to own timetable
+            const activeButton = document.querySelector('.view-timetable.btn-primary');
+            if (activeButton && activeButton.getAttribute('data-username') === username) {
+                document.getElementById('view-own-timetable').click();
+            }
+        } else {
+            showNotification(data.error || 'Failed to stop sharing timetable', 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'danger');
+    });
+  }
+  
+  function respondToRequest(requestId, action) {
     fetch('/respond_to_request', {
         method: 'POST',
         headers: {
@@ -202,9 +260,9 @@ function respondToRequest(requestId, action) {
         console.error('Error:', error);
         showNotification('An error occurred', 'danger');
     });
-}
-
-function loadUserTimetable(username) {
+  }
+  
+  function loadUserTimetable(username) {
     fetch('/get_timetable', {
         method: 'POST',
         headers: {
@@ -226,15 +284,15 @@ function loadUserTimetable(username) {
         console.error('Error:', error);
         showNotification('An error occurred while loading the timetable', 'danger');
     });
-}
-
-function displayTimetable(timetableData) {
+  }
+  
+  function displayTimetable(timetableData) {
     // Clear existing timetable
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
         slot.style.backgroundColor = '';
     });
-
+  
     // Display the new timetable data
     timetableData.forEach(slot => {
         const cell = findCell(slot.day_of_week, slot.start_time);
@@ -242,12 +300,12 @@ function displayTimetable(timetableData) {
             cell.style.backgroundColor = slot.color || '#000000';
         }
     });
-}
-
-function showNotification(message, type) {
+  }
+  
+  function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;
-
+  
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show`;
     notification.role = 'alert';
@@ -255,9 +313,9 @@ function showNotification(message, type) {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-
+  
     notificationsContainer.appendChild(notification);
-
+  
     // Auto-remove after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -265,4 +323,4 @@ function showNotification(message, type) {
             notification.remove();
         }, 150);
     }, 5000);
-}
+  }

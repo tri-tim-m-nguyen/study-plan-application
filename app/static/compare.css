@@ -1,0 +1,21 @@
+.shared-timetable-item {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  
+  .delink-button {
+    position: absolute;
+    right: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+  }
+  
+  .shared-timetable-item:hover .delink-button {
+    opacity: 1;
+  }

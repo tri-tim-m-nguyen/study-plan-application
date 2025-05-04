@@ -389,3 +389,54 @@ def get_timetable():
         'timetable_data': timetable_data,
         'username': username if username else session['username']
     })
+
+@app.route('/delink_timetable', methods=['POST'])
+def delink_timetable():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 403
+    
+    data = request.get_json()
+    username = data.get('username')
+    sharing_type = data.get('sharing_type')  # 'received' or 'sent'
+    
+    if not username:
+        return jsonify({'error': 'Username is required'}), 400
+    
+    current_user_id = session['user_id']
+    
+    # Find the user by username
+    user = UserDetails.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+    
+    other_user_id = user.id
+    
+    # Determine the request to delete based on sharing type
+    if sharing_type == 'received':
+        # The other user has shared with the current user
+        # So the request is from the other user to the current user
+        timetable_request = TimetableRequest.query.filter_by(
+            from_user_id=other_user_id,
+            to_user_id=current_user_id,
+            status='accepted'
+        ).first()
+    else:  # 'sent'
+        # The current user has shared with the other user
+        # So the request is from the current user to the other user
+        timetable_request = TimetableRequest.query.filter_by(
+            from_user_id=current_user_id,
+            to_user_id=other_user_id,
+            status='accepted'
+        ).first()
+    
+    if not timetable_request:
+        return jsonify({'error': 'Timetable sharing not found'}), 404
+    
+    # Delete the request to stop sharing
+    db.session.delete(timetable_request)
+    db.session.commit()
+    
+    return jsonify({
+        'status': 'success',
+        'message': f'Stopped sharing timetable with {username}'
+    })

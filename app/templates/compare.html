@@ -4,6 +4,7 @@
   <script src="{{ url_for('static', filename='timetable.js') }}"></script>
   <script src="{{ url_for('static', filename='compare.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='timetable.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='compare.css') }}">
 {% endblock %}
 
 {% block title %}Compare Timetables{% endblock %}
@@ -64,6 +65,12 @@
                 <button class="btn btn-outline-primary view-timetable" data-username="{{ shared.username }}">
                   {{ shared.username }}
                 </button>
+                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" 
+                     class="delink-button" 
+                     data-username="{{ shared.username }}"
+                     data-sharing-type="{{ shared.type }}"
+                     alt="Remove sharing" 
+                     title="Stop sharing timetable">
               </div>
             {% endfor %}
           {% else %}

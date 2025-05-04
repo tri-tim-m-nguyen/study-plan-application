@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block head_scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='analytics.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='analytics.css') }}">
+{% endblock %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="mb-4">Activity Time Analysis</h1>
+  
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>Time Spent on Activities (Hours)</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="activityChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h5>Activity Summary</h5>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped" id="activitySummaryTable">
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>Hours</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Table data will be filled by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pass user activities data to JavaScript -->
+{% if user_activities %}
+<script>
+  window.userSavedActivities = {{ user_activities|tojson }};
+</script>
+{% else %}
+<script>
+  window.userSavedActivities = [];
+</script>
+{% endif %}
+
+{% endblock %}

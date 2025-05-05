@@ -174,30 +174,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-  
+
     // View own timetable
     const ownTimetableBtn = document.getElementById('view-own-timetable');
     if (ownTimetableBtn) {
-        ownTimetableBtn.addEventListener('click', function() {
-            loadUserTimetable('');  // Empty username means load current user's timetable
-            
+        ownTimetableBtn.addEventListener('click', function () {
+            loadUserTimetable(''); // Empty username means load current user's timetable
+
             // Reset all other buttons
             document.querySelectorAll('.view-timetable').forEach(btn => {
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-outline-primary');
             });
-            
+
             // Highlight own button
             this.classList.remove('btn-outline-secondary');
             this.classList.add('btn-secondary');
-            
+
             setTimeout(() => {
                 this.classList.remove('btn-secondary');
                 this.classList.add('btn-outline-secondary');
             }, 500);
         });
     }
-  }
+}
   
   function setupDelinkButtons() {
     // Setup delink/trash buttons

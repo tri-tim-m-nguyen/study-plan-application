@@ -1,6 +1,6 @@
 let activityCount = 0;
 let focusedActivity = null;
-let = unitCount = 0;
+let unitCount = 0;
 
 // Store activity-to-cells mapping
 const activityCellMap = new Map();

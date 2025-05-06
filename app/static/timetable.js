@@ -1,5 +1,6 @@
 let activityCount = 0;
 let focusedActivity = null;
+let = unitCount = 0;
 
 // Store activity-to-cells mapping
 const activityCellMap = new Map();
@@ -15,15 +16,24 @@ function getRandomColor() {
     return color;
 }
 
-function addActivity(name = null, color = null) {
+function addActivity(name = null, color = null, type = 'normal') {
     if (activityCount >= 10) return null;
 
+    if (type === 'unit' && unitCount >= 4){
+        alert("You can create up to 4 units as activities.");
+        return null;
+    }
+
     activityCount += 1;
+    if (type === 'unit') {
+        unitCount += 1;
+    }
     const activityId = name || 'Activity' + activityCount;
 
     const activityBox = document.createElement('div');
     activityBox.classList.add('activity-box');
     activityBox.dataset.activityName = activityId;
+    activityBox.dataset.activityType = type; // Stores the type of activity
 
     const deleteIcon = document.createElement('img');
     deleteIcon.src = 'https://cdn-icons-png.flaticon.com/512/1214/1214428.png'; // red bin icon
@@ -48,6 +58,11 @@ function addActivity(name = null, color = null) {
         // If this was the focused activity, clear the focus
         if (focusedActivity === activityBox) {
             focusedActivity = null;
+        }
+
+        //Record of unit activity created
+        if (activityBox.dataset.activityType === 'unit') {
+            unitCount -= 1;
         }
         
         // Remove the activity box from the UI
@@ -170,7 +185,8 @@ function loadSavedActivities() {
         if (!activitiesMap[slot.activity_number]) {
             activitiesMap[slot.activity_number] = {
                 slots: [],
-                color: slot.color || getRandomColor() // Use saved color if available, else random
+                color: slot.color || getRandomColor(), // Use saved color if available, else random
+                type:slot.activity_type || 'normal'
             };
         }
         activitiesMap[slot.activity_number].slots.push(slot);
@@ -178,7 +194,7 @@ function loadSavedActivities() {
     
     // Create activities and populate cells
     for (const [actName, actData] of Object.entries(activitiesMap)) {
-        const activityBox = addActivity(actName, actData.color);
+        const activityBox = addActivity(actName, actData.color, actData.type);
         
         if (!activityBox) continue; // Skip if we couldn't create the activity (e.g., limit reached)
         
@@ -247,7 +263,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    document.getElementById('add-button').addEventListener('click', () => addActivity());
+    document.getElementById('add-button').addEventListener('click', () => {
+        const selectedType = document.getElementById('activity-type-selector').value;
+        addActivity(null, null, selectedType);
+    });
     
     // Load saved activities after DOM is loaded
     loadSavedActivities();
@@ -261,6 +280,7 @@ function collectTimetableData() {
         const activityName = activityBox.querySelector('.activity-text').textContent.trim();
         const colorBox = activityBox.querySelector('.activity-color-box');
         const activityColor = colorBox.style.backgroundColor;
+        const activityType = activityBox.dataset.activityType || 'normal';
         
         // Store the color for this activity
         activityColors[activityName] = rgbToHex(activityColor);
@@ -278,7 +298,8 @@ function collectTimetableData() {
                 day_of_week: day,
                 start_time: startTime,
                 end_time: endTime,
-                color: rgbToHex(activityColor) // Add color information
+                color: rgbToHex(activityColor), // Add color information
+                activity_type: activityType
             });
         });
     });

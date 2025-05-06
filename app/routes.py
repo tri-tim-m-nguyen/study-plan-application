@@ -86,12 +86,24 @@ def save_timetable():
     data = request.get_json()
     activity_map = {}
     activity_colors = {}  # Track colors for each activity
+    activity_types = {}  
 
-    # First pass to get all activities and their colors
+    unit_activity_ids = set()
     for item in data.get('activities', []):
         act_no = item['activity_number']
+        act_type = item.get('activity_type', 'normal')
+        if act_type == 'unit':
+            unit_activity_ids.add(act_no)
+        if act_no not in activity_types:
+            activity_types[act_no] = act_type
         if 'color' in item and item['color']:
             activity_colors[act_no] = item['color']
+
+    unit_count = len(unit_activity_ids)
+    
+    # Validate unit activity count
+    if unit_count < 1 or unit_count > 4:
+        return jsonify({'status': 'error', 'error': 'You must have between 1 and 4 unit activities.'}), 400
 
     # Second pass to create activities and time slots
     for item in data.get('activities', []):
@@ -99,12 +111,14 @@ def save_timetable():
         day = item['day_of_week']
         start = item['start_time']
         end = item['end_time']
+        act_type = activity_types.get(act_no, 'normal')
 
         if act_no not in activity_map:
             new_act = UserActivity(
                 user_id=user.id, 
                 activity_number=act_no,
-                color=activity_colors.get(act_no, None)  # Add color if available
+                color=activity_colors.get(act_no, None),  # Add color if available
+                activity_type=act_type
             )
             db.session.add(new_act)
             db.session.flush()
@@ -144,7 +158,9 @@ def create():
                 'day_of_week': slot.day_of_week,
                 'start_time': slot.start_time,
                 'end_time': slot.end_time,
-                'color': activity_colors.get(slot.activity_number)
+                'color': activity_colors.get(slot.activity_number),
+                'activity_type': next(
+                    (act.activity_type for act in activities if act.activity_number == slot.activity_number), 'normal')
             })
     
     return render_template('create.html', title='Create', user_activities=user_activities)
@@ -381,7 +397,8 @@ def get_timetable():
             'day_of_week': slot.day_of_week,
             'start_time': slot.start_time,
             'end_time': slot.end_time,
-            'color': activity_colors.get(slot.activity_number)
+            'color': activity_colors.get(slot.activity_number),
+            'activity_type': activity_types.get(slot.activity_number, 'normal')
         })
     
     return jsonify({

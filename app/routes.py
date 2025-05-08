@@ -388,6 +388,7 @@ def get_timetable():
     return jsonify({
         'status': 'success',
         'timetable_data': timetable_data,
+        'userid': user_id,
         'username': username if username else session['username']
     })
 

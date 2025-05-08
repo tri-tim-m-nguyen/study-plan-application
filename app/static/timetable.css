@@ -18,24 +18,27 @@
 }
 
 .toggle {
-  margin: 5px;
-  border: 1px solid #ccc;
-  background-color: #f8f9fa;
-  cursor: pointer;
-  border-radius: 5px;
-  height: 30px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    border-radius: 5px;
+    height: 30px;
+    width: 50%;
 }
   
 .toggle.active {
-  background-color: #28a745; /* Green highlight */
-  color: white;
-  border-color: #28a745;
+    background-color: #28a745; /* Green highlight */
+    color: white;
+    border-color: black;
 }
   
 .toggle-container {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
 }
 
 .activity-box {
@@ -109,7 +112,11 @@
     border: 3px dotted black;
 }
 
-.timeslot:active {
-    background-color: lightgray; /* Color change on cell click */
+.timeslot.full {
+    background-color: green; /* Color change on cell click */
+}
+
+.timeslot.partial {
+    background-color: gold; /* Color change on cell click */
 }
 

@@ -303,15 +303,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
         slot.style.backgroundColor = '';
+        slot.classList.remove('full', 'partial');
     });
 
     // Display all timetables in light gray
     displayedTimetables.forEach(({ timetableData }) => {
         timetableData.forEach(slot => {
             const key = `${slot.day_of_week}-${slot.start_time}`;
+            const id = `${slot.activity_id}`;
+            const number = `${slot.activity_number}`;
             const cell = findCell(slot.day_of_week, slot.start_time);
             if (cell) {
-                cell.style.backgroundColor = 'lightgray'; // Default to light gray for all timetables
+                if (id != 0) {
+                    cell.style.backgroundColor = 'lightgray'; // Default to light gray for all timetables
+                } else if (number==="partial") {
+                    if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
+                        cell.style.backgroundColor = 'gold'; // Use light blue for partial slots
+                    }
+                }
+                else if (number==="full") {
+                    if (cell.style.backgroundColor === '') {
+                        cell.style.backgroundColor = 'green'; // Use light blue for partial slots
+                    }
+                }
             }
         });
     });
@@ -320,9 +334,22 @@ document.addEventListener('DOMContentLoaded', function() {
     displayedTimetables.forEach(({ timetableData, isUserTimetable }) => {
         if (isUserTimetable) {
             timetableData.forEach(slot => {
+                const id = `${slot.activity_id}`;
+                const number = `${slot.activity_number}`;
                 const cell = findCell(slot.day_of_week, slot.start_time);
                 if (cell) {
-                    cell.style.backgroundColor = slot.color; // Use the current user's color
+                    if (id != 0) {
+                        cell.style.backgroundColor = slot.color; // Use the current user's color
+                    } else if (number==="partial") {
+                        if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
+                            cell.style.backgroundColor = 'gold'; // Use light blue for partial slots
+                        }
+                    }
+                    else if (number==="full") {
+                        if (cell.style.backgroundColor === '') {
+                            cell.style.backgroundColor = 'green'; // Use light blue for partial slots
+                        }
+                    }
                 }
             });
         }
@@ -330,7 +357,6 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 function removeUserTimetable(username) {
-    console.log(displayedTimetables);
     if (!username) {
         // Remove the current user's timetable
         displayedTimetables = displayedTimetables.filter(({ isUserTimetable }) => !isUserTimetable);
@@ -368,7 +394,6 @@ function removeUserTimetable(username) {
         console.error('Error while fetching timetable:', error);
         showNotification('An error occurred while removing the timetable', 'danger');
     });
-    console.log(displayedTimetables);
 }
   
   function showNotification(message, type) {

@@ -26,8 +26,7 @@ class ActivityTimeSlot(db.Model):
     activity_number = db.Column(db.String(200), nullable=False)
     day_of_week = db.Column(db.String(20), nullable=False)
     start_time = db.Column(db.String(20), nullable=False)
-    end_time = db.Column(db.String(20), nullable=False)
-    full_availability = db.Column(db.Boolean, default=True) 
+    end_time = db.Column(db.String(20), nullable=False) 
 
     user = db.relationship('UserDetails', backref=db.backref('time_slots', lazy=True))
 

@@ -38,15 +38,19 @@ function renderAssessments() {
     row.innerHTML = `
         <div class="col">
             <input type="text" placeholder="Assessment Name" class="form-control" id="assessmentName">
+            <div id="nameError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0" max="100" step="any">
+            <div id="obtainedError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0.01" max="100" step="any">
+            <div id="totalError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100" step="any">
+            <div id="weightError" class="text-danger small mt-1"></div>
         </div>
     `;
     container.appendChild(row);
@@ -150,14 +154,45 @@ function moveAssessmentByDrag(fromIdx, toIdx) {
 }
 
 function saveAssessments() {
-    const unit = document.getElementById('UnitSelect').value;
+    const nameInput = document.getElementById('assessmentName');
+    const obtainedInput = document.getElementById('assessmentScoreObtained');
+    const totalInput = document.getElementById('assessmentScoreTotal');
+    const weightInput = document.getElementById('assessmentWeightage');
 
-    const newAssessment = {
-        name: document.getElementById('assessmentName').value,
-        scoreObtained: parseFloat(document.getElementById('assessmentScoreObtained').value),
-        scoreTotal: parseFloat(document.getElementById('assessmentScoreTotal').value),
-        weightage: parseFloat(document.getElementById('assessmentWeightage').value)
-    };
+    const name = nameInput.value.trim();
+    const scoreObtained = parseFloat(obtainedInput.value);
+    const scoreTotal = parseFloat(totalInput.value);
+    const weightage = parseFloat(weightInput.value);
+
+    // Clear previous errors
+    document.getElementById('nameError').textContent = '';
+    document.getElementById('obtainedError').textContent = '';
+    document.getElementById('totalError').textContent = '';
+    document.getElementById('weightError').textContent = '';
+
+    let hasError = false;
+
+    if (!name) {
+        document.getElementById('nameError').textContent = 'Assessment name is required.';
+        hasError = true;
+    }
+    if (isNaN(scoreObtained) || scoreObtained < 0 || scoreObtained > 100) {
+        document.getElementById('obtainedError').textContent = 'Score must be between 0 and 100.';
+        hasError = true;
+    }
+    if (isNaN(scoreTotal) || scoreTotal <= 0 || scoreTotal > 100) {
+        document.getElementById('totalError').textContent = 'Total must be between 0 and 100.';
+        hasError = true;
+    }
+    if (isNaN(weightage) || weightage < 0 || weightage > 100) {
+        document.getElementById('weightError').textContent = 'Weightage must be between 0 and 100.';
+        hasError = true;
+    }
+
+    if (hasError) return;
+
+    const unit = document.getElementById('UnitSelect').value;
+    const newAssessment = { name, scoreObtained, scoreTotal, weightage };
 
     fetch('/assessments', {
         method: 'POST',
@@ -168,17 +203,16 @@ function saveAssessments() {
     .then(res => res.json())
     .then(data => {
         alert("Assessment saved successfully!");
-        // Update local data so it's rendered in summary
         if (!window.savedAssessments[unit]) {
             window.savedAssessments[unit] = [];
         }
         window.savedAssessments[unit].push(newAssessment);
         renderSummary();
-        // Optionally clear the form
-        document.getElementById('assessmentName').value = '';
-        document.getElementById('assessmentScoreObtained').value = '';
-        document.getElementById('assessmentScoreTotal').value = '';
-        document.getElementById('assessmentWeightage').value = '';
+        // Reset form
+        nameInput.value = '';
+        obtainedInput.value = '';
+        totalInput.value = '';
+        weightInput.value = '';
     })
     .catch(err => alert("Error saving assessment"));
 }

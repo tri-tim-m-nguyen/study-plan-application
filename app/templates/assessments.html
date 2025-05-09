@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class = "container">
+        <h1>Assessment Entry</h1>
+        <div>
+            <label for="UnitSelect">Select Unit:</label>
+            <select id="UnitSelect">
+                {% for unit in units %}
+                    <option value="{{ unit }}">{{ unit }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div id="assessmentsContainer" class="mt-3"></div>
+        <button class="add-btn btn btn-primary mt-3" onclick="addAssessment()"><i class="fa-solid fa plus">
+        </i>Add Assessment</button>
+        <div class="summary mt-4" id="summary"></div>
+        <button class="btn btn-success mt-3" onclick="saveAssessments()">Save all</button>
+    </div>
+{% endblock %}

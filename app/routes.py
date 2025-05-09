@@ -4,6 +4,7 @@ from app.models import UserDetails, UserActivity, ActivityTimeSlot, TimetableReq
 from app.forms import LoginForm, SignUpForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from app.models import Assessment
 
 @app.route('/')
 @app.route('/index')
@@ -484,3 +485,7 @@ def analytics():
             })
     
     return render_template('analytics.html', title='Analytics', user_activities=user_activities)
+
+@app.route('/assessments', methods=['GET', 'POST'])
+def assessments():
+    return render_template('assessments.html', title='Assessment')

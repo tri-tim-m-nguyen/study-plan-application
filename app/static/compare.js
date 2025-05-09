@@ -195,6 +195,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 
+
+//function setupDelinkButtons() {
+    // Setup delink/trash buttons
+ //   document.querySelectorAll('.delink-button').forEach(button => {
+ //       button.addEventListener('click', function() {
+ //           const username = this.getAttribute('data-username');
+ //           const sharingType = this.getAttribute('data-sharing-type');
+//            
+//            if (confirm(`Are you sure you want to stop sharing timetables with ${username}?`)) {
+//                delinkTimetable(username, sharingType);
+//            }
+//        });
+//    });
+//  }
   
   function delinkTimetable(username, sharingType) {
     fetch('/delink_timetable', {
@@ -358,8 +372,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function removeUserTimetable(username) {
     if (!username) {
+        console.log("Before removal:", displayedTimetables);
         // Remove the current user's timetable
         displayedTimetables = displayedTimetables.filter(({ isUserTimetable }) => !isUserTimetable);
+        console.log("After removal:", displayedTimetables);
         displayTimetable();
         return;
     }

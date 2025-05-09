@@ -93,10 +93,10 @@ def save_timetable():
         if 'color' in item and item['color']:
             activity_colors[act_no] = item['color']
     
-    # First pass to create activities
+    # Another pass to create activities
     for item in data.get('activities', []):
         act_no = item['activity_number']
-        if act_no not in ["full", "partial"]:  # Skip "full" and "partial" for now
+        if act_no not in ["full", "partial"] and act_no not in activity_map:  # Skip "full" and "partial" for now
             new_act = UserActivity(
                 user_id=user.id,
                 activity_number=act_no,

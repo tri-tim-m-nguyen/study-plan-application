@@ -394,8 +394,7 @@ def get_timetable():
             'day_of_week': slot.day_of_week,
             'start_time': slot.start_time,
             'end_time': slot.end_time,
-            'color': activity_colors.get(slot.activity_number),
-            'activity_type': activity_types.get(slot.activity_number, 'normal')
+            'color': activity_colors.get(slot.activity_number)
         })
     
     return jsonify({

@@ -83,6 +83,29 @@ function addActivity(name = null, color = null, type = 'normal') {
     activityText.contentEditable = false;
     activityText.textContent = activityId;
 
+    const typeSelector = document.createElement('select');
+    typeSelector.className = 'form-select form-select-sm';
+    typeSelector.style.width = '90px';
+
+    ['normal', 'unit'].forEach(type => {
+        const opt = document.createElement('option');
+        opt.value = type;
+        opt.text = type.charAt(0).toUpperCase() + type.slice(1);
+        typeSelector.appendChild(opt);
+    });
+
+    typeSelector.value = type;
+    activityBox.dataset.activityType = type;
+
+    typeSelector.addEventListener('change', () => {
+        const unitCount = document.querySelectorAll('.activity-box select option:checked[value="unit"]').length;
+        if (typeSelector.value === 'unit' && unitCount > 4) {
+            alert('Maximum 4 unit activities allowed');
+            typeSelector.value = 'normal';
+        }
+        activityBox.dataset.activityType = typeSelector.value;  
+    });
+
     const colorBox = document.createElement('div');
     colorBox.className = 'activity-color-box';
     colorBox.style.backgroundColor = color || getRandomColor();
@@ -141,6 +164,7 @@ function addActivity(name = null, color = null, type = 'normal') {
 
     activityBox.appendChild(activityText);
     activityBox.appendChild(deleteIcon);
+    activityBox.appendChild(typeSelector);
     activityBox.appendChild(colorBox);
     activityBox.appendChild(colorInput);
 
@@ -264,8 +288,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById('add-button').addEventListener('click', () => {
-        const selectedType = document.getElementById('activity-type-selector').value;
-        addActivity(null, null, selectedType);
+        addActivity(); // Default is 'normal'
     });
     
     // Load saved activities after DOM is loaded

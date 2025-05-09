@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         {% if title %}
@@ -12,6 +13,7 @@
         
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='accounts_log.css') }}">
         {% block head_scripts %}{% endblock %}
 
@@ -104,39 +106,42 @@
         crossorigin="anonymous"></script>
         
         <script>
-            const toggleSwitch = document.getElementById('theme-toggle');
-        
-            function updateThemeIcons() {
-                const sunIcon = document.querySelector('.theme-switch .sun');
-                const moonIcon = document.querySelector('.theme-switch .moon');
-                if (toggleSwitch.checked) {
-                    sunIcon.style.opacity = "0";
-                    moonIcon.style.opacity = "1";
-                } else {
-                    sunIcon.style.opacity = "1";
-                    moonIcon.style.opacity = "0";
+            document.addEventListener('DOMContentLoaded', function() {
+                const toggleSwitch = document.getElementById('theme-toggle');
+                
+                // Function to switch the theme
+                function switchTheme(isDark) {
+                    if (isDark) {
+                        document.body.classList.add('dark-mode');
+                        toggleSwitch.checked = true;
+                    } else {
+                        document.body.classList.remove('dark-mode');
+                        toggleSwitch.checked = false;
+                    }
                 }
-            }
-        
-            // On page load, check localStorage
-            if (localStorage.getItem('theme') === 'dark') {
-                document.body.classList.add('dark-mode');
-                toggleSwitch.checked = true;
-                updateThemeIcons();
-            } else {
-                toggleSwitch.checked = false;
-                updateThemeIcons();
-            }
-        
-            toggleSwitch.addEventListener('change', () => {
-                if (toggleSwitch.checked) {
-                    document.body.classList.add('dark-mode');
-                    localStorage.setItem('theme', 'dark');
+                
+                // Initialize theme based on localStorage or system preference
+                if (localStorage.getItem('theme') === 'dark') {
+                    switchTheme(true);
+                } else if (localStorage.getItem('theme') === 'light') {
+                    switchTheme(false);
                 } else {
-                    document.body.classList.remove('dark-mode');
-                    localStorage.setItem('theme', 'light');
+                    // If no preference is stored, check system preference
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        switchTheme(true);
+                    }
                 }
-                updateThemeIcons();
+                
+                // Toggle theme when switch is clicked
+                toggleSwitch.addEventListener('change', () => {
+                    if (toggleSwitch.checked) {
+                        switchTheme(true);
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        switchTheme(false);
+                        localStorage.setItem('theme', 'light');
+                    }
+                });
             });
         </script>
     </body>

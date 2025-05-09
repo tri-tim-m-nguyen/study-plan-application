@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Populate summary table
     populateSummaryTable(activityData);
+
+    createAssessmentChart();
   });
   
   function calculateActivityTime() {
@@ -181,4 +183,48 @@ document.addEventListener('DOMContentLoaded', function() {
     b = Math.max(0, Math.floor(b * (1 - amount)));
     
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  }
+
+  function createAssessmentChart() {
+    if (!window.assessmentAverages || window.assessmentAverages.length === 0) return;
+  
+    const ctx = document.getElementById('assessmentChart').getContext('2d');
+    const labels = window.assessmentAverages.map(item => item.unit);
+    const data = window.assessmentAverages.map(item => item.average);
+  
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Average Score (%)',
+          data: data,
+          backgroundColor: '#4e73df'
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            title: {
+              display: true,
+              text: 'Score (%)'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Units'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
   }

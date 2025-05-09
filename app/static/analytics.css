@@ -1,44 +1,21 @@
 .container {
-    margin-top: 20px;
-  }
-  
-  .card {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-  }
-  
-  .card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-  }
-  
-  canvas {
-    max-height: 400px;
-  }
-  
-  .table th {
-    border-top: none;
-  }
-  
-  /* Dark mode styles */
-  body.dark-mode .card {
-    background-color: #343a40;
-    color: #f8f9fa;
-  }
-  
-  body.dark-mode .card-header {
-    background-color: #2c3136;
-    border-color: #495057;
-  }
-  
-  body.dark-mode .table {
-    color: #f8f9fa;
-  }
-  
-  body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(255, 255, 255, 0.05);
-  }
-  
-  body.dark-mode .table-active {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
+  margin-top: 20px;
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+canvas {
+  max-height: 400px;
+}
+
+.table th {
+  border-top: none;
+}

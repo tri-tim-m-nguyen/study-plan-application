@@ -556,3 +556,38 @@ def delete_assessment():
         return jsonify({'status': 'success'})
 
     return jsonify({'status': 'not_found'}), 404
+
+@app.route('/assessments/update', methods=['POST'])
+def update_assessment():
+    if 'user_id' not in session:
+        return jsonify({'status': 'unauthorized'}), 403
+
+    data = request.get_json()
+    user_id = session['user_id']
+    unit = data.get('unit')
+    name = data.get('name')  # original name (before editing)
+    new_data = data.get('new_data')
+
+    if not unit or not name or not new_data:
+        return jsonify({'status': 'error', 'message': 'Incomplete data'}), 400
+    
+    app.logger.info(f"Updating {name} in unit {unit} with data: {new_data}")
+
+    assessment = Assessment.query.filter_by(user_id=user_id, unit=unit, name=name).first()
+    if not assessment:
+        return jsonify({'status': 'not_found'}), 404
+
+    assessment.name = new_data.get('name', assessment.name)
+
+    if 'scoreObtained' in new_data:
+        assessment.score_obtained = float(new_data['scoreObtained'])
+
+    if 'scoreTotal' in new_data:
+        assessment.score_total = float(new_data['scoreTotal'])
+
+    if 'weightage' in new_data:
+        assessment.weightage = float(new_data['weightage'])
+
+
+    db.session.commit()
+    return jsonify({'status': 'success'})

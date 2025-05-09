@@ -11,12 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     renderAssessments();
 });
 
-units.forEach(unit => assessmentsData[unit]=[]);
+//units.forEach(unit => assessmentsData[unit]=[]);
 
-document.addEventListener('DOMContentLoaded', function(){
-    document.getElementById('UnitSelect').addEventListener('change', renderAssessments);
-    renderAssessments();
-})
 function addAssessment(){
     const unit = document.getElementById('UnitSelect').value;
     assessmentsData[unit].push({name: '', scoreObtained: '', scoreTotal: '', weightage: ''});
@@ -44,13 +40,13 @@ function renderAssessments() {
             <input type="text" placeholder="Assessment Name" class="form-control" id="assessmentName">
         </div>
         <div class="col">
-            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0">
         </div>
         <div class="col">
-            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0">
         </div>
         <div class="col">
-            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100">
         </div>
     `;
     container.appendChild(row);
@@ -83,18 +79,21 @@ function renderSummary(){
           weighted = ((obtained / total) * weight).toFixed(2) + '%';
         }
       
-        html += `<tr>
-          <td>${a.name || '-'}</td>
-          <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
-          <td>${!isNaN(weight) ? weight : 0}%</td>
-          <td>${weighted}</td>
-          <td class="icon-cell">
-            <button onclick="deleteAssessment(${idx})" title="Delete assessment">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
+        html += `<tr class="assessment-row">
+            <td>${a.name || '-'}</td>
+            <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
+            <td>${!isNaN(weight) ? weight : 0}%</td>
+            <td>${weighted}</td>
+            <td class="icon-cell">
+                <button class="edit-btn" onclick="editAssessment(${idx})" title="Edit assessment">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+                <button class="delete-btn" onclick="deleteAssessment(${idx})" title="Delete assessment">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </td>
         </tr>`;
-      });
+    });
     html += '</tbody></table>';
     summaryDiv.innerHTML = html;
 }
@@ -156,4 +155,60 @@ function deleteAssessment(idx) {
         }
     })
     .catch(err => alert("Error deleting assessment"));
+}
+
+function editAssessment(idx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const a = assessmentsData[unit][idx];
+    
+    const summaryDiv = document.getElementById('summary');
+    const table = summaryDiv.querySelector('.assessment-table');
+    const row = table.querySelectorAll('tbody tr')[idx];
+  
+    row.innerHTML = `
+      <td><input type="text" value="${a.name}" id="edit-name-${idx}" /></td>
+      <td>
+        <input type="number" min="0" value="${a.scoreObtained}" id="edit-obtained-${idx}" min="0" style="width: 45px;" /> /
+        <input type="number" min="0" value="${a.scoreTotal}" id="edit-total-${idx}" min="0" style="width: 45px;" />
+      </td>
+      <td><input type="number" min="0" max="100" value="${a.weightage}" id="edit-weight-${idx}" min="0" style="width: 60px;" />%</td>
+      <td>--</td>
+      <td class="icon-cell">
+        <button onclick="saveEdit(${idx})" title="Save"><i class="fa-solid fa-check"></i></button>
+      </td>
+    `;
+}
+
+function saveEdit(idx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const oldName = assessmentsData[unit][idx].name;  // in case name was edited
+    const updated = {
+        name: document.getElementById(`edit-name-${idx}`).value,
+        scoreObtained: parseFloat(document.getElementById(`edit-obtained-${idx}`).value),
+        scoreTotal: parseFloat(document.getElementById(`edit-total-${idx}`).value),
+        weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value),
+    };
+
+    // Update DB
+    fetch('/assessments/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+            unit: unit,
+            name: oldName,
+            new_data: updated
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // update local copy & re-render
+            assessmentsData[unit][idx] = updated;
+            window.savedAssessments[unit] = assessmentsData[unit];
+            renderSummary();
+        } else {
+            alert("Error updating assessment: " + (data.message || ''));
+        }
+    });
 }

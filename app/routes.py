@@ -516,7 +516,7 @@ def assessments():
         return jsonify({'status': 'success'})
 
     # Load saved assessments
-    user_assessments = Assessment.query.filter_by(user_id=user_id).all()
+    user_assessments = Assessment.query.filter_by(user_id=user_id).order_by(Assessment.position).all()
     assessments_by_unit = {}
     for unit in units:
         assessments_by_unit[unit] = []
@@ -588,6 +588,26 @@ def update_assessment():
     if 'weightage' in new_data:
         assessment.weightage = float(new_data['weightage'])
 
+
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+@app.route('/assessments/reorder', methods=['POST'])
+def reorder_assessments():
+    if 'user_id' not in session:
+        return jsonify({'status': 'unauthorized'}), 403
+
+    data = request.get_json()
+    unit = data.get('unit')
+    order = data.get('order')  # List of assessment names in new order
+
+    if not unit or not isinstance(order, list):
+        return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
+
+    for pos, name in enumerate(order):
+        assessment = Assessment.query.filter_by(user_id=session['user_id'], unit=unit, name=name).first()
+        if assessment:
+            assessment.position = pos
 
     db.session.commit()
     return jsonify({'status': 'success'})

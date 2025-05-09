@@ -68,34 +68,85 @@ function renderSummary(){
         <th>Assessment Weight %</th>
         <th>Obtained Weight %</th>
         <th></th>
-    </tr></thead></tbody>`;
+    </tr></thead><tbody id="assessment-tbody">`;
     assessments.forEach((a, idx) => {
         const obtained = parseFloat(a.scoreObtained);
         const total = parseFloat(a.scoreTotal);
         const weight = parseFloat(a.weightage);
         let weighted = '-';
-      
         if (!isNaN(obtained) && !isNaN(total) && total > 0) {
           weighted = ((obtained / total) * weight).toFixed(2) + '%';
         }
       
-        html += `<tr class="assessment-row">
-            <td>${a.name || '-'}</td>
-            <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
-            <td>${!isNaN(weight) ? weight : 0}%</td>
-            <td>${weighted}</td>
-            <td class="icon-cell">
-                <button class="edit-btn" onclick="editAssessment(${idx})" title="Edit assessment">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button class="delete-btn" onclick="deleteAssessment(${idx})" title="Delete assessment">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </td>
+        html += `<tr class="assessment-row" draggable="true" data-index="${idx}">
+          <td>${a.name || '-'}</td>
+          <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
+          <td>${!isNaN(weight) ? weight : 0}%</td>
+          <td>${weighted}</td>
+          <td class="icon-cell">
+            <button class="edit-btn" onclick="editAssessment(${idx})" title="Edit assessment">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="delete-btn" onclick="deleteAssessment(${idx})" title="Delete assessment">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
         </tr>`;
+      });
+      
+      html += '</tbody></table>';
+      summaryDiv.innerHTML = html;
+      enableDragAndDrop();
+}
+
+function enableDragAndDrop() {
+    const tbody = document.getElementById("assessment-tbody");
+    let dragStartIndex;
+
+    tbody.querySelectorAll("tr").forEach(row => {
+        row.addEventListener("dragstart", (e) => {
+            dragStartIndex = +row.dataset.index;
+            row.classList.add('dragging');
+        });
+
+        row.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            row.classList.add('drag-over');
+        });
+
+        row.addEventListener("dragleave", () => {
+            row.classList.remove('drag-over');
+        });
+
+        row.addEventListener("drop", () => {
+            row.classList.remove('drag-over');
+            const dropIndex = +row.dataset.index;
+            moveAssessmentByDrag(dragStartIndex, dropIndex);
+        });
+
+        row.addEventListener("dragend", () => {
+            row.classList.remove('dragging');
+        });
     });
-    html += '</tbody></table>';
-    summaryDiv.innerHTML = html;
+}
+
+function moveAssessmentByDrag(fromIdx, toIdx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const list = assessmentsData[unit];
+    const [moved] = list.splice(fromIdx, 1);
+    list.splice(toIdx, 0, moved);
+    window.savedAssessments[unit] = list;
+
+    // Persist to backend
+    const order = list.map(a => a.name);
+    fetch('/assessments/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ unit, order })
+    });
+
+    renderSummary();
 }
 
 function saveAssessments() {
@@ -211,4 +262,9 @@ function saveEdit(idx) {
             alert("Error updating assessment: " + (data.message || ''));
         }
     });
+}
+
+function getAssessmentOrder() {
+    const rows = document.querySelectorAll('.assessment-row');
+    return Array.from(rows).map(row => row.dataset.index);  // Make sure to assign `data-index=idx` on each row
 }

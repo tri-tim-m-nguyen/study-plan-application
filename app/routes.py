@@ -488,4 +488,29 @@ def analytics():
 
 @app.route('/assessments', methods=['GET', 'POST'])
 def assessments():
-    return render_template('assessments.html', title='Assessment')
+    if 'user_id' not in session:
+        flash('Please login to view assessments.', 'warning')
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+
+    unit_activities = UserActivity.query.filter_by(user_id=user_id, activity_type='unit').all()
+    units = sorted(set([activity.activity_number for activity in unit_activities]))
+
+    if request.method == 'POST':
+        data = request.get_json()
+        for unit, assessments in data.get('assessments', {}).items():
+            for assessment in assessments:
+                new_assessment = Assessment(
+                    user_id=user_id,
+                    unit=unit,
+                    name=assessment['name'],
+                    score_obtained=float(assessment['scoreObtained']),
+                    score_total=float(assessment['scoreTotal']),
+                    weightage=float(assessment['weightage'])
+                )
+                db.session.add(new_assessment)
+        db.session.commit()
+        return jsonify({'status': 'success'})
+
+    return render_template('assessments.html', title='Assessment', units=units)

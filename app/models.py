@@ -53,6 +53,6 @@ class Assessment(db.Model):
     score_obtained = db.Column(db.Float, nullable=False)
     score_total = db.Column(db.Float, nullable=False)
     weightage = db.Column(db.Float, nullable=False)
-    position = db.Column(db.Integer, nullable=False)
+    position = db.Column(db.Integer, nullable=False, default=0)
 
     user = db.relationship('UserDetails', backref=db.backref('assessments', lazy=True))

@@ -130,3 +130,6 @@
 .timeslot:active {
     background-color: lightgray; /* Color change on cell click */
 }
+.activity-box select {
+    margin-right: 5px;
+}

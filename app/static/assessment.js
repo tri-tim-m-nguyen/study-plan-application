@@ -11,12 +11,8 @@ document.addEventListener('DOMContentLoaded', function () {
     renderAssessments();
 });
 
-units.forEach(unit => assessmentsData[unit]=[]);
+//units.forEach(unit => assessmentsData[unit]=[]);
 
-document.addEventListener('DOMContentLoaded', function(){
-    document.getElementById('UnitSelect').addEventListener('change', renderAssessments);
-    renderAssessments();
-})
 function addAssessment(){
     const unit = document.getElementById('UnitSelect').value;
     assessmentsData[unit].push({name: '', scoreObtained: '', scoreTotal: '', weightage: ''});
@@ -44,13 +40,13 @@ function renderAssessments() {
             <input type="text" placeholder="Assessment Name" class="form-control" id="assessmentName">
         </div>
         <div class="col">
-            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0">
         </div>
         <div class="col">
-            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0">
         </div>
         <div class="col">
-            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100">
         </div>
     `;
     container.appendChild(row);
@@ -72,31 +68,85 @@ function renderSummary(){
         <th>Assessment Weight %</th>
         <th>Obtained Weight %</th>
         <th></th>
-    </tr></thead></tbody>`;
+    </tr></thead><tbody id="assessment-tbody">`;
     assessments.forEach((a, idx) => {
         const obtained = parseFloat(a.scoreObtained);
         const total = parseFloat(a.scoreTotal);
         const weight = parseFloat(a.weightage);
         let weighted = '-';
-      
         if (!isNaN(obtained) && !isNaN(total) && total > 0) {
           weighted = ((obtained / total) * weight).toFixed(2) + '%';
         }
       
-        html += `<tr>
+        html += `<tr class="assessment-row" draggable="true" data-index="${idx}">
           <td>${a.name || '-'}</td>
           <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
           <td>${!isNaN(weight) ? weight : 0}%</td>
           <td>${weighted}</td>
           <td class="icon-cell">
-            <button onclick="deleteAssessment(${idx})" title="Delete assessment">
-              <i class="fa-solid fa-trash"></i>
+            <button class="edit-btn" onclick="editAssessment(${idx})" title="Edit assessment">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="delete-btn" onclick="deleteAssessment(${idx})" title="Delete assessment">
+                <i class="fa-solid fa-trash"></i>
             </button>
           </td>
         </tr>`;
       });
-    html += '</tbody></table>';
-    summaryDiv.innerHTML = html;
+      
+      html += '</tbody></table>';
+      summaryDiv.innerHTML = html;
+      enableDragAndDrop();
+}
+
+function enableDragAndDrop() {
+    const tbody = document.getElementById("assessment-tbody");
+    let dragStartIndex;
+
+    tbody.querySelectorAll("tr").forEach(row => {
+        row.addEventListener("dragstart", (e) => {
+            dragStartIndex = +row.dataset.index;
+            row.classList.add('dragging');
+        });
+
+        row.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            row.classList.add('drag-over');
+        });
+
+        row.addEventListener("dragleave", () => {
+            row.classList.remove('drag-over');
+        });
+
+        row.addEventListener("drop", () => {
+            row.classList.remove('drag-over');
+            const dropIndex = +row.dataset.index;
+            moveAssessmentByDrag(dragStartIndex, dropIndex);
+        });
+
+        row.addEventListener("dragend", () => {
+            row.classList.remove('dragging');
+        });
+    });
+}
+
+function moveAssessmentByDrag(fromIdx, toIdx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const list = assessmentsData[unit];
+    const [moved] = list.splice(fromIdx, 1);
+    list.splice(toIdx, 0, moved);
+    window.savedAssessments[unit] = list;
+
+    // Persist to backend
+    const order = list.map(a => a.name);
+    fetch('/assessments/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ unit, order })
+    });
+
+    renderSummary();
 }
 
 function saveAssessments() {
@@ -156,4 +206,65 @@ function deleteAssessment(idx) {
         }
     })
     .catch(err => alert("Error deleting assessment"));
+}
+
+function editAssessment(idx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const a = assessmentsData[unit][idx];
+    
+    const summaryDiv = document.getElementById('summary');
+    const table = summaryDiv.querySelector('.assessment-table');
+    const row = table.querySelectorAll('tbody tr')[idx];
+  
+    row.innerHTML = `
+      <td><input type="text" value="${a.name}" id="edit-name-${idx}" /></td>
+      <td>
+        <input type="number" min="0" value="${a.scoreObtained}" id="edit-obtained-${idx}" min="0" style="width: 45px;" /> /
+        <input type="number" min="0" value="${a.scoreTotal}" id="edit-total-${idx}" min="0" style="width: 45px;" />
+      </td>
+      <td><input type="number" min="0" max="100" value="${a.weightage}" id="edit-weight-${idx}" min="0" style="width: 60px;" />%</td>
+      <td>--</td>
+      <td class="icon-cell">
+        <button onclick="saveEdit(${idx})" title="Save"><i class="fa-solid fa-check"></i></button>
+      </td>
+    `;
+}
+
+function saveEdit(idx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const oldName = assessmentsData[unit][idx].name;  // in case name was edited
+    const updated = {
+        name: document.getElementById(`edit-name-${idx}`).value,
+        scoreObtained: parseFloat(document.getElementById(`edit-obtained-${idx}`).value),
+        scoreTotal: parseFloat(document.getElementById(`edit-total-${idx}`).value),
+        weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value),
+    };
+
+    // Update DB
+    fetch('/assessments/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+            unit: unit,
+            name: oldName,
+            new_data: updated
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // update local copy & re-render
+            assessmentsData[unit][idx] = updated;
+            window.savedAssessments[unit] = assessmentsData[unit];
+            renderSummary();
+        } else {
+            alert("Error updating assessment: " + (data.message || ''));
+        }
+    });
+}
+
+function getAssessmentOrder() {
+    const rows = document.querySelectorAll('.assessment-row');
+    return Array.from(rows).map(row => row.dataset.index);  // Make sure to assign `data-index=idx` on each row
 }

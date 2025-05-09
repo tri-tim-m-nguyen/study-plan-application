@@ -166,10 +166,6 @@ def create():
     
     return render_template('create.html', title='Create', user_activities=user_activities)
 
-@app.route('/view')
-def view():
-    return render_template('view.html', title='View')
-
 @app.route('/compare')
 def compare():
     if 'user_id' not in session:

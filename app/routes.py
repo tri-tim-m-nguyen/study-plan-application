@@ -535,3 +535,24 @@ def assessments():
         units=units,
         saved_assessments=assessments_by_unit
     )
+
+@app.route('/assessments/delete', methods=['POST'])
+def delete_assessment():
+    if 'user_id' not in session:
+        return jsonify({'status': 'unauthorized'}), 403
+
+    data = request.get_json()
+    user_id = session['user_id']
+    unit = data.get('unit')
+    name = data.get('name')
+
+    if not unit or not name:
+        return jsonify({'status': 'error', 'message': 'Missing unit or name'}), 400
+
+    assessment = Assessment.query.filter_by(user_id=user_id, unit=unit, name=name).first()
+    if assessment:
+        db.session.delete(assessment)
+        db.session.commit()
+        return jsonify({'status': 'success'})
+
+    return jsonify({'status': 'not_found'}), 404

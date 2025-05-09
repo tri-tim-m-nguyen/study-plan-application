@@ -332,12 +332,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     cell.style.backgroundColor = 'lightgray'; // Default to light gray for all timetables
                 } else if (number==="partial") {
                     if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
-                        cell.style.backgroundColor = 'gold'; // Use light blue for partial slots
+                        cell.style.backgroundColor = 'gold'; // Use gold for partial slots
                     }
                 }
                 else if (number==="full") {
                     if (cell.style.backgroundColor === '') {
-                        cell.style.backgroundColor = 'green'; // Use light blue for partial slots
+                        cell.style.backgroundColor = 'green'; // Use green for partial slots
                     }
                 }
             }
@@ -356,12 +356,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         cell.style.backgroundColor = slot.color; // Use the current user's color
                     } else if (number==="partial") {
                         if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
-                            cell.style.backgroundColor = 'gold'; // Use light blue for partial slots
+                            cell.style.backgroundColor = 'gold'; // Use gold for partial slots
                         }
                     }
                     else if (number==="full") {
                         if (cell.style.backgroundColor === '') {
-                            cell.style.backgroundColor = 'green'; // Use light blue for partial slots
+                            cell.style.backgroundColor = 'green'; // Use green for partial slots
                         }
                     }
                 }

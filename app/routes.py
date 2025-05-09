@@ -5,6 +5,7 @@ from app.forms import LoginForm, SignUpForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from app.models import Assessment
+from sqlalchemy import func
 
 @app.route('/')
 @app.route('/index')
@@ -455,33 +456,6 @@ def delink_timetable():
         'message': f'Stopped sharing timetable with {username}'
     })
 
-@app.route('/analytics')
-def analytics():
-    user_activities = []
-    
-    # If user is logged in, fetch their saved activities
-    if 'user_id' in session:
-        user_id = session['user_id']
-        
-        # Query all activities for this user
-        activities = UserActivity.query.filter_by(user_id=user_id).all()
-        activity_colors = {act.activity_number: act.color for act in activities}
-        
-        # Get all time slots
-        time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
-        
-        # Convert time slots to a format the frontend can use
-        for slot in time_slots:
-            user_activities.append({
-                'activity_number': slot.activity_number,
-                'day_of_week': slot.day_of_week,
-                'start_time': slot.start_time,
-                'end_time': slot.end_time,
-                'color': activity_colors.get(slot.activity_number)
-            })
-    
-    return render_template('analytics.html', title='Analytics', user_activities=user_activities)
-
 @app.route('/assessments', methods=['GET', 'POST'])
 def assessments():
     if 'user_id' not in session:
@@ -496,7 +470,7 @@ def assessments():
     if request.method == 'POST':
         data = request.get_json()
         for unit, assessments in data.get('assessments', {}).items():
-            for assessment in assessments:
+            for idx, assessment in enumerate(assessments):
                 existing = Assessment.query.filter_by(
                     user_id=user_id,
                     unit=unit,
@@ -509,7 +483,8 @@ def assessments():
                         name=assessment['name'],
                         score_obtained=float(assessment['scoreObtained']),
                         score_total=float(assessment['scoreTotal']),
-                        weightage=float(assessment['weightage'])
+                        weightage=float(assessment['weightage']),
+                        position=idx
                     )
                     db.session.add(new_assessment)
         db.session.commit()
@@ -611,3 +586,39 @@ def reorder_assessments():
 
     db.session.commit()
     return jsonify({'status': 'success'})
+
+@app.route('/analytics')
+def analytics():
+    user_activities = []
+    assessment_averages = []
+
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        # Existing user activity processing...
+        activities = UserActivity.query.filter_by(user_id=user_id).all()
+        activity_colors = {act.activity_number: act.color for act in activities}
+        time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
+
+        for slot in time_slots:
+            user_activities.append({
+                'activity_number': slot.activity_number,
+                'day_of_week': slot.day_of_week,
+                'start_time': slot.start_time,
+                'end_time': slot.end_time,
+                'color': activity_colors.get(slot.activity_number)
+            })
+
+        # NEW: Average scores per unit
+        results = (
+            db.session.query(Assessment.unit, func.avg(Assessment.score_obtained / Assessment.score_total * 100))
+            .filter(Assessment.user_id == user_id)
+            .group_by(Assessment.unit)
+            .all()
+        )
+        assessment_averages = [{'unit': unit, 'average': round(avg, 2)} for unit, avg in results]
+
+    return render_template('analytics.html',
+                           title='Analytics',
+                           user_activities=user_activities,
+                           assessment_averages=assessment_averages)

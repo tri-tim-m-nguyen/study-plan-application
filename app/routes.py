@@ -494,43 +494,44 @@ def assessments():
 
     user_id = session['user_id']
 
-    #Get the unit names from UserActivity table
     unit_activities = UserActivity.query.filter_by(user_id=user_id, activity_type='unit').all()
     units = sorted(set([activity.activity_number for activity in unit_activities]))
 
-    #Load saved assessments from app.db
+    if request.method == 'POST':
+        data = request.get_json()
+        for unit, assessments in data.get('assessments', {}).items():
+            for assessment in assessments:
+                existing = Assessment.query.filter_by(
+                    user_id=user_id,
+                    unit=unit,
+                    name=assessment['name']
+                ).first()
+                if not existing:
+                    new_assessment = Assessment(
+                        user_id=user_id,
+                        unit=unit,
+                        name=assessment['name'],
+                        score_obtained=float(assessment['scoreObtained']),
+                        score_total=float(assessment['scoreTotal']),
+                        weightage=float(assessment['weightage'])
+                    )
+                    db.session.add(new_assessment)
+        db.session.commit()
+        return jsonify({'status': 'success'})
+
+    # Load saved assessments
     user_assessments = Assessment.query.filter_by(user_id=user_id).all()
     assessments_by_unit = {}
     for unit in units:
         assessments_by_unit[unit] = []
 
     for a in user_assessments:
-        if a.unit not in assessments_by_unit:
-            assessments_by_unit[a.unit] = []
         assessments_by_unit[a.unit].append({
             "name": a.name,
             "scoreObtained": a.score_obtained,
             "scoreTotal": a.score_total,
             "weightage": a.weightage
         })
-
-    #Handles form submission (save)
-    if request.method == 'POST':
-        data = request.get_json()
-        Assessment.query.filter_by(user_id=user_id).delete()  # Overwrite
-        for unit, assessments in data.get('assessments', {}).items():
-            for assessment in assessments:
-                new_assessment = Assessment(
-                    user_id=user_id,
-                    unit=unit,
-                    name=assessment['name'],
-                    score_obtained=float(assessment['scoreObtained']),
-                    score_total=float(assessment['scoreTotal']),
-                    weightage=float(assessment['weightage'])
-                )
-                db.session.add(new_assessment)
-        db.session.commit()
-        return jsonify({'status': 'success'})
 
     return render_template(
         'assessments.html',

@@ -18,11 +18,6 @@ def signup():
         return redirect(url_for('home'))
     form= SignUpForm()
     if form.validate_on_submit():
-        # Registration occurs here
-        existing_user = UserDetails.query.filter_by(username=form.username.data).first()
-        if existing_user:
-            flash('Username already exists. Please choose a different one.', 'danger')
-            return redirect(url_for('signup'))
         
         #Create a new user with hashed password
         hashed_password = generate_password_hash(form.password.data)

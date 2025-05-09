@@ -3,6 +3,8 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired
 from wtforms import ValidationError
 from wtforms.validators import Length, EqualTo, ValidationError
+from app.models import UserDetails
+import re
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -15,6 +17,21 @@ class SignUpForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     submit = SubmitField('Submit')
+
+    def validate_username(self, field):
+        username = field.data
+
+        # Check minimum length
+        if len(username) < 3:
+            raise ValidationError('Username must be at least 3 characters long.')
+
+        # Check allowed characters (alphanumeric, underscores, hyphens)
+        if not re.match(r'^[A-Za-z0-9_-]+$', username):
+            raise ValidationError('Username can only contain letters, numbers, underscores, and hyphens.')
+
+        # Check uniqueness
+        if UserDetails.query.filter_by(username=username).first():
+            raise ValidationError('Username already exists. Please choose a different one.')
 
     def validate_password(self, field):
         password=field.data
@@ -29,5 +46,3 @@ class SignUpForm(FlaskForm):
             raise ValidationError('Password must contain at least one lower case letter.')
         if not any(char in '!@#$%^&*()_+' for char in password):
             raise ValidationError('Password must contain at least one special character.')
-
-

@@ -41,13 +41,13 @@ function renderAssessments() {
     row.className = 'row mb-2';
     row.innerHTML = `
         <div class="col">
-            <input type="text" placeholder="Name" class="form-control" id="assessmentName">
+            <input type="text" placeholder="Assessment Name" class="form-control" id="assessmentName">
         </div>
         <div class="col">
-            <input type="number" placeholder="Obtained" class="form-control" id="assessmentScoreObtained">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained">
         </div>
         <div class="col">
-            <input type="number" placeholder="Total" class="form-control" id="assessmentScoreTotal">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal">
         </div>
         <div class="col">
             <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage">
@@ -66,22 +66,35 @@ function renderSummary(){
         summaryDiv.innerHTML = '<em>No assessments available</em>';
         return;
     }
-    let html = `<table class="table"><thead><tr><th>Name</th><th>Score</th><th>Weightage</th><th>Weighted %</th></tr></thead></tbody>`;
-    assessments.forEach(a => {
+    let html = `<table class="assessment-table"><thead><tr>
+        <th>Name</th>
+        <th>Score</th>
+        <th>Assessment Weight %</th>
+        <th>Obtained Weight %</th>
+        <th></th>
+    </tr></thead></tbody>`;
+    assessments.forEach((a, idx) => {
         const obtained = parseFloat(a.scoreObtained);
         const total = parseFloat(a.scoreTotal);
         const weight = parseFloat(a.weightage);
         let weighted = '-';
-        if (!isNaN(obtained) && !isNaN(total) && total>0) {
-            weighted = ((obtained/total)*weight).toFixed(2) + '%';
+      
+        if (!isNaN(obtained) && !isNaN(total) && total > 0) {
+          weighted = ((obtained / total) * weight).toFixed(2) + '%';
         }
+      
         html += `<tr>
-            <td>${a.name || '-'}</td>
-            <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
-            <td>${!isNaN(weight) ? weight : 0}%</td>
-            <td>${weighted}</td>
+          <td>${a.name || '-'}</td>
+          <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
+          <td>${!isNaN(weight) ? weight : 0}%</td>
+          <td>${weighted}</td>
+          <td class="icon-cell">
+            <button onclick="deleteAssessment(${idx})" title="Delete assessment">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </td>
         </tr>`;
-        });
+      });
     html += '</tbody></table>';
     summaryDiv.innerHTML = html;
 }
@@ -118,4 +131,29 @@ function saveAssessments() {
         document.getElementById('assessmentWeightage').value = '';
     })
     .catch(err => alert("Error saving assessment"));
+}
+
+function deleteAssessment(idx) {
+    const unit = document.getElementById('UnitSelect').value;
+    const toDelete = assessmentsData[unit][idx];
+
+    fetch('/assessments/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            unit: unit,
+            name: toDelete.name
+        }),
+        credentials: 'include'
+    })
+    .then(res => res.json())
+    .then(data => {
+        // Remove locally only if server deletion succeeded
+        if (data.status === 'success') {
+            assessmentsData[unit].splice(idx, 1);
+            window.savedAssessments[unit] = assessmentsData[unit];
+            renderSummary();
+        }
+    })
+    .catch(err => alert("Error deleting assessment"));
 }

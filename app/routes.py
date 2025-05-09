@@ -494,11 +494,30 @@ def assessments():
 
     user_id = session['user_id']
 
+    #Get the unit names from UserActivity table
     unit_activities = UserActivity.query.filter_by(user_id=user_id, activity_type='unit').all()
     units = sorted(set([activity.activity_number for activity in unit_activities]))
 
+    #Load saved assessments from app.db
+    user_assessments = Assessment.query.filter_by(user_id=user_id).all()
+    assessments_by_unit = {}
+    for unit in units:
+        assessments_by_unit[unit] = []
+
+    for a in user_assessments:
+        if a.unit not in assessments_by_unit:
+            assessments_by_unit[a.unit] = []
+        assessments_by_unit[a.unit].append({
+            "name": a.name,
+            "scoreObtained": a.score_obtained,
+            "scoreTotal": a.score_total,
+            "weightage": a.weightage
+        })
+
+    #Handles form submission (save)
     if request.method == 'POST':
         data = request.get_json()
+        Assessment.query.filter_by(user_id=user_id).delete()  # Overwrite
         for unit, assessments in data.get('assessments', {}).items():
             for assessment in assessments:
                 new_assessment = Assessment(
@@ -513,4 +532,9 @@ def assessments():
         db.session.commit()
         return jsonify({'status': 'success'})
 
-    return render_template('assessments.html', title='Assessment', units=units)
+    return render_template(
+        'assessments.html',
+        title='Assessment',
+        units=units,
+        saved_assessments=assessments_by_unit
+    )

@@ -1,9 +1,11 @@
 const assessmentsData = {};
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Dynamically extract units from the dropdown
     const unitOptions = document.querySelectorAll('#UnitSelect option');
-    unitOptions.forEach(opt => assessmentsData[opt.value] = []);
+    unitOptions.forEach(opt => {
+        const unit = opt.value;
+        assessmentsData[unit] = window.savedAssessments?.[unit] || [];
+    });
 
     document.getElementById('UnitSelect').addEventListener('change', renderAssessments);
     renderAssessments();
@@ -30,32 +32,29 @@ function removeAssessment(idx){
     assessmentsData[unit].splice(idx, 1);
     renderAssessments();
 }
-function renderAssessments(){
+function renderAssessments() {
     const unit = document.getElementById('UnitSelect').value;
     const container = document.getElementById('assessmentsContainer');
     container.innerHTML = '';
-    assessmentsData[unit].forEach((a, idx) => {
-        const row = document.createElement('div');
-        row.className = 'row mb-2';
-        row.innerHTML = `
-            <div class="col">
-                <input type="text" placeholder="Name" class="form-control" value="${a.name}" onchange="updateAssessment(${idx}, 'name', this.value)">
-            </div>
-            <div class="col">
-                <input type="number" placeholder="Obtained" class="form-control" value="${a.scoreObtained}" onchange="updateAssessment(${idx}, 'scoreObtained', this.value)">
-            </div>
-            <div class="col">
-                <input type="number" placeholder="Total" class="form-control" value="${a.scoreTotal}" onchange="updateAssessment(${idx}, 'scoreTotal', this.value)">
-            </div>
-            <div class="col">
-                <input type="number" placeholder="Weightage (%)" class="form-control" value="${a.weightage}" onchange="updateAssessment(${idx}, 'weightage', this.value)">
-            </div>
-            <div class="col">
-                <button class="btn btn-danger" onclick="removeAssessment(${idx})"><i class="fa fa-trash"></i></button>
-            </div>
-        `;
-        container.appendChild(row);
-    });
+
+    const row = document.createElement('div');
+    row.className = 'row mb-2';
+    row.innerHTML = `
+        <div class="col">
+            <input type="text" placeholder="Name" class="form-control" id="assessmentName">
+        </div>
+        <div class="col">
+            <input type="number" placeholder="Obtained" class="form-control" id="assessmentScoreObtained">
+        </div>
+        <div class="col">
+            <input type="number" placeholder="Total" class="form-control" id="assessmentScoreTotal">
+        </div>
+        <div class="col">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage">
+        </div>
+    `;
+    container.appendChild(row);
+
     renderSummary();
 }
 function renderSummary(){
@@ -87,14 +86,36 @@ function renderSummary(){
     summaryDiv.innerHTML = html;
 }
 
-function saveAssessments(){
+function saveAssessments() {
+    const unit = document.getElementById('UnitSelect').value;
+
+    const newAssessment = {
+        name: document.getElementById('assessmentName').value,
+        scoreObtained: parseFloat(document.getElementById('assessmentScoreObtained').value),
+        scoreTotal: parseFloat(document.getElementById('assessmentScoreTotal').value),
+        weightage: parseFloat(document.getElementById('assessmentWeightage').value)
+    };
+
     fetch('/assessments', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({assessments: assessmentsData}),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ assessments: { [unit]: [newAssessment] } }),
         credentials: 'include'
     })
-    .then(res=>res.json())
-    .then(data=>alert('Assessments saves successfully!'))
-    .catch(err => alert("Error saving assessments"));
+    .then(res => res.json())
+    .then(data => {
+        alert("Assessment saved successfully!");
+        // Update local data so it's rendered in summary
+        if (!window.savedAssessments[unit]) {
+            window.savedAssessments[unit] = [];
+        }
+        window.savedAssessments[unit].push(newAssessment);
+        renderSummary();
+        // Optionally clear the form
+        document.getElementById('assessmentName').value = '';
+        document.getElementById('assessmentScoreObtained').value = '';
+        document.getElementById('assessmentScoreTotal').value = '';
+        document.getElementById('assessmentWeightage').value = '';
+    })
+    .catch(err => alert("Error saving assessment"));
 }

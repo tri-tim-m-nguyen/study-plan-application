@@ -1,3 +1,4 @@
+// compare.js - Specific JavaScript for compare.html page
 document.addEventListener('DOMContentLoaded', function() {
     // Handle request form submission
     const requestForm = document.getElementById('request-timetable-form');
@@ -21,9 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for new requests periodically
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000); // Check every 30 seconds
-  });
+});
   
-  function sendTimetableRequest(username) {
+function sendTimetableRequest(username) {
     fetch('/request_timetable', {
         method: 'POST',
         headers: {
@@ -45,9 +46,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error:', error);
         showNotification('An error occurred while sending the request', 'danger');
     });
-  }
+}
   
-  function checkForNewRequests() {
+function checkForNewRequests() {
     if (!document.getElementById('pending-requests-list')) return;
   
     fetch('/check_requests', {
@@ -71,9 +72,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
         console.error('Error checking for requests:', error);
     });
-  }
+}
   
-  function updatePendingRequestsList(requests) {
+function updatePendingRequestsList(requests) {
     const container = document.getElementById('pending-requests-list');
     if (!container) return;
   
@@ -95,9 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
     container.innerHTML = html;
     setupRequestButtons();
-  }
+}
   
-  function updateSharedTimetablesList(shared) {
+function updateSharedTimetablesList(shared) {
     const container = document.getElementById('shared-timetables-list');
     if (!container) return;
   
@@ -126,9 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
     container.innerHTML = html;
     setupTimetableViewButtons();
     setupDelinkButtons();
-  }
+}
   
-  function setupRequestButtons() {
+function setupRequestButtons() {
     // Set up accept buttons
     document.querySelectorAll('.accept-request').forEach(button => {
         button.addEventListener('click', function() {
@@ -144,9 +145,9 @@ document.addEventListener('DOMContentLoaded', function() {
             respondToRequest(requestId, 'reject');
         });
     });
-  }
+}
   
-  function setupTimetableViewButtons() {
+function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
         button.addEventListener('click', function() {
@@ -185,9 +186,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         });
     }
-  }
+}
   
-  function setupDelinkButtons() {
+function setupDelinkButtons() {
     // Setup delink/trash buttons
     document.querySelectorAll('.delink-button').forEach(button => {
         button.addEventListener('click', function() {
@@ -199,9 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-  }
+}
   
-  function delinkTimetable(username, sharingType) {
+function delinkTimetable(username, sharingType) {
     fetch('/delink_timetable', {
         method: 'POST',
         headers: {
@@ -233,9 +234,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error:', error);
         showNotification('An error occurred', 'danger');
     });
-  }
+}
   
-  function respondToRequest(requestId, action) {
+function respondToRequest(requestId, action) {
     fetch('/respond_to_request', {
         method: 'POST',
         headers: {
@@ -260,9 +261,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error:', error);
         showNotification('An error occurred', 'danger');
     });
-  }
+}
   
-  function loadUserTimetable(username) {
+function loadUserTimetable(username) {
     fetch('/get_timetable', {
         method: 'POST',
         headers: {
@@ -284,9 +285,9 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error:', error);
         showNotification('An error occurred while loading the timetable', 'danger');
     });
-  }
+}
   
-  function displayTimetable(timetableData) {
+function displayTimetable(timetableData) {
     // Clear existing timetable
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
@@ -300,12 +301,12 @@ document.addEventListener('DOMContentLoaded', function() {
             cell.style.backgroundColor = slot.color || '#000000';
         }
     });
-  }
+}
   
-  function showNotification(message, type) {
+function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;
-  
+
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show`;
     notification.role = 'alert';
@@ -313,9 +314,9 @@ document.addEventListener('DOMContentLoaded', function() {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-  
+
     notificationsContainer.appendChild(notification);
-  
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -323,4 +324,4 @@ document.addEventListener('DOMContentLoaded', function() {
             notification.remove();
         }, 150);
     }, 5000);
-  }
+}

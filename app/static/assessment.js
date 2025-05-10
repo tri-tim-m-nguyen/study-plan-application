@@ -1,5 +1,10 @@
 const assessmentsData = {};
 
+function formatToTwoDecimals(value) {
+    const num = parseFloat(value);
+    return isNaN(num) ? '' : parseFloat(num.toFixed(2));
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const unitOptions = document.querySelectorAll('#UnitSelect option');
     unitOptions.forEach(opt => {
@@ -41,15 +46,15 @@ function renderAssessments() {
             <div id="nameError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0" max="100" step="any">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0" max="100" step="0.01">
             <div id="obtainedError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0.01" max="100" step="any">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0.01" max="100" step="0.01">
             <div id="totalError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100" step="any">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100" step="0.01">
             <div id="weightError" class="text-danger small mt-1"></div>
         </div>
     `;
@@ -153,6 +158,10 @@ function moveAssessmentByDrag(fromIdx, toIdx) {
     renderSummary();
 }
 
+function isTwoDecimalPlaces(value) {
+    return /^\d+(\.\d{1,2})?$/.test(value);
+}
+
 function saveAssessments() {
     const nameInput = document.getElementById('assessmentName');
     const obtainedInput = document.getElementById('assessmentScoreObtained');
@@ -160,11 +169,11 @@ function saveAssessments() {
     const weightInput = document.getElementById('assessmentWeightage');
 
     const name = nameInput.value.trim();
-    const scoreObtained = parseFloat(obtainedInput.value);
-    const scoreTotal = parseFloat(totalInput.value);
-    const weightage = parseFloat(weightInput.value);
+    const scoreObtainedStr = obtainedInput.value.trim();
+    const scoreTotalStr = totalInput.value.trim();
+    const weightageStr = weightInput.value.trim();
 
-    // Clear previous errors
+    // Clear all previous error messages
     document.getElementById('nameError').textContent = '';
     document.getElementById('obtainedError').textContent = '';
     document.getElementById('totalError').textContent = '';
@@ -172,24 +181,45 @@ function saveAssessments() {
 
     let hasError = false;
 
+    // Validate name
     if (!name) {
         document.getElementById('nameError').textContent = 'Assessment name is required.';
         hasError = true;
     }
-    if (isNaN(scoreObtained) || scoreObtained < 0 || scoreObtained > 100) {
+
+    // Validate Obtained Score
+    if (isNaN(scoreObtainedStr) || parseFloat(scoreObtainedStr) < 0 || parseFloat(scoreObtainedStr) > 100) {
         document.getElementById('obtainedError').textContent = 'Score must be between 0 and 100.';
         hasError = true;
-    }
-    if (isNaN(scoreTotal) || scoreTotal <= 0 || scoreTotal > 100) {
-        document.getElementById('totalError').textContent = 'Total must be between 0 and 100.';
+    } else if (!isTwoDecimalPlaces(scoreObtainedStr)) {
+        document.getElementById('obtainedError').textContent = 'Input must be 2 decimal places.';
         hasError = true;
     }
-    if (isNaN(weightage) || weightage < 0 || weightage > 100) {
+
+    // Validate Total Score
+    if (isNaN(scoreTotalStr) || parseFloat(scoreTotalStr) <= 0 || parseFloat(scoreTotalStr) > 100) {
+        document.getElementById('totalError').textContent = 'Total must be between 0 and 100.';
+        hasError = true;
+    } else if (!isTwoDecimalPlaces(scoreTotalStr)) {
+        document.getElementById('totalError').textContent = 'Input must be 2 decimal places.';
+        hasError = true;
+    }
+
+    // Validate Weightage
+    if (isNaN(weightageStr) || parseFloat(weightageStr) < 0 || parseFloat(weightageStr) > 100) {
         document.getElementById('weightError').textContent = 'Weightage must be between 0 and 100.';
+        hasError = true;
+    } else if (!isTwoDecimalPlaces(weightageStr)) {
+        document.getElementById('weightError').textContent = 'Input must be 2 decimal places.';
         hasError = true;
     }
 
     if (hasError) return;
+
+    // If all valid, parse and proceed
+    const scoreObtained = parseFloat(scoreObtainedStr);
+    const scoreTotal = parseFloat(scoreTotalStr);
+    const weightage = parseFloat(weightageStr);
 
     const unit = document.getElementById('UnitSelect').value;
     const newAssessment = { name, scoreObtained, scoreTotal, weightage };
@@ -208,6 +238,7 @@ function saveAssessments() {
         }
         window.savedAssessments[unit].push(newAssessment);
         renderSummary();
+
         // Reset form
         nameInput.value = '';
         obtainedInput.value = '';
@@ -216,6 +247,7 @@ function saveAssessments() {
     })
     .catch(err => alert("Error saving assessment"));
 }
+
 
 function deleteAssessment(idx) {
     const unit = document.getElementById('UnitSelect').value;
@@ -271,7 +303,7 @@ function saveEdit(idx) {
         name: document.getElementById(`edit-name-${idx}`).value,
         scoreObtained: parseFloat(document.getElementById(`edit-obtained-${idx}`).value),
         scoreTotal: parseFloat(document.getElementById(`edit-total-${idx}`).value),
-        weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value),
+        weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value)
     };
 
     // Update DB

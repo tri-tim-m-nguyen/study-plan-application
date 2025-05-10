@@ -91,8 +91,8 @@ function renderSummary(){
             <button class="edit-btn" onclick="editAssessment(${idx})" title="Edit assessment">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <button class="delete-btn" onclick="deleteAssessment(${idx})" title="Delete assessment">
-                <i class="fa-solid fa-trash"></i>
+            <button class="delete-btn" onclick="deleteAssessment(${idx})" title="Delete activity">
+                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" alt="Delete" class="delete-icon" style="width: 20px; height: 20px;" />
             </button>
           </td>
         </tr>`;

@@ -143,10 +143,9 @@ function moveAssessmentByDrag(fromIdx, toIdx) {
 
     // Persist to backend
     const order = list.map(a => a.name);
-    fetch('/assessments/reorder', {
+    safeFetch('/assessments/reorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ unit, order })
     });
 
@@ -194,11 +193,10 @@ function saveAssessments() {
     const unit = document.getElementById('UnitSelect').value;
     const newAssessment = { name, scoreObtained, scoreTotal, weightage };
 
-    fetch('/assessments', {
+    safeFetch('/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessments: { [unit]: [newAssessment] } }),
-        credentials: 'include'
+        body: JSON.stringify({ assessments: { [unit]: [newAssessment] } })
     })
     .then(res => res.json())
     .then(data => {
@@ -221,14 +219,13 @@ function deleteAssessment(idx) {
     const unit = document.getElementById('UnitSelect').value;
     const toDelete = assessmentsData[unit][idx];
 
-    fetch('/assessments/delete', {
+    safeFetch('/assessments/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             unit: unit,
             name: toDelete.name
         }),
-        credentials: 'include'
     })
     .then(res => res.json())
     .then(data => {
@@ -275,10 +272,9 @@ function saveEdit(idx) {
     };
 
     // Update DB
-    fetch('/assessments/update', {
+    safeFetch('/assessments/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
             unit: unit,
             name: oldName,

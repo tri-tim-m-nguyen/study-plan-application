@@ -143,5 +143,12 @@
                 });
             });
         </script>
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script>
+            // Make CSRF token globally available
+            window.csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        </script>
+        <script src="{{ url_for('static', filename='js/ajax-utils.js') }}"></script>
     </body>
 </html>

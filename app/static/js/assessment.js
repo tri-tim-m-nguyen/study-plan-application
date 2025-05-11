@@ -1,10 +1,5 @@
 const assessmentsData = {};
 
-function formatToTwoDecimals(value) {
-    const num = parseFloat(value);
-    return isNaN(num) ? '' : parseFloat(num.toFixed(2));
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     const unitOptions = document.querySelectorAll('#UnitSelect option');
     unitOptions.forEach(opt => {
@@ -46,15 +41,15 @@ function renderAssessments() {
             <div id="nameError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0" max="100" step="0.01">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0" max="100" step="any">
             <div id="obtainedError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0.01" max="100" step="0.01">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0.01" max="100" step="any">
             <div id="totalError" class="text-danger small mt-1"></div>
         </div>
         <div class="col">
-            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100" step="0.01">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100" step="any">
             <div id="weightError" class="text-danger small mt-1"></div>
         </div>
     `;
@@ -148,18 +143,13 @@ function moveAssessmentByDrag(fromIdx, toIdx) {
 
     // Persist to backend
     const order = list.map(a => a.name);
-    fetch('/assessments/reorder', {
+    safeFetch('/assessments/reorder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ unit, order })
     });
 
     renderSummary();
-}
-
-function isTwoDecimalPlaces(value) {
-    return /^\d+(\.\d{1,2})?$/.test(value);
 }
 
 function saveAssessments() {
@@ -169,11 +159,11 @@ function saveAssessments() {
     const weightInput = document.getElementById('assessmentWeightage');
 
     const name = nameInput.value.trim();
-    const scoreObtainedStr = obtainedInput.value.trim();
-    const scoreTotalStr = totalInput.value.trim();
-    const weightageStr = weightInput.value.trim();
+    const scoreObtained = parseFloat(obtainedInput.value);
+    const scoreTotal = parseFloat(totalInput.value);
+    const weightage = parseFloat(weightInput.value);
 
-    // Clear all previous error messages
+    // Clear previous errors
     document.getElementById('nameError').textContent = '';
     document.getElementById('obtainedError').textContent = '';
     document.getElementById('totalError').textContent = '';
@@ -181,54 +171,32 @@ function saveAssessments() {
 
     let hasError = false;
 
-    // Validate name
     if (!name) {
         document.getElementById('nameError').textContent = 'Assessment name is required.';
         hasError = true;
     }
-
-    // Validate Obtained Score
-    if (isNaN(scoreObtainedStr) || parseFloat(scoreObtainedStr) < 0 || parseFloat(scoreObtainedStr) > 100) {
+    if (isNaN(scoreObtained) || scoreObtained < 0 || scoreObtained > 100) {
         document.getElementById('obtainedError').textContent = 'Score must be between 0 and 100.';
         hasError = true;
-    } else if (!isTwoDecimalPlaces(scoreObtainedStr)) {
-        document.getElementById('obtainedError').textContent = 'Input must be 2 decimal places.';
-        hasError = true;
     }
-
-    // Validate Total Score
-    if (isNaN(scoreTotalStr) || parseFloat(scoreTotalStr) <= 0 || parseFloat(scoreTotalStr) > 100) {
+    if (isNaN(scoreTotal) || scoreTotal <= 0 || scoreTotal > 100) {
         document.getElementById('totalError').textContent = 'Total must be between 0 and 100.';
         hasError = true;
-    } else if (!isTwoDecimalPlaces(scoreTotalStr)) {
-        document.getElementById('totalError').textContent = 'Input must be 2 decimal places.';
-        hasError = true;
     }
-
-    // Validate Weightage
-    if (isNaN(weightageStr) || parseFloat(weightageStr) < 0 || parseFloat(weightageStr) > 100) {
+    if (isNaN(weightage) || weightage < 0 || weightage > 100) {
         document.getElementById('weightError').textContent = 'Weightage must be between 0 and 100.';
-        hasError = true;
-    } else if (!isTwoDecimalPlaces(weightageStr)) {
-        document.getElementById('weightError').textContent = 'Input must be 2 decimal places.';
         hasError = true;
     }
 
     if (hasError) return;
 
-    // If all valid, parse and proceed
-    const scoreObtained = parseFloat(scoreObtainedStr);
-    const scoreTotal = parseFloat(scoreTotalStr);
-    const weightage = parseFloat(weightageStr);
-
     const unit = document.getElementById('UnitSelect').value;
     const newAssessment = { name, scoreObtained, scoreTotal, weightage };
 
-    fetch('/assessments', {
+    safeFetch('/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ assessments: { [unit]: [newAssessment] } }),
-        credentials: 'include'
+        body: JSON.stringify({ assessments: { [unit]: [newAssessment] } })
     })
     .then(res => res.json())
     .then(data => {
@@ -238,7 +206,6 @@ function saveAssessments() {
         }
         window.savedAssessments[unit].push(newAssessment);
         renderSummary();
-
         // Reset form
         nameInput.value = '';
         obtainedInput.value = '';
@@ -248,19 +215,17 @@ function saveAssessments() {
     .catch(err => alert("Error saving assessment"));
 }
 
-
 function deleteAssessment(idx) {
     const unit = document.getElementById('UnitSelect').value;
     const toDelete = assessmentsData[unit][idx];
 
-    fetch('/assessments/delete', {
+    safeFetch('/assessments/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             unit: unit,
             name: toDelete.name
         }),
-        credentials: 'include'
     })
     .then(res => res.json())
     .then(data => {
@@ -303,14 +268,13 @@ function saveEdit(idx) {
         name: document.getElementById(`edit-name-${idx}`).value,
         scoreObtained: parseFloat(document.getElementById(`edit-obtained-${idx}`).value),
         scoreTotal: parseFloat(document.getElementById(`edit-total-${idx}`).value),
-        weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value)
+        weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value),
     };
 
     // Update DB
-    fetch('/assessments/update', {
+    safeFetch('/assessments/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
             unit: unit,
             name: oldName,

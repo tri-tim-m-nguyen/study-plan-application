@@ -25,13 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
   
 function sendTimetableRequest(username) {
-    fetch('/request_timetable', {
+    safeFetch('/request_timetable', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: username }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -51,9 +50,8 @@ function sendTimetableRequest(username) {
 function checkForNewRequests() {
     if (!document.getElementById('pending-requests-list')) return;
   
-    fetch('/check_requests', {
+    safeFetch('/check_requests', {
         method: 'GET',
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -203,7 +201,7 @@ function setupDelinkButtons() {
 }
   
 function delinkTimetable(username, sharingType) {
-    fetch('/delink_timetable', {
+    safeFetch('/delink_timetable', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -212,7 +210,6 @@ function delinkTimetable(username, sharingType) {
             username: username,
             sharing_type: sharingType
         }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -237,7 +234,7 @@ function delinkTimetable(username, sharingType) {
 }
   
 function respondToRequest(requestId, action) {
-    fetch('/respond_to_request', {
+    safeFetch('/respond_to_request', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -246,7 +243,6 @@ function respondToRequest(requestId, action) {
             request_id: requestId,
             action: action
         }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -264,13 +260,12 @@ function respondToRequest(requestId, action) {
 }
   
 function loadUserTimetable(username) {
-    fetch('/get_timetable', {
+    safeFetch('/get_timetable', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: username }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {

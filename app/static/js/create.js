@@ -311,11 +311,10 @@ function collectTimetableData() {
 // Function to save the timetable to the server
 function saveTimeTable(showAlert = false) {
     const activityData = collectTimetableData();
-    return fetch('/save_timetable', {
+    return safeFetch('/save_timetable', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ activities: activityData }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {

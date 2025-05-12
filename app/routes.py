@@ -4,6 +4,8 @@ from app.models import UserDetails, UserActivity, ActivityTimeSlot, TimetableReq
 from app.forms import LoginForm, SignUpForm
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from app.models import Assessment
+from sqlalchemy import func
 
 @app.route('/')
 @app.route('/index')
@@ -17,11 +19,6 @@ def signup():
         return redirect(url_for('home'))
     form= SignUpForm()
     if form.validate_on_submit():
-        # Registration occurs here
-        existing_user = UserDetails.query.filter_by(username=form.username.data).first()
-        if existing_user:
-            flash('Username already exists. Please choose a different one.', 'danger')
-            return redirect(url_for('signup'))
         
         #Create a new user with hashed password
         hashed_password = generate_password_hash(form.password.data)
@@ -86,10 +83,16 @@ def save_timetable():
     data = request.get_json()
     activity_map = {}
     activity_colors = {}  # Track colors for each activity
+    activity_types = {}  
 
-    # First pass to get all activities and their colors
+    unit_activity_ids = set()
     for item in data.get('activities', []):
         act_no = item['activity_number']
+        act_type = item.get('activity_type', 'normal')
+        if act_type == 'unit':
+            unit_activity_ids.add(act_no)
+        if act_no not in activity_types:
+            activity_types[act_no] = act_type
         if 'color' in item and item['color']:
             activity_colors[act_no] = item['color']
     
@@ -106,12 +109,19 @@ def save_timetable():
             db.session.flush()  # Get the activity ID
             activity_map[act_no] = new_act.activity_id
 
+    unit_count = len(unit_activity_ids)
+    
+    # Validate unit activity count
+    if unit_count < 1 or unit_count > 4:
+        return jsonify({'status': 'error', 'error': 'You must have between 1 and 4 unit activities.'}), 400
+
     # Second pass to create activities and time slots
     for item in data.get('activities', []):
         act_no = item['activity_number']
         day = item['day_of_week']
         start = item['start_time']
         end = item['end_time']
+        act_type = activity_types.get(act_no, 'normal')
 
         if act_no in ["full", "partial"]:
             # Save "full" or "partial" timeslots with activity_id = 0
@@ -133,6 +143,21 @@ def save_timetable():
                 start_time=start,
                 end_time=end
             ))
+                color=activity_colors.get(act_no, None),  # Add color if available
+                activity_type=act_type
+            )
+            db.session.add(new_act)
+            db.session.flush()
+            activity_map[act_no] = new_act.activity_id
+
+        db.session.add(ActivityTimeSlot(
+            user_id=user.id,
+            activity_id=activity_map[act_no],
+            activity_number=act_no,
+            day_of_week=day,
+            start_time=start,
+            end_time=end
+        ))
 
     db.session.commit()
     return jsonify({'status': 'success'})
@@ -161,13 +186,11 @@ def create():
                 'start_time': slot.start_time,
                 'end_time': slot.end_time,
                 'color': activity_colors.get(slot.activity_number),
+                'activity_type': next(
+                    (act.activity_type for act in activities if act.activity_number == slot.activity_number), 'normal')
             })
     
     return render_template('create.html', title='Create', user_activities=user_activities)
-
-@app.route('/view')
-def view():
-    return render_template('view.html', title='View')
 
 @app.route('/compare')
 def compare():
@@ -458,3 +481,170 @@ def delink_timetable():
         'status': 'success',
         'message': f'Stopped sharing timetable with {username}'
     })
+
+@app.route('/assessments', methods=['GET', 'POST'])
+def assessments():
+    if 'user_id' not in session:
+        flash('Please login to view assessments.', 'warning')
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+
+    unit_activities = UserActivity.query.filter_by(user_id=user_id, activity_type='unit').all()
+    units = sorted(set([activity.activity_number for activity in unit_activities]))
+
+    if request.method == 'POST':
+        data = request.get_json()
+        for unit, assessments in data.get('assessments', {}).items():
+            for idx, assessment in enumerate(assessments):
+                existing = Assessment.query.filter_by(
+                    user_id=user_id,
+                    unit=unit,
+                    name=assessment['name']
+                ).first()
+                if not existing:
+                    new_assessment = Assessment(
+                        user_id=user_id,
+                        unit=unit,
+                        name=assessment['name'],
+                        score_obtained=float(assessment['scoreObtained']),
+                        score_total=float(assessment['scoreTotal']),
+                        weightage=float(assessment['weightage']),
+                        position=idx
+                    )
+                    db.session.add(new_assessment)
+        db.session.commit()
+        return jsonify({'status': 'success'})
+
+    # Load saved assessments
+    user_assessments = Assessment.query.filter_by(user_id=user_id).order_by(Assessment.position).all()
+    assessments_by_unit = {}
+    for unit in units:
+        assessments_by_unit[unit] = []
+
+    for a in user_assessments:
+        assessments_by_unit[a.unit].append({
+            "name": a.name,
+            "scoreObtained": a.score_obtained,
+            "scoreTotal": a.score_total,
+            "weightage": a.weightage
+        })
+
+    return render_template(
+        'assessments.html',
+        title='Assessment',
+        units=units,
+        saved_assessments=assessments_by_unit
+    )
+
+@app.route('/assessments/delete', methods=['POST'])
+def delete_assessment():
+    if 'user_id' not in session:
+        return jsonify({'status': 'unauthorized'}), 403
+
+    data = request.get_json()
+    user_id = session['user_id']
+    unit = data.get('unit')
+    name = data.get('name')
+
+    if not unit or not name:
+        return jsonify({'status': 'error', 'message': 'Missing unit or name'}), 400
+
+    assessment = Assessment.query.filter_by(user_id=user_id, unit=unit, name=name).first()
+    if assessment:
+        db.session.delete(assessment)
+        db.session.commit()
+        return jsonify({'status': 'success'})
+
+    return jsonify({'status': 'not_found'}), 404
+
+@app.route('/assessments/update', methods=['POST'])
+def update_assessment():
+    if 'user_id' not in session:
+        return jsonify({'status': 'unauthorized'}), 403
+
+    data = request.get_json()
+    user_id = session['user_id']
+    unit = data.get('unit')
+    name = data.get('name')  # original name (before editing)
+    new_data = data.get('new_data')
+
+    if not unit or not name or not new_data:
+        return jsonify({'status': 'error', 'message': 'Incomplete data'}), 400
+    
+    app.logger.info(f"Updating {name} in unit {unit} with data: {new_data}")
+
+    assessment = Assessment.query.filter_by(user_id=user_id, unit=unit, name=name).first()
+    if not assessment:
+        return jsonify({'status': 'not_found'}), 404
+
+    assessment.name = new_data.get('name', assessment.name)
+
+    if 'scoreObtained' in new_data:
+        assessment.score_obtained = float(new_data['scoreObtained'])
+
+    if 'scoreTotal' in new_data:
+        assessment.score_total = float(new_data['scoreTotal'])
+
+    if 'weightage' in new_data:
+        assessment.weightage = float(new_data['weightage'])
+
+
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+@app.route('/assessments/reorder', methods=['POST'])
+def reorder_assessments():
+    if 'user_id' not in session:
+        return jsonify({'status': 'unauthorized'}), 403
+
+    data = request.get_json()
+    unit = data.get('unit')
+    order = data.get('order')  # List of assessment names in new order
+
+    if not unit or not isinstance(order, list):
+        return jsonify({'status': 'error', 'message': 'Invalid data'}), 400
+
+    for pos, name in enumerate(order):
+        assessment = Assessment.query.filter_by(user_id=session['user_id'], unit=unit, name=name).first()
+        if assessment:
+            assessment.position = pos
+
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+@app.route('/analytics')
+def analytics():
+    user_activities = []
+    assessment_averages = []
+
+    if 'user_id' in session:
+        user_id = session['user_id']
+
+        # Existing user activity processing...
+        activities = UserActivity.query.filter_by(user_id=user_id).all()
+        activity_colors = {act.activity_number: act.color for act in activities}
+        time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
+
+        for slot in time_slots:
+            user_activities.append({
+                'activity_number': slot.activity_number,
+                'day_of_week': slot.day_of_week,
+                'start_time': slot.start_time,
+                'end_time': slot.end_time,
+                'color': activity_colors.get(slot.activity_number)
+            })
+
+        # NEW: Average scores per unit
+        results = (
+            db.session.query(Assessment.unit, func.avg(Assessment.score_obtained / Assessment.score_total * 100))
+            .filter(Assessment.user_id == user_id)
+            .group_by(Assessment.unit)
+            .all()
+        )
+        assessment_averages = [{'unit': unit, 'average': round(avg, 2)} for unit, avg in results]
+
+    return render_template('analytics.html',
+                           title='Analytics',
+                           user_activities=user_activities,
+                           assessment_averages=assessment_averages)

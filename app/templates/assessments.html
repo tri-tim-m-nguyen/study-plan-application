@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block head_scripts %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assessment.css') }}">
+    <script src="{{ url_for('static', filename='js/assessment.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="assessment-flex">
+    <div class="input-container">
+      <h2>Assessment Entry</h2>
+
+      <label for="UnitSelect">Select Unit:</label>
+      <select id="UnitSelect">
+          {% for unit in units %}
+              <option value="{{ unit }}">{{ unit }}</option>
+          {% endfor %}
+      </select>
+
+      <div id="assessmentsContainer"></div>
+
+      <button class="add-btn" onclick="saveAssessments()">
+        <i class="fa-solid fa-plus"></i> Save Assessment
+      </button>
+    </div>
+
+    <div class="summary-container">
+      <div class="summary" id="summary"></div>
+    </div>
+  </div>
+
+  <script>
+    window.savedAssessments = {{ saved_assessments | tojson }};
+  </script>
+{% endblock %}

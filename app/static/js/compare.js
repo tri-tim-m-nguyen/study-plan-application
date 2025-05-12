@@ -1,3 +1,4 @@
+// compare.js - Specific JavaScript for compare.html page
 document.addEventListener('DOMContentLoaded', function() {
     // Handle request form submission
     const requestForm = document.getElementById('request-timetable-form');
@@ -21,16 +22,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check for new requests periodically
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000); // Check every 30 seconds
-  });
+});
   
-  function sendTimetableRequest(username) {
-    fetch('/request_timetable', {
+function sendTimetableRequest(username) {
+    safeFetch('/request_timetable', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: username }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -45,14 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error:', error);
         showNotification('An error occurred while sending the request', 'danger');
     });
-  }
+}
   
-  function checkForNewRequests() {
+function checkForNewRequests() {
     if (!document.getElementById('pending-requests-list')) return;
   
-    fetch('/check_requests', {
+    safeFetch('/check_requests', {
         method: 'GET',
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -71,9 +70,9 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
         console.error('Error checking for requests:', error);
     });
-  }
+}
   
-  function updatePendingRequestsList(requests) {
+function updatePendingRequestsList(requests) {
     const container = document.getElementById('pending-requests-list');
     if (!container) return;
   
@@ -95,9 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
   
     container.innerHTML = html;
     setupRequestButtons();
-  }
+}
   
-  function updateSharedTimetablesList(shared) {
+function updateSharedTimetablesList(shared) {
     const container = document.getElementById('shared-timetables-list');
     if (!container) return;
   
@@ -126,9 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
     container.innerHTML = html;
     setupTimetableViewButtons();
     setupDelinkButtons();
-  }
+}
   
-  function setupRequestButtons() {
+function setupRequestButtons() {
     // Set up accept buttons
     document.querySelectorAll('.accept-request').forEach(button => {
         button.addEventListener('click', function() {
@@ -144,9 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
             respondToRequest(requestId, 'reject');
         });
     });
-  }
+}
   
-  function setupTimetableViewButtons() {
+function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
         button.addEventListener('click', function () {
@@ -197,11 +196,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+<<<<<<< HEAD:app/static/compare.js
 })
 
 
 function setupDelinkButtons() {
     //Setup delink/trash buttons
+=======
+}
+  
+function setupDelinkButtons() {
+    // Setup delink/trash buttons
+>>>>>>> main:app/static/js/compare.js
     document.querySelectorAll('.delink-button').forEach(button => {
         button.addEventListener('click', function() {
             const username = this.getAttribute('data-username');
@@ -214,8 +220,8 @@ function setupDelinkButtons() {
     });
 }
   
-  function delinkTimetable(username, sharingType) {
-    fetch('/delink_timetable', {
+function delinkTimetable(username, sharingType) {
+    safeFetch('/delink_timetable', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -224,7 +230,6 @@ function setupDelinkButtons() {
             username: username,
             sharing_type: sharingType
         }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -246,10 +251,10 @@ function setupDelinkButtons() {
         console.error('Error:', error);
         showNotification('An error occurred', 'danger');
     });
-  }
+}
   
-  function respondToRequest(requestId, action) {
-    fetch('/respond_to_request', {
+function respondToRequest(requestId, action) {
+    safeFetch('/respond_to_request', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -258,7 +263,6 @@ function setupDelinkButtons() {
             request_id: requestId,
             action: action
         }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -273,16 +277,15 @@ function setupDelinkButtons() {
         console.error('Error:', error);
         showNotification('An error occurred', 'danger');
     });
-  }
+}
   
-  function loadUserTimetable(username) {
-    fetch('/get_timetable', {
+function loadUserTimetable(username) {
+    safeFetch('/get_timetable', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username: username }),
-        credentials: 'include'
     })
     .then(response => response.json())
     .then(data => {
@@ -312,12 +315,17 @@ function setupDelinkButtons() {
     });
 }
   
+<<<<<<< HEAD:app/static/compare.js
 
   
   let displayedTimetables = []; // Store all currently displayed timetables
 
   function displayTimetable() {
     // Clear all timeslot styles
+=======
+function displayTimetable(timetableData) {
+    // Clear existing timetable
+>>>>>>> main:app/static/js/compare.js
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
         slot.style.backgroundColor = '';
@@ -373,6 +381,7 @@ function setupDelinkButtons() {
         }
     });
 }
+<<<<<<< HEAD:app/static/compare.js
 
 function removeUserTimetable(username) {
     if (!username) {
@@ -415,11 +424,13 @@ function removeUserTimetable(username) {
         showNotification('An error occurred while removing the timetable', 'danger');
     });
 }
+=======
+>>>>>>> main:app/static/js/compare.js
   
-  function showNotification(message, type) {
+function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;
-  
+
     const notification = document.createElement('div');
     notification.className = `alert alert-${type} alert-dismissible fade show`;
     notification.role = 'alert';
@@ -427,9 +438,9 @@ function removeUserTimetable(username) {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-  
+
     notificationsContainer.appendChild(notification);
-  
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -437,4 +448,4 @@ function removeUserTimetable(username) {
             notification.remove();
         }, 150);
     }, 5000);
-  }
+}

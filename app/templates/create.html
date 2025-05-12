@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 
 {% block head_scripts %}
-  <script src="{{ url_for('static', filename='timetable.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/timetable.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/create.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='timetable.css') }}">
 {% endblock %}
 
@@ -30,10 +31,11 @@
       </div>
       <button type="submit">Submit</button>
     </form>
+    <button class="toggle" id="toggle-pselected">Partially Unavailable</button>
 
     <div id="activity-container">
-        <!-- New activities will be added here -->
-        <button id="add-button">+</button>
+      <!-- New activities will be added here -->
+       <button id="add-button">+</button>
     </div>
     <button id="save-timetable" class="btn btn-primary mt-3">Save Timetable</button>
 
@@ -43,7 +45,7 @@
 <!-- Pass user activities data to JavaScript -->
 {% if user_activities %}
 <script>
-  window.userSavedActivities = {{ user_activities|tojson }};
+  window.userSavedActivities = {{ user_activities|tojson|safe }};
 </script>
 {% else %}
 <script>

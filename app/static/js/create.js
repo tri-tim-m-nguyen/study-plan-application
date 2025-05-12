@@ -1,20 +1,4 @@
-let activityCount = 0;
-let focusedActivity = null;
-let availabilityState = null;
-
-// Store activity-to-cells mapping
-const activityCellMap = new Map();
-// NEW: Store cell-to-activity mapping to track which activity owns each cell
-const cellActivityMap = new Map();
-
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
+let availabilityState = null; // Track the availability state
 
 function addActivity(name = null, color = null) {
     if (activityCount >= 10) return null;
@@ -397,26 +381,6 @@ function collectTimetableData() {
         }
     });
     return data;
-}
-
-// Helper function to convert RGB to Hex
-function rgbToHex(rgb) {
-    // Check if rgb is already a hex color
-    if (rgb.startsWith('#')) {
-        return rgb;
-    }
-    
-    // Extract RGB values
-    const rgbValues = rgb.match(/\d+/g);
-    if (!rgbValues || rgbValues.length < 3) {
-        return '#000000'; // Default black if format is invalid
-    }
-    
-    // Convert to hex
-    return '#' + rgbValues.map(x => {
-        const hex = parseInt(x).toString(16);
-        return hex.length === 1 ? '0' + hex : hex;
-    }).join('');
 }
 
 // Function to save the timetable to the server

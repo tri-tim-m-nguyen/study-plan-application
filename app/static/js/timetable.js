@@ -55,14 +55,14 @@ function rgbToHex(rgb) {
 }
 
 // Initialize toggle buttons
-document.addEventListener('DOMContentLoaded', function () {
+//document.addEventListener('DOMContentLoaded', function () {
     // Set up toggle buttons for all pages that use timetable
-    const toggleButtons = document.querySelectorAll('.toggle');
-    if (toggleButtons) {
-        toggleButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.toggle('active');
-            });
-        });
-    }
-});
+//    const toggleButtons = document.querySelectorAll('.toggle');
+//    if (toggleButtons) {
+//        toggleButtons.forEach(button => {
+//            button.addEventListener('click', function() {
+//                this.classList.toggle('active');
+//            });
+//        });
+//    }
+//});

@@ -196,18 +196,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-<<<<<<< HEAD:app/static/compare.js
-})
-
-
-function setupDelinkButtons() {
-    //Setup delink/trash buttons
-=======
-}
+});
   
 function setupDelinkButtons() {
     // Setup delink/trash buttons
->>>>>>> main:app/static/js/compare.js
     document.querySelectorAll('.delink-button').forEach(button => {
         button.addEventListener('click', function() {
             const username = this.getAttribute('data-username');
@@ -315,17 +307,10 @@ function loadUserTimetable(username) {
     });
 }
   
-<<<<<<< HEAD:app/static/compare.js
+let displayedTimetables = []; // Store all currently displayed timetables
 
-  
-  let displayedTimetables = []; // Store all currently displayed timetables
-
-  function displayTimetable() {
-    // Clear all timeslot styles
-=======
 function displayTimetable(timetableData) {
     // Clear existing timetable
->>>>>>> main:app/static/js/compare.js
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
         slot.style.backgroundColor = '';
@@ -381,7 +366,6 @@ function displayTimetable(timetableData) {
         }
     });
 }
-<<<<<<< HEAD:app/static/compare.js
 
 function removeUserTimetable(username) {
     if (!username) {
@@ -424,8 +408,7 @@ function removeUserTimetable(username) {
         showNotification('An error occurred while removing the timetable', 'danger');
     });
 }
-=======
->>>>>>> main:app/static/js/compare.js
+
   
 function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');

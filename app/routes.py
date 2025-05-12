@@ -141,11 +141,10 @@ def save_timetable():
                 activity_number=act_no,
                 day_of_week=day,
                 start_time=start,
-                end_time=end
-            ))
+                end_time=end,
                 color=activity_colors.get(act_no, None),  # Add color if available
                 activity_type=act_type
-            )
+            ))
             db.session.add(new_act)
             db.session.flush()
             activity_map[act_no] = new_act.activity_id

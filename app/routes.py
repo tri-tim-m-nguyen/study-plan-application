@@ -102,6 +102,19 @@ def save_timetable():
     if unit_count < 1 or unit_count > 4:
         return jsonify({'status': 'error', 'error': 'You must have between 1 and 4 unit activities.'}), 400
 
+    # Another pass to create activities
+    for item in data.get('activities', []):
+        act_no = item['activity_number']
+        if act_no not in ["full", "partial"] and act_no not in activity_map:  # Skip "full" and "partial" for now
+            new_act = UserActivity(
+                user_id=user.id,
+                activity_number=act_no,
+                color=activity_colors.get(act_no, None)  # Add color if available
+            )
+            db.session.add(new_act)
+            db.session.flush()  # Get the activity ID
+            activity_map[act_no] = new_act.activity_id
+
     # Second pass to create activities and time slots
     for item in data.get('activities', []):
         act_no = item['activity_number']
@@ -121,14 +134,26 @@ def save_timetable():
             db.session.flush()
             activity_map[act_no] = new_act.activity_id
 
-        db.session.add(ActivityTimeSlot(
-            user_id=user.id,
-            activity_id=activity_map[act_no],
-            activity_number=act_no,
-            day_of_week=day,
-            start_time=start,
-            end_time=end
-        ))
+        if act_no in ["full", "partial"]:
+            # Save "full" or "partial" timeslots with activity_id = 0
+            db.session.add(ActivityTimeSlot(
+                user_id=user.id,
+                activity_id=0,  # Set activity_id to 0
+                activity_number=act_no,
+                day_of_week=day,
+                start_time=start,
+                end_time=end
+            ))
+        else:
+            # Save regular activity timeslots
+            db.session.add(ActivityTimeSlot(
+                user_id=user.id,
+                activity_id=activity_map[act_no],
+                activity_number=act_no,
+                day_of_week=day,
+                start_time=start,
+                end_time=end,
+            ))
 
     db.session.commit()
     return jsonify({'status': 'success'})
@@ -152,6 +177,7 @@ def create():
         for slot in time_slots:
             user_activities.append({
                 'activity_number': slot.activity_number,
+                'activity_id': slot.activity_id,
                 'day_of_week': slot.day_of_week,
                 'start_time': slot.start_time,
                 'end_time': slot.end_time,
@@ -386,6 +412,7 @@ def get_timetable():
     # Convert time slots to a format the frontend can use
     for slot in time_slots:
         timetable_data.append({
+            'activity_id': slot.activity_id,
             'activity_number': slot.activity_number,
             'day_of_week': slot.day_of_week,
             'start_time': slot.start_time,
@@ -396,6 +423,7 @@ def get_timetable():
     return jsonify({
         'status': 'success',
         'timetable_data': timetable_data,
+        'user_id': user_id,
         'username': username if username else session['username']
     })
 
@@ -449,6 +477,28 @@ def delink_timetable():
         'status': 'success',
         'message': f'Stopped sharing timetable with {username}'
     })
+
+@app.route('/get_userid', methods=['POST'])
+def get_userid():
+    # Ensure the user is logged in
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not logged in'}), 403
+
+    # Parse the request data
+    data = request.get_json()
+    username = data.get('username')
+
+    # Validate the username
+    if not username:
+        return jsonify({'error': 'Username is required'}), 400
+
+    # Query the database for the user
+    user = UserDetails.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    # Return the user_id
+    return jsonify({'status': 'success', 'user_id': user.id})
 
 @app.route('/assessments', methods=['GET', 'POST'])
 def assessments():

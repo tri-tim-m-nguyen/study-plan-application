@@ -150,7 +150,7 @@ function setupRequestButtons() {
 function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const username = this.getAttribute('data-username');
             // Check if the button is already active
             const isActive = this.classList.contains('btn-primary');

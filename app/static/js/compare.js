@@ -369,10 +369,8 @@ function displayTimetable(timetableData) {
 
 function removeUserTimetable(username) {
     if (!username) {
-        console.log("Before removal:", displayedTimetables);
         // Remove the current user's timetable
         displayedTimetables = displayedTimetables.filter(({ isUserTimetable }) => !isUserTimetable);
-        console.log("After removal:", displayedTimetables);
         displayTimetable();
         return;
     }

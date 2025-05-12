@@ -126,23 +126,6 @@ function addActivity(name = null, color = null) {
     return activityBox;
 }
 
-// Function to find cell by day and time
-function findCell(day, startTime) {
-    const dayIndexMap = { 'Mon': 1, 'Tue': 2, 'Wed': 3, 'Thu': 4, 'Fri': 5, 'Sat': 6, 'Sun': 7 };
-    const dayIndex = dayIndexMap[day];
-    
-    if (!dayIndex) return null;
-    
-    const rows = document.querySelectorAll('.timetable tr');
-    for (let i = 1; i < rows.length; i++) { // Skip header row
-        const timeCell = rows[i].cells[0];
-        if (timeCell.textContent.trim() === startTime) {
-            return rows[i].cells[dayIndex];
-        }
-    }
-    return null;
-}
-
 // Function to load saved activities from database
 function loadSavedActivities() {
     // Use window.userSavedActivities instead of savedActivities

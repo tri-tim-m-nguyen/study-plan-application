@@ -149,15 +149,6 @@ def save_timetable():
             db.session.flush()
             activity_map[act_no] = new_act.activity_id
 
-        db.session.add(ActivityTimeSlot(
-            user_id=user.id,
-            activity_id=activity_map[act_no],
-            activity_number=act_no,
-            day_of_week=day,
-            start_time=start,
-            end_time=end
-        ))
-
     db.session.commit()
     return jsonify({'status': 'success'})
 

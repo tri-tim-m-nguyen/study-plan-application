@@ -5,4 +5,3 @@ default_database_location = 'sqlite:///' + os.path.join(basedir, 'app.db')
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or default_database_location
-    SECRET_KEY = 'Best study plan creater'

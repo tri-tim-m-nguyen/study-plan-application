@@ -63,6 +63,16 @@ body.dark-mode .nav-link {
   transform: translateY(-2px);
 }
 
+#pending-requests-badge {
+    display: none; /* Hidden by default */
+    font-size: 0.75rem;
+}
+
+#pending-requests-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 body.dark-mode .nav-link:hover {
   color: var(--primary-dark) !important;
 }

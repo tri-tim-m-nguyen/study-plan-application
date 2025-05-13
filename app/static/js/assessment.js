@@ -1,38 +1,44 @@
+// Store assessments data grouped by unit
 const assessmentsData = {};
 
+// Initialize assessments data once the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function () {
     const unitOptions = document.querySelectorAll('#UnitSelect option');
     unitOptions.forEach(opt => {
         const unit = opt.value;
+        // Load saved assessments if available, else empty array
         assessmentsData[unit] = window.savedAssessments?.[unit] || [];
     });
-
+    // Re-render assessments when a new unit is selected
     document.getElementById('UnitSelect').addEventListener('change', renderAssessments);
     renderAssessments();
 });
 
 //units.forEach(unit => assessmentsData[unit]=[]);
-
+// Add a new blank assessment entry for the selected unit
 function addAssessment(){
     const unit = document.getElementById('UnitSelect').value;
     assessmentsData[unit].push({name: '', scoreObtained: '', scoreTotal: '', weightage: ''});
     renderAssessments();
 }
+// Update a field value for an existing assessment
 function updateAssessment(idx, field, value){
     const unit = document.getElementById('UnitSelect').value;
     assessmentsData[unit][idx][field] = value;
     renderSummary();
 }
+// Remove an assessment entry by index
 function removeAssessment(idx){
     const unit = document.getElementById('UnitSelect').value;
     assessmentsData[unit].splice(idx, 1);
     renderAssessments();
 }
+// Render the assessment input form and summary table
 function renderAssessments() {
     const unit = document.getElementById('UnitSelect').value;
     const container = document.getElementById('assessmentsContainer');
     container.innerHTML = '';
-
+    // Form row to input a new assessment
     const row = document.createElement('div');
     row.className = 'row mb-2';
     row.innerHTML = `
@@ -57,6 +63,7 @@ function renderAssessments() {
 
     renderSummary();
 }
+// Render the summary table showing all assessments for the selected unit
 function renderSummary(){
     const unit = document.getElementById('UnitSelect').value;
     const summaryDiv = document.getElementById('summary');
@@ -66,6 +73,7 @@ function renderSummary(){
         summaryDiv.innerHTML = '<em>No assessments available</em>';
         return;
     }
+    // Build the HTML table
     let html = `<table class="assessment-table"><thead><tr>
         <th>Name</th>
         <th>Score</th>
@@ -81,7 +89,7 @@ function renderSummary(){
         if (!isNaN(obtained) && !isNaN(total) && total > 0) {
           weighted = ((obtained / total) * weight).toFixed(2) + '%';
         }
-      
+        // Render table row with edit/delete buttons
         html += `<tr class="assessment-row" draggable="true" data-index="${idx}">
           <td>${a.name || '-'}</td>
           <td>${!isNaN(obtained) ? obtained : '-'} / ${!isNaN(total) ? total : '-'}</td>
@@ -100,9 +108,11 @@ function renderSummary(){
       
       html += '</tbody></table>';
       summaryDiv.innerHTML = html;
+      // Enable drag-and-drop functionality
       enableDragAndDrop();
 }
 
+// Enable drag-and-drop to reorder assessments
 function enableDragAndDrop() {
     const tbody = document.getElementById("assessment-tbody");
     let dragStartIndex;
@@ -133,7 +143,7 @@ function enableDragAndDrop() {
         });
     });
 }
-
+// Move assessment from one index to another (reordering)
 function moveAssessmentByDrag(fromIdx, toIdx) {
     const unit = document.getElementById('UnitSelect').value;
     const list = assessmentsData[unit];
@@ -141,7 +151,7 @@ function moveAssessmentByDrag(fromIdx, toIdx) {
     list.splice(toIdx, 0, moved);
     window.savedAssessments[unit] = list;
 
-    // Persist to backend
+    // Save the new order to the backend
     const order = list.map(a => a.name);
     safeFetch('/assessments/reorder', {
         method: 'POST',
@@ -151,7 +161,7 @@ function moveAssessmentByDrag(fromIdx, toIdx) {
 
     renderSummary();
 }
-
+// Validate and submit a new assessment entry
 function saveAssessments() {
     const nameInput = document.getElementById('assessmentName');
     const obtainedInput = document.getElementById('assessmentScoreObtained');
@@ -163,14 +173,14 @@ function saveAssessments() {
     const scoreTotal = parseFloat(totalInput.value);
     const weightage = parseFloat(weightInput.value);
 
-    // Clear previous errors
+    // Reset validation messages
     document.getElementById('nameError').textContent = '';
     document.getElementById('obtainedError').textContent = '';
     document.getElementById('totalError').textContent = '';
     document.getElementById('weightError').textContent = '';
 
     let hasError = false;
-
+    // Validate all inputs
     if (!name) {
         document.getElementById('nameError').textContent = 'Assessment name is required.';
         hasError = true;
@@ -192,7 +202,7 @@ function saveAssessments() {
 
     const unit = document.getElementById('UnitSelect').value;
     const newAssessment = { name, scoreObtained, scoreTotal, weightage };
-
+    // Save to server
     safeFetch('/assessments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -206,7 +216,7 @@ function saveAssessments() {
         }
         window.savedAssessments[unit].push(newAssessment);
         renderSummary();
-        // Reset form
+        // Clear the input form
         nameInput.value = '';
         obtainedInput.value = '';
         totalInput.value = '';
@@ -214,7 +224,7 @@ function saveAssessments() {
     })
     .catch(err => alert("Error saving assessment"));
 }
-
+// Delete an assessment from local state and server
 function deleteAssessment(idx) {
     const unit = document.getElementById('UnitSelect').value;
     const toDelete = assessmentsData[unit][idx];
@@ -238,7 +248,7 @@ function deleteAssessment(idx) {
     })
     .catch(err => alert("Error deleting assessment"));
 }
-
+// Turn a row into editable fields for modification
 function editAssessment(idx) {
     const unit = document.getElementById('UnitSelect').value;
     const a = assessmentsData[unit][idx];
@@ -260,7 +270,7 @@ function editAssessment(idx) {
       </td>
     `;
 }
-
+// Save edited data and persist to server
 function saveEdit(idx) {
     const unit = document.getElementById('UnitSelect').value;
     const oldName = assessmentsData[unit][idx].name;  // in case name was edited
@@ -271,7 +281,7 @@ function saveEdit(idx) {
         weightage: parseFloat(document.getElementById(`edit-weight-${idx}`).value),
     };
 
-    // Update DB
+    // Update backend and UI
     safeFetch('/assessments/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -293,7 +303,7 @@ function saveEdit(idx) {
         }
     });
 }
-
+// Get the current order of assessments from the DOM
 function getAssessmentOrder() {
     const rows = document.querySelectorAll('.assessment-row');
     return Array.from(rows).map(row => row.dataset.index);  // Make sure to assign `data-index=idx` on each row

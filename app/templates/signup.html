@@ -1,12 +1,19 @@
+{# Extend the shared base layout that includes navigation, styles, etc. #}
 {% extends "base.html" %}
 
+{# ===== MAIN CONTENT BLOCK ===== #}
 {% block content %}
 <div class="auth-form-container">
     <div class="auth-form-card">
+
+        {# Page title #}
         <h1 class="auth-form-title">Sign Up</h1>
+
+        {# ===== Registration Form ===== #}
         <form class="auth-form" action="" method="POST" novalidate>
             {{ form.hidden_tag() }}
 
+            {# ===== Username Field ===== #}
             <div class="form-group">
                 {{ form.username.label(class="form-label") }}
                 {{ form.username(class="form-control") }}
@@ -15,6 +22,7 @@
                 {% endfor %}
             </div>
 
+            {# ===== Password Field ===== #}
             <div class="form-group">
                 {{ form.password.label(class="form-label") }}
                 {{ form.password(class="form-control") }}
@@ -25,6 +33,7 @@
                 {% endfor %}
             </div>
 
+            {# ===== Confirm Password Field ===== #}
             <div class="form-group">
                 {{ form.confirm_password.label(class="form-label") }}
                 {{ form.confirm_password(class="form-control") }}
@@ -33,8 +42,11 @@
                 {% endfor %}
             </div>
 
+            {# ===== Submit Button and Login Link ===== #}
             <div class="form-group">
                 {{ form.submit(class="btn btn-submit") }}
+
+                {# Link to login page for users who already have an account #}
                 <div class="text-center mt-3">
                     <a href="{{ url_for('login') }}" class="account-link">Already have an account?</a>
                 </div>

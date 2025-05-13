@@ -1,17 +1,25 @@
 <div class="col-md-8">
+    <!-- ===== Timetable Table ===== -->
     <table id="timetable" class="timetable table-striped">
         <thead>
           <tr>
-            <div class="col-md-1"><th>Time</th></div>
-            <div class="col-md-1"><th>Mon</th></div>
-            <div class="col-md-1"><th>Tue</th></div>
-            <div class="col-md-1"><th>Wed</th></div>
-            <div class="col-md-1"><th>Thu</th></div>
-            <div class="col-md-1"><th>Fri</th></div>
-            <div class="col-md-1"><th>Sat</th></div>
-            <div class="col-md-1"><th>Sun</th></div>
+            <!-- Table headers for each day of the week and time -->
+            <th>Time</th>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
           </tr>
         </thead>
+
+        <!-- ===== Timetable Rows by Time Slot ===== -->
+        <!-- Each row represents a 30-minute interval from 8:00AM to 11:00PM -->
+        <!-- First <td> = time label; the rest are clickable cells (class 'timeslot') -->
+
+        <!-- Example Row -->
         <tr>
           <td>8:00AM</td>
           <td class="timeslot" id="slot1"></td>

@@ -1,3 +1,6 @@
+/* ===== Timetable Table Styling ===== */
+
+/* Main timetable table layout */
 .timetable {
     width: 100%;
     border-collapse: collapse;
@@ -5,6 +8,7 @@
     justify-self: left;
 }
 
+/* Table header cells */
 .timetable th {
     border: 1px solid #ddd;
     background-color: lightgreen;
@@ -13,10 +17,13 @@
     text-align: center;
 }
 
+/* Table data cells */
 .timetable td {
     border: 1px solid black;
 }
+/* ===== Timeslot Cell Styling ===== */
 
+/* Base style for all timetable cells (timeslots) */
 .timeslot {
     width: 10%;
     background-color: #fff;
@@ -25,29 +32,39 @@
     height: 20px;
 }
 
+/* Selected (fully unavailable) cell */
 .timeslot.selected {
     background-color: grey;
 }
 
+/* Partially unavailable cell */
 .timeslot.pselected {
     background-color: lightblue;
 }
 
+/* Hover state for timeslot */
 .timeslot:hover {
     border: 3px dotted black; /* Change border to dotted on hover */
 }
 
+/* ===== Toggle Button Styling ===== */
+
+/* Default toggle button */
 .toggle {
     background-color:gray;
     color: black;
     border: 1px solid black;
 }
 
+/* Toggle button when active (selected state) */
 .toggle.active {
     background-color: lightgreen;
     border: 1px solid green;
 }
 
+/* ===== Activity Box (Sidebar Panel) ===== */
+
+/* Container for each activity */
 .activity-box {
     display: flex;
     align-items: center;
@@ -59,12 +76,14 @@
     gap: 8px; /* Add spacing between elements */
 }
 
+/* Activity name text inside activity box */
 .activity-text {
     flex-grow: 1;
     margin-right: 5px;
     cursor: pointer;
 }
 
+/* Color indicator box for each activity */
 .activity-color-box {
     width: 20px;
     height: 20px;
@@ -73,6 +92,7 @@
     border: 1px solid #ccc;
 }
 
+/* "+" Add activity button */
 #add-button {
     display: block;
     width: 30px;
@@ -89,6 +109,7 @@
     display: none;
 }
 
+/* Delete icon inside activity box (trash can) */
 .delete-icon {
     width: 18px;
     height: 18px;
@@ -98,10 +119,12 @@
     margin-right: 8px;
   }
 
+/* Show delete icon on hover */
 .activity-box:hover .delete-icon {
     display: inline;
   }
-  
+
+/* Highlight border for selected/focused activity */
 .activity-box.focused {
     border: 2px solid blue;  /* Highlight the focused activity */
 }
@@ -115,21 +138,12 @@
     cursor: pointer; /* Add cursor pointer to indicate it's clickable */
 }
 
-.timeslot.selected {
-    background-color: grey;
-}
-
-.timeslot.pselected {
-    background-color: lightblue;
-}
-
-.timeslot:hover {
-    border: 3px dotted black;
-}
-
+/* Active (on click) state for timeslot */
 .timeslot:active {
     background-color: lightgray; /* Color change on cell click */
 }
+
+/* Select dropdown inside activity box */
 .activity-box select {
     margin-right: 5px;
 }

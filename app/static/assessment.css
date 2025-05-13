@@ -1,9 +1,13 @@
+/* ===== Base Layout ===== */
+
+/* Set global font and base layout for full viewport */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   min-height: 100vh;
   background: white; /* Keep it clean */
 }
+/* Central content wrapper with constrained width and spacing */
 .container {
   max-width: 1000px;
   margin: 40px auto;
@@ -13,25 +17,34 @@ body {
   border: none;
   display: block;
 }
+/* Flexbox layout for vertically stacked sections (input + summary) */
 .assessment-flex {
   display: flex;
   flex-direction: column;
   gap: 24px;
   align-items: stretch;
 }
+/* ===== Card Containers ===== */
+
+/* Shared styles for input and summary card containers */
 .input-container, .summary-container {
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.7);            /* Transparent white background */
   border-radius: 18px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);           /* Soft blur shadow */
   padding: 32px 24px 24px 24px;
   width: 100%;
   box-sizing: border-box;
   margin: 0 auto;
 }
+
+/* Slightly lighter shadow for summary block */
 .summary-container {
   background: rgba(255,255,255,0.7);
   box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.10);
 }
+
+/* ===== Headings and Labels ===== */
+/* Section title styling */
 h2 {
   text-align: center;
   color: #3a3a5a;
@@ -39,11 +52,15 @@ h2 {
   letter-spacing: 1px;
   margin-bottom: 18px;
 }
+/* Form labels */
 label {
   font-weight: 600;
   margin-right: 8px;
   color: #4b4b6b;
 }
+/* ===== Input Styles ===== */
+
+/* Common input styles for select, text, and number inputs */
 select, input[type="text"], input[type="number"] {
   padding: 8px 12px;
   margin: 6px 0 12px 0;
@@ -55,20 +72,27 @@ select, input[type="text"], input[type="number"] {
   background: rgba(255,255,255,0.85);
   transition: border 0.2s;
 }
+/* Highlight inputs on focus */
 select:focus, input[type="text"]:focus, input[type="number"]:focus {
   border: 1.5px solid #7c3aed;
   outline: none;
 }
+/* ===== Assessment Table Row Interactions ===== */
+
+/* Default background for assessment rows */
 .assessment-row {
   background: rgba(124, 58, 237, 0.04);
   transition: background 0.2s;
 }
+/* Highlight row on hover */
 .assessment-row:hover {
   background: rgba(124, 58, 237, 0.10);
 }
+/* Set width for number input cells inside table */
 .assessment-table td input[type="number"] {
   width: 60px !important;
 }
+/* Style for buttons (edit/delete) in each row */
 .assessment-row button {
   background: none;
   border: none;
@@ -82,10 +106,15 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   align-items: center;
   justify-content: center;
 }
+
+/* Button hover style */
 .assessment-row button:hover {
   background: #ffeaea;
   color: #c0392b;
 }
+/* ===== Add Button Styling ===== */
+
+/* Stylish "Add" button with gradient and shadow */
 .add-btn {
   background: linear-gradient(90deg, #7c3aed 0%, #3498db 100%);
   color: #fff;
@@ -102,14 +131,19 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   gap: 8px;
   transition: background 0.2s, box-shadow 0.2s;
 }
+/* Add button hover effect */
 .add-btn:hover {
   background: linear-gradient(90deg, #5b21b6 0%, #217dbb 100%);
   box-shadow: 0 4px 16px rgba(124,58,237,0.13);
 }
+
+/* ===== Summary Section ===== */
 .summary {
   margin-top: 24px;
   overflow-x: auto;
 }
+
+/* ===== Assessment Table Structure ===== */
 .assessment-table {
     width: 100%;
     border-collapse: collapse;
@@ -121,6 +155,8 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
     font-size: 15px;
     margin-bottom: 10px;
   }
+
+/* Padding for header and data cells */
 .assessment-table th,
 .assessment-table td {
   padding: 12px 10px;
@@ -138,21 +174,26 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
 .assessment-table th:nth-child(5),
 .assessment-table td:nth-child(5) { width: 6%; text-align: center; }/* Trash Icon */
 
+/* Header styles */
 .assessment-table th {
   background: #eaf1fb;
   color: #2c3e50;
   font-weight: 600;
   border-bottom: 2px solid #d6e4f0;
+  white-space: nowrap;
 }
-.assessment-table th {
-    white-space: nowrap;
-}
+
+/* Add borders between rows */
 .assessment-table tr:not(:last-child) td {
   border-bottom: 1px solid #e3e9f3;
 }
+
+/* Row hover effect */
 .assessment-table tbody tr:hover {
   background: #f3e8ff;
 }
+
+/* Text styles for score and percent cells */
 .assessment-table td {
   color: #34495e;
 }
@@ -164,6 +205,8 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   font-weight: 600;
   color: #27ae60;
 }
+
+/* Icon cell styling (delete/edit) */
 .assessment-table .icon-cell {
   text-align: center;
   font-size: 18px;
@@ -178,6 +221,8 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   justify-content: center;
   align-items: center;
 }
+
+/* ===== Responsive Tweaks ===== */
 @media (max-width: 900px) {
   .assessment-flex {
     gap: 18px;
@@ -187,6 +232,7 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   }
 }
 
+/* ===== Edit/Delete Button Visibility on Hover ===== */
 /* Hide delete button initially */
 .assessment-row .delete-btn {
   visibility: hidden;
@@ -195,23 +241,26 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   color: #6b7280; /* soft gray, not red */
 }
 
-/* Show on hover */
+/* Show delete button on hover */
 .assessment-row:hover .delete-btn {
   visibility: visible;
   opacity: 1;
 }
 
+/* Style for delete icon button */
 .assessment-table .icon-cell .delete-btn {
   background: none;
   border: none;
   font-size: 16px;
   cursor: pointer;
 }
+/* Style icon inside delete button */
 .assessment-table .delete-btn i {
   color: #6b7280;
   font-size: 16px;
 }
 
+/* Edit button hidden by default */
 .assessment-row .edit-btn {
   visibility: hidden;
   opacity: 0;
@@ -224,13 +273,18 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
   padding: 4px;
 }
 
+/* Show edit button on row hover */
 .assessment-row:hover .edit-btn {
   visibility: visible;
   opacity: 1;
 }
+/* ===== Drag-and-Drop Styles ===== */
+
+/* Slight transparency when dragging row */
 .dragging {
   opacity: 0.5;
 }
+/* Highlight drop target row */
 .drag-over {
   background-color: #eaf1fb;
 }

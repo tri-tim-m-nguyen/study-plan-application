@@ -20,32 +20,32 @@
 /* === Base Elements === */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--dark-text);
-  background-color: var(--light-bg);
+  color: var(--dark-text);                                             /* Default text color */
+  background-color: var(--light-bg);                                   /* Default background */
   line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s;                       /* Smooth mode switching */
 }
 
 /* Dark mode base */
 body.dark-mode {
-  color: var(--light-text);
-  background-color: var(--dark-bg);
+  color: var(--light-text);                                            /* Switch to light text */
+  background-color: var(--dark-bg);                                    /* Switch to dark background */
 }
 
 /* === Navbar Customization === */
 .navbar {
-  background-color: white;
-  box-shadow: var(--shadow-sm);
+  background-color: white;                                        /* Light navbar by default */
+  box-shadow: var(--shadow-sm);                                     /* Subtle shadow for depth */
   padding: 0.5rem 1rem;
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 body.dark-mode .navbar {
-  background-color: var(--dark-card-bg);
-  box-shadow: var(--shadow-dark);
+  background-color: var(--dark-card-bg);                  /* Dark navbar */
+  box-shadow: var(--shadow-dark);                         /* Stronger shadow in dark mode */
 }
 
 .nav-link {
@@ -55,26 +55,26 @@ body.dark-mode .navbar {
 }
 
 body.dark-mode .nav-link {
-  color: var(--light-text) !important;
+  color: var(--light-text) !important;                      /* White text in dark mode */
 }
 
 .nav-link:hover {
-  color: var(--primary-color) !important;
-  transform: translateY(-2px);
+  color: var(--primary-color) !important;                   /* Hover color in light mode */
+  transform: translateY(-2px);                              /* Slight upward movement */
 }
 
 body.dark-mode .nav-link:hover {
-  color: var(--primary-dark) !important;
+  color: var(--primary-dark) !important;                    /* Hover color in dark mode */
 }
 
 body.dark-mode .navbar-text {
-  color: var(--light-text);
+  color: var(--light-text);                                 /* Adjust navbar text for contrast */
 }
 
 /* === Content Area === */
 .container {
   padding: 2rem;
-  flex: 1;
+  flex: 1;                                         /* Fill remaining vertical space */
 }
 
 h1, h2, h3 {
@@ -87,19 +87,20 @@ h1, h2, h3 {
 body.dark-mode h1, 
 body.dark-mode h2, 
 body.dark-mode h3 {
-  color: var(--primary-dark);
+  color: var(--primary-dark);                               /* Adjust heading color in dark mode */
 }
 
 h1 {
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);            /* Decorative underline */
   padding-bottom: 0.5rem;
   transition: border-color 0.3s;
 }
 
 body.dark-mode h1 {
-  border-bottom-color: var(--primary-dark);
+  border-bottom-color: var(--primary-dark);                 /* Matching border color in dark mode */
 }
 
+/* Card element used in info sections */
 .info-card {
   background: white;
   border-radius: 0.5rem;
@@ -116,7 +117,7 @@ body.dark-mode .info-card {
 }
 
 .info-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px);                              /* Elevation on hover */
   box-shadow: var(--shadow-md);
 }
 
@@ -133,21 +134,21 @@ body.dark-mode .info-card {
 }
 
 body.dark-mode .btn-primary {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-dark);                        /* Adjust button background */
 }
 
 .btn-primary:hover {
-  background-color: #3a5ccc;
+  background-color: #3a5ccc;                                  /* Slightly darker on hover */
   transform: translateY(-2px);
 }
 
 body.dark-mode .btn-primary:hover {
-  background-color: #2d4aa3;
+  background-color: #2d4aa3;                                  /* Hover style for dark mode */
 }
 
 /* === Footer (add to base.html if needed) === */
 footer {
-  background-color: var(--dark-text);
+  background-color: var(--dark-text);                           /* Dark background for footer */
   color: white;
   text-align: center;
   padding: 1rem 0;
@@ -156,7 +157,7 @@ footer {
 }
 
 body.dark-mode footer {
-  background-color: #1a1d20;
+  background-color: #1a1d20;                                   /* Slightly darker footer for dark mode */
 }
 
 /* ===== Theme Switch Button ===== */
@@ -165,21 +166,23 @@ body.dark-mode footer {
   align-items: center;
 }
 
+/* Toggle track */
 .theme-switch {
   position: relative;
   display: inline-block;
   width: 60px;
   height: 30px;
   background: var(--secondary-color);
-  border-radius: 50px;
+  border-radius: 50px;                                        /* Gray toggle background */
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 body.dark-mode .theme-switch {
-  background: var(--secondary-dark);
+  background: var(--secondary-dark);                          /* Darker toggle background */
 }
 
+/* Common styles for sun/moon icons inside toggle */
 .theme-switch .icon {
   position: absolute;
   top: 50%;
@@ -196,32 +199,33 @@ body.dark-mode .theme-switch {
 
 .theme-switch .moon {
   right: 2px;
-  opacity: 0;
+  opacity: 0;                                     /* Hidden by default */
 }
 
 .theme-switch .sun {
   left: 2px;
-  opacity: 1;
+  opacity: 1;                                     /* Shown by default */
 }
 
 #theme-toggle {
-  display: none;
+  display: none;                                  /* Hidden native checkbox */
 }
 
+/* When theme is toggled on (dark mode) */
 #theme-toggle:checked + .theme-switch {
   background: var(--primary-color);
 }
 
 body.dark-mode #theme-toggle:checked + .theme-switch {
-  background: var(--primary-dark);
+  background: var(--primary-dark);                              /* Maintain brand color in dark mode */
 }
 
 #theme-toggle:checked + .theme-switch .moon {
-  opacity: 1;
+  opacity: 1;                                                   /* Show moon icon */
 }
 
 #theme-toggle:checked + .theme-switch .sun {
-  opacity: 0;
+  opacity: 0;                                                   /* Hide sun icon */
 }
 
 /* Additional dark mode form styling */
@@ -233,7 +237,7 @@ body.dark-mode .form-control {
 
 body.dark-mode .form-control:focus {
   border-color: var(--primary-dark);
-  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);           /* Subtle blue glow */
 }
 
 body.dark-mode .form-label,

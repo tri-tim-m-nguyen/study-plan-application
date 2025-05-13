@@ -1,6 +1,6 @@
 // compare.js - Specific JavaScript for compare.html page
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle request form submission
+    // Submit timetable request when form is submitted
     const requestForm = document.getElementById('request-timetable-form');
     if (requestForm) {
         requestForm.addEventListener('submit', function(e) {
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
             sendTimetableRequest(username);
         });
     }
-  
+    // Set up buttons and interaction handlers
     // Setup event listeners for accepting/rejecting requests
     setupRequestButtons();
   
@@ -17,13 +17,14 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTimetableViewButtons();
   
     // Setup event listeners for delinking timetables
-    setupDelinkButtons();
+    setupDelinkButtons();                               // Unshare timetable buttons
   
-    // Check for new requests periodically
+    // Check for new requests periodically (// Automatically check for new requests every 30 seconds)
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000); // Check every 30 seconds
 });
-  
+
+// Send timetable share request to another user
 function sendTimetableRequest(username) {
     safeFetch('/request_timetable', {
         method: 'POST',
@@ -46,7 +47,7 @@ function sendTimetableRequest(username) {
         showNotification('An error occurred while sending the request', 'danger');
     });
 }
-  
+// Poll the backend to check for pending and shared timetable updates  
 function checkForNewRequests() {
     if (!document.getElementById('pending-requests-list')) return;
   
@@ -71,7 +72,7 @@ function checkForNewRequests() {
         console.error('Error checking for requests:', error);
     });
 }
-  
+// Display the list of pending timetable requests  
 function updatePendingRequestsList(requests) {
     const container = document.getElementById('pending-requests-list');
     if (!container) return;
@@ -95,7 +96,7 @@ function updatePendingRequestsList(requests) {
     container.innerHTML = html;
     setupRequestButtons();
 }
-  
+// Display list of currently shared timetables  
 function updateSharedTimetablesList(shared) {
     const container = document.getElementById('shared-timetables-list');
     if (!container) return;
@@ -123,10 +124,10 @@ function updateSharedTimetablesList(shared) {
     });
   
     container.innerHTML = html;
-    setupTimetableViewButtons();
-    setupDelinkButtons();
+    setupTimetableViewButtons();                // Rebind view handlers
+    setupDelinkButtons();                       // Rebind delink handlers
 }
-  
+// Set up click handlers for Accept/Reject buttons on each request  
 function setupRequestButtons() {
     // Set up accept buttons
     document.querySelectorAll('.accept-request').forEach(button => {
@@ -144,7 +145,7 @@ function setupRequestButtons() {
         });
     });
 }
-  
+// Configure buttons to load the appropriate timetable  
 function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
@@ -185,7 +186,8 @@ function setupTimetableViewButtons() {
         });
     }
 }
-  
+
+// Set up click handler for removing shared timetable access
 function setupDelinkButtons() {
     // Setup delink/trash buttons
     document.querySelectorAll('.delink-button').forEach(button => {
@@ -199,7 +201,8 @@ function setupDelinkButtons() {
         });
     });
 }
-  
+
+// Send request to backend to revoke shared timetable access
 function delinkTimetable(username, sharingType) {
     safeFetch('/delink_timetable', {
         method: 'POST',
@@ -232,7 +235,8 @@ function delinkTimetable(username, sharingType) {
         showNotification('An error occurred', 'danger');
     });
 }
-  
+
+// Accept or reject a pending timetable request  
 function respondToRequest(requestId, action) {
     safeFetch('/respond_to_request', {
         method: 'POST',
@@ -258,7 +262,8 @@ function respondToRequest(requestId, action) {
         showNotification('An error occurred', 'danger');
     });
 }
-  
+
+// Load a specific user's timetable (or own if username is blank)
 function loadUserTimetable(username) {
     safeFetch('/get_timetable', {
         method: 'POST',
@@ -281,7 +286,8 @@ function loadUserTimetable(username) {
         showNotification('An error occurred while loading the timetable', 'danger');
     });
 }
-  
+
+// Render the timetable slots in the UI using provided data
 function displayTimetable(timetableData) {
     // Clear existing timetable
     const timeslots = document.querySelectorAll('.timeslot');
@@ -297,7 +303,7 @@ function displayTimetable(timetableData) {
         }
     });
 }
-  
+// Utility to show Bootstrap alert-style notifications  
 function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;
@@ -312,7 +318,7 @@ function showNotification(message, type) {
 
     notificationsContainer.appendChild(notification);
 
-    // Auto-remove after 5 seconds
+    // Auto-remove notification after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {

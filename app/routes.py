@@ -1,3 +1,4 @@
+# ====== Imports ======
 from flask import render_template, flash, redirect, url_for, session, request, jsonify
 from app import app, db
 from app.models import UserDetails, UserActivity, ActivityTimeSlot, TimetableRequest
@@ -7,11 +8,13 @@ from datetime import datetime
 from app.models import Assessment
 from sqlalchemy import func
 
+# ====== Home Page ======
 @app.route('/')
 @app.route('/index')
 def home():
     return render_template('index.html', title='Home', show_auth_links=True)
 
+# ===== Sign Up =====
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if 'username' in session:
@@ -34,6 +37,7 @@ def signup():
 
     return render_template('signup.html', form=form, title='Sign Up')
 
+# ===== Login =====
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -55,6 +59,7 @@ def login():
             flash('Invalid username or password', 'danger')
     return render_template('login.html', title='Sign In', form=form)
 
+# ===== Logout =====
 @app.route('/logout')
 def logout():
     if 'username' in session:
@@ -65,6 +70,7 @@ def logout():
         flash('No user is currently logged in.', 'warning')
     return redirect(url_for('home'))
 
+# ===== Save Timetable =====
 @app.route('/save_timetable', methods=['POST'])
 def save_timetable():
     if 'username' not in session:
@@ -86,6 +92,7 @@ def save_timetable():
     activity_types = {}  
 
     unit_activity_ids = set()
+    # Collect unit activity info and validation
     for item in data.get('activities', []):
         act_no = item['activity_number']
         act_type = item.get('activity_type', 'normal')
@@ -133,6 +140,7 @@ def save_timetable():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# ===== Timetable Creation Page =====
 @app.route('/create')
 def create():
     user_activities = []
@@ -162,6 +170,7 @@ def create():
     
     return render_template('create.html', title='Create', user_activities=user_activities)
 
+# ===== Compare Timetables =====
 @app.route('/compare')
 def compare():
     if 'user_id' not in session:
@@ -202,8 +211,10 @@ def compare():
                           pending_requests=pending_requests,
                           shared_timetables=shared_timetables)
 
+# ===== Timetable Request APIs =====
 @app.route('/request_timetable', methods=['POST'])
 def request_timetable():
+    # Logic for sending a request to view another user's timetable
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -249,6 +260,7 @@ def request_timetable():
 
 @app.route('/check_requests', methods=['GET'])
 def check_requests():
+    # Return pending and shared timetable requests
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -301,6 +313,7 @@ def check_requests():
 
 @app.route('/respond_to_request', methods=['POST'])
 def respond_to_request():
+    # Accept or reject incoming requests
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -332,6 +345,7 @@ def respond_to_request():
 
 @app.route('/get_timetable', methods=['POST'])
 def get_timetable():
+    # Return timetable data for comparison
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -401,6 +415,7 @@ def get_timetable():
 
 @app.route('/delink_timetable', methods=['POST'])
 def delink_timetable():
+    # Stop sharing timetable between users
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -450,8 +465,10 @@ def delink_timetable():
         'message': f'Stopped sharing timetable with {username}'
     })
 
+# ===== Assessments =====
 @app.route('/assessments', methods=['GET', 'POST'])
 def assessments():
+    # View and add assessments by unit
     if 'user_id' not in session:
         flash('Please login to view assessments.', 'warning')
         return redirect(url_for('login'))
@@ -507,6 +524,7 @@ def assessments():
 
 @app.route('/assessments/delete', methods=['POST'])
 def delete_assessment():
+    # Delete an assessment by name and unit
     if 'user_id' not in session:
         return jsonify({'status': 'unauthorized'}), 403
 
@@ -528,6 +546,7 @@ def delete_assessment():
 
 @app.route('/assessments/update', methods=['POST'])
 def update_assessment():
+    # Update existing assessment data
     if 'user_id' not in session:
         return jsonify({'status': 'unauthorized'}), 403
 
@@ -563,6 +582,7 @@ def update_assessment():
 
 @app.route('/assessments/reorder', methods=['POST'])
 def reorder_assessments():
+    # Reorder assessments based on position
     if 'user_id' not in session:
         return jsonify({'status': 'unauthorized'}), 403
 
@@ -581,6 +601,7 @@ def reorder_assessments():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# ===== Analytics Page =====
 @app.route('/analytics')
 def analytics():
     user_activities = []

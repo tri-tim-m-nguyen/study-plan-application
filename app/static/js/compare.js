@@ -1,3 +1,5 @@
+let displayedTimetables = []; // Array to hold all displayed timetables
+
 // compare.js - Specific JavaScript for compare.html page
 document.addEventListener('DOMContentLoaded', function() {
     // Handle request form submission
@@ -150,41 +152,50 @@ function setupTimetableViewButtons() {
     document.querySelectorAll('.view-timetable').forEach(button => {
         button.addEventListener('click', function() {
             const username = this.getAttribute('data-username');
-            loadUserTimetable(username);
-            
-            // Highlight the active button
-            document.querySelectorAll('.view-timetable').forEach(btn => {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-primary');
-            });
-            this.classList.remove('btn-outline-primary');
-            this.classList.add('btn-primary');
+            // Check if the button is already active
+            const isActive = this.classList.contains('btn-primary');
+
+            if (isActive) {
+                // If active, remove only this user's timetable and reset the button
+                this.classList.remove('btn-primary');
+                this.classList.add('btn-outline-primary');
+                removeUserTimetable(username); // Remove only this user's timetable
+            } else {
+                // If not active, load the timetable and highlight the button
+                loadUserTimetable(username);
+
+                // Highlight the active button
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-primary');
+            }
         });
     });
-  
+}
+
+document.addEventListener('DOMContentLoaded', function() {
     // View own timetable
     const ownTimetableBtn = document.getElementById('view-own-timetable');
     if (ownTimetableBtn) {
-        ownTimetableBtn.addEventListener('click', function() {
-            loadUserTimetable('');  // Empty username means load current user's timetable
-            
-            // Reset all other buttons
-            document.querySelectorAll('.view-timetable').forEach(btn => {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-primary');
-            });
-            
-            // Highlight own button
-            this.classList.remove('btn-outline-secondary');
-            this.classList.add('btn-secondary');
-            
-            setTimeout(() => {
+        ownTimetableBtn.addEventListener('click', function () {
+            // Check if the button is already active
+            const isActive = this.classList.contains('btn-secondary');
+
+            if (isActive) {
+                // If active, remove the user's timetable but keep the button highlighted
+                removeUserTimetable(''); // Remove the current user's timetable
                 this.classList.remove('btn-secondary');
                 this.classList.add('btn-outline-secondary');
-            }, 500);
+            } else {
+                // If not active, load the timetable and highlight the button
+                loadUserTimetable(''); // Empty username means load current user's timetable
+
+                // Highlight own button
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-secondary');
+            }
         });
     }
-}
+});
   
 function setupDelinkButtons() {
     // Setup delink/trash buttons
@@ -270,7 +281,19 @@ function loadUserTimetable(username) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
-            displayTimetable(data.timetable_data);
+            const isUserTimetable = !username;
+
+            // Add userid to each activity in timetableData
+            const timetableDataWithUserId = data.timetable_data.map(activity => ({
+                ...activity,
+                userid: data.userid
+            }));
+
+            // Update displayedTimetables
+            displayedTimetables.push({ timetableData: timetableDataWithUserId, isUserTimetable });
+
+            // Render the updated timetables
+            displayTimetable();
             showNotification(`Viewing ${username ? username + "'s" : 'your'} timetable`, 'info');
         } else {
             showNotification(data.error || 'Failed to load timetable', 'danger');
@@ -287,17 +310,100 @@ function displayTimetable(timetableData) {
     const timeslots = document.querySelectorAll('.timeslot');
     timeslots.forEach(slot => {
         slot.style.backgroundColor = '';
+        slot.classList.remove('full', 'partial');
     });
   
-    // Display the new timetable data
-    timetableData.forEach(slot => {
-        const cell = findCell(slot.day_of_week, slot.start_time);
-        if (cell) {
-            cell.style.backgroundColor = slot.color || '#000000';
+    // Display all timetables in light gray
+    displayedTimetables.forEach(({ timetableData }) => {
+        timetableData.forEach(slot => {
+            const key = `${slot.day_of_week}-${slot.start_time}`;
+            const id = `${slot.activity_id}`;
+            const number = `${slot.activity_number}`;
+            const cell = findCell(slot.day_of_week, slot.start_time);
+            if (cell) {
+                if (id != 0) {
+                    cell.style.backgroundColor = 'lightgray'; // Default to light gray for all timetables
+                } else if (number==="partial") {
+                    if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
+                        cell.style.backgroundColor = 'gold'; // Use gold for partial slots
+                    }
+                }
+                else if (number==="full") {
+                    if (cell.style.backgroundColor === '') {
+                        cell.style.backgroundColor = 'green'; // Use green for partial slots
+                    }
+                }
+            }
+        });
+    });
+
+    // Overlay the current user's timetable in its assigned color
+    displayedTimetables.forEach(({ timetableData, isUserTimetable }) => {
+        if (isUserTimetable) {
+            timetableData.forEach(slot => {
+                const id = `${slot.activity_id}`;
+                const number = `${slot.activity_number}`;
+                const cell = findCell(slot.day_of_week, slot.start_time);
+                if (cell) {
+                    if (id != 0) {
+                        cell.style.backgroundColor = slot.color; // Use the current user's color
+                    } else if (number==="partial") {
+                        if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
+                            cell.style.backgroundColor = 'gold'; // Use gold for partial slots
+                        }
+                    }
+                    else if (number==="full") {
+                        if (cell.style.backgroundColor === '') {
+                            cell.style.backgroundColor = 'green'; // Use green for partial slots
+                        }
+                    }
+                }
+            });
         }
     });
 }
-  
+
+function removeUserTimetable(username) {
+    if (!username) {
+        // Remove the current user's timetable
+        displayedTimetables = displayedTimetables.filter(({ isUserTimetable }) => !isUserTimetable);
+        displayTimetable();
+        return;
+    }
+
+    // Fetch the timetable to get the userid for the given username
+    console.log("Removing timetable for username:", username);
+    safeFetch('/get_userid', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username }),
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Response from /get_userid:", data);
+        if (data.status === 'success' && data.user_id) {
+            const useridToRemove = data.userid;
+            // Filter out the timetable for the specified userid
+            displayedTimetables = displayedTimetables.filter(({ timetableData }) => {
+                return timetableData.every(activity => activity.userid !== useridToRemove);
+            });
+
+            // Re-render the remaining timetables
+            displayTimetable();
+        } else {
+            console.error(`Failed to find timetable for username: ${username}`);
+            showNotification(`Failed to remove timetable for ${username}`, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error while fetching timetable:', error);
+        showNotification('An error occurred while removing the timetable', 'danger');
+    });
+}
+        
 function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;

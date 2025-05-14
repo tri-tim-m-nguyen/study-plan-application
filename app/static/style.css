@@ -2,19 +2,19 @@
 
 /* Styles for a full-width container with header content */
 .container-fluid_h1 {
-    background-color: lightblue;                    /* Light blue background for visibility */
-    justify-content: center;                          /* Center content horizontally (used with flex) */
-    border-color: black;                            /* Border color (needs border-style to be visible) */
-    border-width: 2px;                                /* Thickness of the border */
-    text-align: center;                               /* Center-align text inside the container */
+    background-color: lightblue;                    
+    justify-content: center;                        
+    border-color: black;                            
+    border-width: 2px;                   
+    text-align: center;                             
 }
 
 /* ===== Main Body Section Styling ===== */
 
 /* Styles for the main content body wrapper */
 div.body {
-    background-color: lightyellow;                  /* Soft yellow background */
-    padding: 5px;                                     /* Inner spacing around content */
-    border-color: black;                            /* Border color (needs border-style to render) */
-    border-width: 2px;                                /* Border thickness */
+    background-color: lightyellow;                 
+    padding: 5px;                                  
+    border-color: black;                           
+    border-width: 2px;                             
 }

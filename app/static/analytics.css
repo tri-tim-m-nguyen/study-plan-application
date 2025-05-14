@@ -15,15 +15,15 @@
 
 /* Styles the header section of cards */
 .card-header {
-  background-color: #f8f9fa;        /* Light gray background (Bootstrap standard) */
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);        /* Subtle separator line */
+  background-color: #f8f9fa;        
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);        
 }
 
 /* ===== Chart Display ===== */
 
 /* Restricts canvas height for responsive chart rendering */
 canvas {
-  max-height: 400px;        /* Prevents canvas from growing too tall */
+  max-height: 400px;        
 }
 
 /* ===== Table Styling ===== */

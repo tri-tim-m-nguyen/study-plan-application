@@ -5,7 +5,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   min-height: 100vh;
-  background: white; /* Keep it clean */
+  background: white; 
 }
 /* Central content wrapper with constrained width and spacing */
 .container {
@@ -28,9 +28,9 @@ body {
 
 /* Shared styles for input and summary card containers */
 .input-container, .summary-container {
-  background: rgba(255,255,255,0.7);            /* Transparent white background */
+  background: rgba(255,255,255,0.7);            
   border-radius: 18px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);           /* Soft blur shadow */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);           
   padding: 32px 24px 24px 24px;
   width: 100%;
   box-sizing: border-box;
@@ -164,15 +164,15 @@ select:focus, input[type="text"]:focus, input[type="number"]:focus {
 }
 /* Equal column widths (adds breathing space between Assessment and Obtained columns) */
 .assessment-table th:nth-child(1),
-.assessment-table td:nth-child(1) { width: 17%; text-align: left; }  /* Name */
+.assessment-table td:nth-child(1) { width: 17%; text-align: left; }  
 .assessment-table th:nth-child(2),
-.assessment-table td:nth-child(2) { width: 13%; text-align: left; }  /* Score */
+.assessment-table td:nth-child(2) { width: 13%; text-align: left; }  
 .assessment-table th:nth-child(3),
-.assessment-table td:nth-child(3) { width: 20%; text-align: center; }/* Assessment Weight % */
+.assessment-table td:nth-child(3) { width: 20%; text-align: center; }
 .assessment-table th:nth-child(4),
-.assessment-table td:nth-child(4) { width: 20%; text-align: center; }/* Obtained Weight % */
+.assessment-table td:nth-child(4) { width: 20%; text-align: center; }
 .assessment-table th:nth-child(5),
-.assessment-table td:nth-child(5) { width: 6%; text-align: center; }/* Trash Icon */
+.assessment-table td:nth-child(5) { width: 6%; text-align: center; }
 
 /* Header styles */
 .assessment-table th {

@@ -7,7 +7,7 @@ body.dark-mode .timetable {
 
 /* Timetable headers styled for dark background */
 body.dark-mode .timetable th {
-    background-color: #2c613b; /* darker version of lightgreen for contrast*/
+    background-color: #2c613b; 
     color: var(--light-text);
     border-color: var(--dark-border);
 }
@@ -30,7 +30,7 @@ body.dark-mode .timeslot.selected {
 }
 
 body.dark-mode .timeslot.pselected {
-    background-color: #1a617a; /* darker version of lightblue */
+    background-color: #1a617a; 
 }
 
 /* Hover effect for timetable slots */
@@ -47,7 +47,7 @@ body.dark-mode .toggle {
 
 /* Active state for toggle buttons */
 body.dark-mode .toggle.active {
-    background-color: #2c613b; /* darker version of lightgreen */
+    background-color: #2c613b; 
     border-color: var(--light-text);
 }
 
@@ -142,14 +142,14 @@ body.dark-mode .delink-button {
 
 /* Custom header background (styled with class .container-fluid_h1) */
 body.dark-mode .container-fluid_h1 {
-    background-color: #1a617a; /* darker version of lightblue */
+    background-color: #1a617a; 
     color: var(--light-text);
     border-color: var(--light-text);
 }
 
 /* Main body background override */
 body.dark-mode div.body {
-    background-color: #3b3b2b; /* darker version of lightyellow */
+    background-color: #3b3b2b; 
     color: var(--light-text);
     border-color: var(--light-text);
 }

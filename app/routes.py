@@ -281,8 +281,6 @@ def check_requests():
         }
         pending_requests.append(request_data)
         
-        # In a real app, you'd check if this is a new request since last check
-        # For now, we'll consider all pending requests as new for demonstration
         new_requests.append(request_data)
     
     # Get shared timetables (accepted requests)
@@ -437,16 +435,12 @@ def delink_timetable():
     
     # Determine the request to delete based on sharing type
     if sharing_type == 'received':
-        # The other user has shared with the current user
-        # So the request is from the other user to the current user
         timetable_request = TimetableRequest.query.filter_by(
             from_user_id=other_user_id,
             to_user_id=current_user_id,
             status='accepted'
         ).first()
-    else:  # 'sent'
-        # The current user has shared with the other user
-        # So the request is from the current user to the other user
+    else:  
         timetable_request = TimetableRequest.query.filter_by(
             from_user_id=current_user_id,
             to_user_id=other_user_id,

@@ -4,10 +4,10 @@ from datetime import datetime
 # ======= UserDetails Table =======
 class UserDetails(db.Model):
     __tablename__ = 'user_details'
-    id = db.Column(db.Integer, primary_key=True)                            # Unique user ID
-    username = db.Column(db.String(200), nullable=False, unique=True)       # Unique username (required)
-    password = db.Column(db.String(200), nullable=False)                    # Hashed password (required)
-    permission = db.Column(db.String(200), nullable=True)                   # Optional user role/permission
+    id = db.Column(db.Integer, primary_key=True)                           
+    username = db.Column(db.String(200), nullable=False, unique=True)       
+    password = db.Column(db.String(200), nullable=False)                    
+    permission = db.Column(db.String(200), nullable=True)                  
     # Relationships:
     # - activities: One-to-many with UserActivity
     # - time_slots: One-to-many with ActivityTimeSlot
@@ -18,11 +18,11 @@ class UserDetails(db.Model):
 # ===== User Activity Table =====
 class UserActivity(db.Model):
     __tablename__ = 'user_activity'
-    activity_id = db.Column(db.Integer, primary_key=True)                                   # Unique activity ID
-    user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)       # FK to user
-    activity_number = db.Column(db.String(200), nullable=False)                             # Name or ID of the activity
-    activity_type = db.Column(db.String(20), default='normal')                              # 'normal' or 'unit'
-    color = db.Column(db.String(20), nullable=True)  # Store the hex color code
+    activity_id = db.Column(db.Integer, primary_key=True)                                   
+    user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)       
+    activity_number = db.Column(db.String(200), nullable=False)                             
+    activity_type = db.Column(db.String(20), default='normal')                              
+    color = db.Column(db.String(20), nullable=True)  
 
     user = db.relationship('UserDetails', backref=db.backref('activities', lazy=True))
     time_slots = db.relationship('ActivityTimeSlot', backref='activity', lazy=True)
@@ -59,11 +59,11 @@ class Assessment(db.Model):
     __tablename__='assessments'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)
-    unit = db.Column(db.String(100), nullable=False)                                    # Unit name/code
-    name = db.Column(db.String(100), nullable=False)                                    # Assessment name
-    score_obtained = db.Column(db.Float, nullable=False)                                # Marks obtained
-    score_total = db.Column(db.Float, nullable=False)                                   # Total marks
-    weightage = db.Column(db.Float, nullable=False)                                     # Weight of the assessment (%)
-    position = db.Column(db.Integer, nullable=False, default=0)                         # For ordering assessments in UI
+    unit = db.Column(db.String(100), nullable=False)                                  
+    name = db.Column(db.String(100), nullable=False)                                    
+    score_obtained = db.Column(db.Float, nullable=False)                               
+    score_total = db.Column(db.Float, nullable=False)                                   
+    weightage = db.Column(db.Float, nullable=False)                                     
+    position = db.Column(db.Integer, nullable=False, default=0)                         
 
     user = db.relationship('UserDetails', backref=db.backref('assessments', lazy=True))

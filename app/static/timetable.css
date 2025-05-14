@@ -44,7 +44,7 @@
 
 /* Hover state for timeslot */
 .timeslot:hover {
-    border: 3px dotted black; /* Change border to dotted on hover */
+    border: 3px dotted black; 
 }
 
 /* ===== Toggle Button Styling ===== */
@@ -126,7 +126,7 @@
 
 /* Highlight border for selected/focused activity */
 .activity-box.focused {
-    border: 2px solid blue;  /* Highlight the focused activity */
+    border: 2px solid blue;  
 }
 
 .timeslot {
@@ -135,12 +135,12 @@
     transition: background-color 0.3s;
     border: 1px solid black;
     height: 20px;
-    cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+    cursor: pointer; 
 }
 
 /* Active (on click) state for timeslot */
 .timeslot:active {
-    background-color: lightgray; /* Color change on cell click */
+    background-color: lightgray; 
 }
 
 /* Select dropdown inside activity box */

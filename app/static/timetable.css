@@ -17,28 +17,35 @@
     border: 1px solid black;
 }
 
+.timeslot {
+    width: 10%;
+    background-color: #fff;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+    height: 20px;
+}
+
+.timeslot.selected {
+    background-color: grey;
+}
+
+.timeslot.pselected {
+    background-color: lightblue;
+}
+
+.timeslot:hover {
+    border: 3px dotted black; /* Change border to dotted on hover */
+}
+
 .toggle {
-    margin: 5px;
-    border: 1px solid #ccc;
-    background-color: #f8f9fa;
-    cursor: pointer;
-    border-radius: 5px;
-    height: 30px;
-    width: 40%;
+    background-color:gray;
+    color: black;
+    border: 1px solid black;
 }
 
 .toggle.active {
     background-color: lightgreen;
-    color: white;
-    border-color: black;
-}
-
-.toggle-container {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
-    width: 100%;
-    justify-content: center;
+    border: 1px solid green;
 }
 
 .activity-box {
@@ -108,26 +115,21 @@
     cursor: pointer; /* Add cursor pointer to indicate it's clickable */
 }
 
-.timeslot.Available {
-    background-color: green;
+.timeslot.selected {
+    background-color: grey;
 }
 
-.timeslot.pAvailable {
-    background-color: gold;
+.timeslot.pselected {
+    background-color: lightblue;
 }
 
 .timeslot:hover {
     border: 3px dotted black;
 }
 
-.timeslot.full {
-    background-color: green; /* Color change on cell click */
+.timeslot:active {
+    background-color: lightgray; /* Color change on cell click */
 }
-
-.timeslot.partial {
-    background-color: gold; /* Color change on cell click */
-}
-
 .activity-box select {
     margin-right: 5px;
 }

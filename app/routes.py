@@ -109,7 +109,8 @@ def save_timetable():
             new_act = UserActivity(
                 user_id=user.id,
                 activity_number=act_no,
-                color=activity_colors.get(act_no, None)  # Add color if available
+                color=activity_colors.get(act_no, None),  # Add color if available
+                activity_type = act_type
             )
             db.session.add(new_act)
             db.session.flush()  # Get the activity ID

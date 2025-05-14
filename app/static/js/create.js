@@ -1,5 +1,60 @@
+let availabilityState = null; // Track the availability state
+
 // create.js - Specific JavaScript for create.html page
 document.addEventListener('DOMContentLoaded', function () {
+
+    // Event listeners for toggling fully available and partially available parameters.
+    const fullyAvailableToggle = document.getElementById('toggle-Available');
+    const partiallyAvailableToggle = document.getElementById('toggle-pAvailable');
+
+    fullyAvailableToggle.addEventListener('click', () => {
+        if (availabilityState === "full") {
+            // Deselect if already selected
+            availabilityState = null;
+            fullyAvailableToggle.classList.remove('active');
+            fullyAvailableToggle.style.backgroundColor = "";
+        } else {
+            // Select this toggle
+            availabilityState = "full";
+            fullyAvailableToggle.classList.add('active');
+            fullyAvailableToggle.style.backgroundColor = "green";
+
+            // Deselect the other toggle
+            partiallyAvailableToggle.classList.remove('active');
+            partiallyAvailableToggle.style.backgroundColor = "";
+
+            // Unselect any focused activity
+            if (focusedActivity) {
+                focusedActivity.classList.remove('focused');
+                focusedActivity = null;
+            }
+        }
+    });
+
+    partiallyAvailableToggle.addEventListener('click', () => {
+        if (availabilityState === "partial") {
+            // Deselect if already selected
+            availabilityState = null;
+            partiallyAvailableToggle.classList.remove('active');
+            partiallyAvailableToggle.style.backgroundColor = "";
+        } else {
+            // Select this toggle
+            availabilityState = "partial";
+            partiallyAvailableToggle.classList.add('active');
+            partiallyAvailableToggle.style.backgroundColor = "gold";
+
+            // Deselect the other toggle
+            fullyAvailableToggle.classList.remove('active');
+            fullyAvailableToggle.style.backgroundColor = "";
+
+            // Unselect any focused activity
+            if (focusedActivity) {
+                focusedActivity.classList.remove('focused');
+                focusedActivity = null;
+            }
+        }
+    });
+
     // Initialize activity creation and timetable selection functionality
     const timeslots = document.querySelectorAll(".timeslot");
     const addButton = document.getElementById('add-button');
@@ -14,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // Toggle behavior: if slot is already colored with the focused activity's color, remove it
                 if (slot.style.backgroundColor === activityColor) {
+                    slot.classList.remove('full', 'partial');
                     slot.style.backgroundColor = "";
                     
                     if (activityCellMap.has(focusedActivity)) {
@@ -46,6 +102,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     
                     // Update cell-to-activity mapping
                     cellActivityMap.set(slot, focusedActivity);
+                }
+
+            } else if (availabilityState === "full") {
+                // If fullyAvailable is selected, set the timeslot to green
+                if (slot.classList.contains("full")) {
+                    slot.classList.remove("full");
+                    slot.dataset.availability = ""; // Clear availability
+                } else {
+                    slot.classList.add("full");
+                    slot.classList.remove("partial"); // Ensure only one class is active
+                    slot.dataset.availability = "full"; // Set availability to full
+                }
+            } else if (availabilityState === "partial") {
+                // If partiallyAvailable is selected, set the timeslot to gold
+                if (slot.classList.contains("partial")) {
+                    slot.classList.remove("partial");
+                    slot.dataset.availability = ""; // Clear availability
+                } else {
+                    slot.classList.add("partial");
+                    slot.classList.remove("full"); // Ensure only one class is active
+                    slot.dataset.availability = "partial"; // Set availability to partial
                 }
             }
         });
@@ -252,14 +329,26 @@ function loadSavedActivities() {
     // Group time slots by activity
     const activitiesMap = {};
     window.userSavedActivities.forEach(slot => {
-        if (!activitiesMap[slot.activity_number]) {
-            activitiesMap[slot.activity_number] = {
-                slots: [],
-                color: slot.color || getRandomColor(), // Use saved color if available, else random
-                type:slot.activity_type || 'normal'
-            };
+        if (slot.activity_id === 0) {
+            // Render full or partial timeslots directly
+            const cell = findCell(slot.day_of_week, slot.start_time);
+            if (cell) {
+                if (slot.activity_number === "full") {
+                    cell.classList.add('full'); // Add the full class
+                } else if (slot.activity_number === "partial") {
+                    cell.classList.add('partial'); // Add the partial class
+                }
+            }
+        } else {
+            if (!activitiesMap[slot.activity_number]) {
+                activitiesMap[slot.activity_number] = {
+                    slots: [],
+                    color: slot.color || getRandomColor(), // Use saved color if available, else random
+                    type:slot.activity_type || 'normal'
+                };
+            }
+            activitiesMap[slot.activity_number].slots.push(slot);
         }
-        activitiesMap[slot.activity_number].slots.push(slot);
     });
     
     // Create activities and populate cells
@@ -318,6 +407,29 @@ function collectTimetableData() {
             });
         });
     });
+
+     // Add timeslots with "full" or "partial" availability
+    document.querySelectorAll('.timeslot').forEach(cell => {
+        const availability = cell.dataset.availability; // Check the availability field
+        if (availability === "full" || availability === "partial") {
+            const colIndex = cell.cellIndex;
+            const rowIndex = cell.parentElement.rowIndex;
+            const day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][colIndex - 1];
+            const startTime = cell.parentElement.cells[0].textContent.trim();
+            const endRow = cell.parentElement.nextElementSibling;
+            const endTime = endRow ? endRow.cells[0].textContent.trim() : startTime;
+
+            data.push({
+                activity_number: availability, // Set activity name to "full" or "partial"
+                activity_id: 0, // Set activity ID to 0
+                day_of_week: day,
+                start_time: startTime,
+                end_time: endTime,
+                color: null, // No color for full/partial availability
+            });
+        }
+    });
+
     return data;
 }
 

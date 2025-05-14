@@ -11,4 +11,3 @@ default_database_location = 'sqlite:///' + os.path.join(basedir, 'app.db')
 class Config(object):
     # Set SQLAlchemy database URI
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or default_database_location
-    

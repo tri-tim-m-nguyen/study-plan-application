@@ -21,9 +21,7 @@
 .timetable td {
     border: 1px solid black;
 }
-/* ===== Timeslot Cell Styling ===== */
 
-/* Base style for all timetable cells (timeslots) */
 .timeslot {
     width: 10%;
     background-color: #fff;
@@ -32,34 +30,44 @@
     height: 20px;
 }
 
-/* Selected (fully unavailable) cell */
 .timeslot.selected {
     background-color: grey;
 }
 
-/* Partially unavailable cell */
 .timeslot.pselected {
     background-color: lightblue;
 }
 
-/* Hover state for timeslot */
 .timeslot:hover {
-    border: 3px dotted black; 
+    border: 3px dotted black; /* Change border to dotted on hover */
 }
 
 /* ===== Toggle Button Styling ===== */
 
 /* Default toggle button */
 .toggle {
-    background-color:gray;
-    color: black;
-    border: 1px solid black;
+    margin: 5px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    border-radius: 5px;
+    height: 30px;
+    width: 40%;
 }
 
 /* Toggle button when active (selected state) */
 .toggle.active {
     background-color: lightgreen;
-    border: 1px solid green;
+    color: white;
+    border-color: black;
+}
+
+.toggle-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
 }
 
 /* ===== Activity Box (Sidebar Panel) ===== */
@@ -135,15 +143,24 @@
     transition: background-color 0.3s;
     border: 1px solid black;
     height: 20px;
-    cursor: pointer; 
+    cursor: pointer; /* Add cursor pointer to indicate it's clickable */
 }
 
-/* Active (on click) state for timeslot */
+.timeslot.selected {
+    background-color: grey;
+}
+
+.timeslot.pselected {
+    background-color: lightblue;
+}
+
+.timeslot:hover {
+    border: 3px dotted black;
+}
+
 .timeslot:active {
-    background-color: lightgray; 
+    background-color: lightgray; /* Color change on cell click */
 }
-
-/* Select dropdown inside activity box */
 .activity-box select {
     margin-right: 5px;
 }

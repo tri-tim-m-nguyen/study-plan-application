@@ -237,12 +237,11 @@ def request_timetable():
     if to_user.id == from_user_id:
         return jsonify({'error': 'You cannot request your own timetable'}), 400
     
-    # Check if a request already exists
-    existing_request = TimetableRequest.query.filter_by(
-        from_user_id=from_user_id,
-        to_user_id=to_user.id,
-        status='pending'
-    ).first()
+    # Check if a request already exists or accepted
+    existing_request = TimetableRequest.query.filter(
+    ((TimetableRequest.from_user_id == from_user_id) & (TimetableRequest.to_user_id == to_user.id)) |
+    ((TimetableRequest.from_user_id == to_user.id) & (TimetableRequest.to_user_id == from_user_id))
+).filter(TimetableRequest.status.in_(['pending', 'accepted'])).first()
     
     if existing_request:
         return jsonify({'error': 'You already have a pending request to this user'}), 400

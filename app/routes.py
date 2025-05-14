@@ -110,7 +110,7 @@ def save_timetable():
         end = item['end_time']
         act_type = activity_types.get(act_no, 'normal')
 
-        if act_no not in activity_map:
+        if act_no not in ["full", "partial"] and act_no not in activity_map:
             new_act = UserActivity(
                 user_id=user.id, 
                 activity_number=act_no,
@@ -632,13 +632,14 @@ def analytics():
         time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
 
         for slot in time_slots:
-            user_activities.append({
-                'activity_number': slot.activity_number,
-                'day_of_week': slot.day_of_week,
-                'start_time': slot.start_time,
-                'end_time': slot.end_time,
-                'color': activity_colors.get(slot.activity_number)
-            })
+            if slot.activity_number not in ["full", "partial"]:
+                user_activities.append({
+                    'activity_number': slot.activity_number,
+                    'day_of_week': slot.day_of_week,
+                    'start_time': slot.start_time,
+                    'end_time': slot.end_time,
+                    'color': activity_colors.get(slot.activity_number)
+                })
 
         # NEW: Average scores per unit
         results = (

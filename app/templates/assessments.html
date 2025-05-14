@@ -28,7 +28,6 @@
       {# Dropdown to select a unit #}
       <label for="UnitSelect">Select Unit:</label>
       <select id="UnitSelect">
-        {# Populate dropdown with units passed from backend #}
           {% for unit in units %}
               <option value="{{ unit }}">{{ unit }}</option>
           {% endfor %}
@@ -37,7 +36,6 @@
       {# Container where input fields for each assessment will be dynamically added #}
       <div id="assessmentsContainer"></div>
 
-      {# Save button with plus icon — triggers saveAssessments() JS function #}
       <button class="add-btn" onclick="saveAssessments()">
         <i class="fa-solid fa-plus"></i> Save Assessment
       </button>
@@ -45,7 +43,6 @@
 
     {# ===== Summary Table Section ===== #}
     <div class="summary-container">
-      {# This div will be dynamically filled by JS to show saved assessments summary #}
       <div class="summary" id="summary"></div>
     </div>
   </div>

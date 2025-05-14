@@ -241,10 +241,13 @@ def request_timetable():
     existing_request = TimetableRequest.query.filter(
     ((TimetableRequest.from_user_id == from_user_id) & (TimetableRequest.to_user_id == to_user.id)) |
     ((TimetableRequest.from_user_id == to_user.id) & (TimetableRequest.to_user_id == from_user_id))
-).filter(TimetableRequest.status.in_(['pending', 'accepted'])).first()
+    ).filter(TimetableRequest.status.in_(['pending', 'accepted'])).first()
     
     if existing_request:
-        return jsonify({'error': 'You already have a pending request to this user'}), 400
+        if existing_request.status == 'pending':
+            return jsonify({'error': 'You already have a pending request to this user.'}), 400
+        elif existing_request.status == 'accepted':
+            return jsonify({'error': 'You already have access to this user\'s timetable.'}), 400
     
     # Create a new request
     new_request = TimetableRequest(

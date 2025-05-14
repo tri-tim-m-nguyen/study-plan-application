@@ -102,19 +102,6 @@ def save_timetable():
     if unit_count < 1 or unit_count > 4:
         return jsonify({'status': 'error', 'error': 'You must have between 1 and 4 unit activities.'}), 400
 
-    # Another pass to create activities
-    for item in data.get('activities', []):
-        act_no = item['activity_number']
-        if act_no not in ["full", "partial"] and act_no not in activity_map:  # Skip "full" and "partial" for now
-            new_act = UserActivity(
-                user_id=user.id,
-                activity_number=act_no,
-                color=activity_colors.get(act_no, None)  # Add color if available
-            )
-            db.session.add(new_act)
-            db.session.flush()  # Get the activity ID
-            activity_map[act_no] = new_act.activity_id
-
     # Second pass to create activities and time slots
     for item in data.get('activities', []):
         act_no = item['activity_number']
@@ -123,7 +110,7 @@ def save_timetable():
         end = item['end_time']
         act_type = activity_types.get(act_no, 'normal')
 
-        if act_no not in activity_map:
+        if act_no not in ["full", "partial"] and act_no not in activity_map:
             new_act = UserActivity(
                 user_id=user.id, 
                 activity_number=act_no,
@@ -250,15 +237,17 @@ def request_timetable():
     if to_user.id == from_user_id:
         return jsonify({'error': 'You cannot request your own timetable'}), 400
     
-    # Check if a request already exists
-    existing_request = TimetableRequest.query.filter_by(
-        from_user_id=from_user_id,
-        to_user_id=to_user.id,
-        status='pending'
-    ).first()
+    # Check if a request already exists or accepted
+    existing_request = TimetableRequest.query.filter(
+    ((TimetableRequest.from_user_id == from_user_id) & (TimetableRequest.to_user_id == to_user.id)) |
+    ((TimetableRequest.from_user_id == to_user.id) & (TimetableRequest.to_user_id == from_user_id))
+    ).filter(TimetableRequest.status.in_(['pending', 'accepted'])).first()
     
     if existing_request:
-        return jsonify({'error': 'You already have a pending request to this user'}), 400
+        if existing_request.status == 'pending':
+            return jsonify({'error': 'You already have a pending request to this user.'}), 400
+        elif existing_request.status == 'accepted':
+            return jsonify({'error': 'You already have access to this user\'s timetable.'}), 400
     
     # Create a new request
     new_request = TimetableRequest(
@@ -645,13 +634,14 @@ def analytics():
         time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
 
         for slot in time_slots:
-            user_activities.append({
-                'activity_number': slot.activity_number,
-                'day_of_week': slot.day_of_week,
-                'start_time': slot.start_time,
-                'end_time': slot.end_time,
-                'color': activity_colors.get(slot.activity_number)
-            })
+            if slot.activity_number not in ["full", "partial"]:
+                user_activities.append({
+                    'activity_number': slot.activity_number,
+                    'day_of_week': slot.day_of_week,
+                    'start_time': slot.start_time,
+                    'end_time': slot.end_time,
+                    'color': activity_colors.get(slot.activity_number)
+                })
 
         # NEW: Average scores per unit
         results = (

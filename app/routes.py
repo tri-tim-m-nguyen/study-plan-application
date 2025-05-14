@@ -102,20 +102,6 @@ def save_timetable():
     if unit_count < 1 or unit_count > 4:
         return jsonify({'status': 'error', 'error': 'You must have between 1 and 4 unit activities.'}), 400
 
-    # Another pass to create activities
-    for item in data.get('activities', []):
-        act_no = item['activity_number']
-        if act_no not in ["full", "partial"] and act_no not in activity_map:  # Skip "full" and "partial" for now
-            new_act = UserActivity(
-                user_id=user.id,
-                activity_number=act_no,
-                color=activity_colors.get(act_no, None),  # Add color if available
-                activity_type = act_type
-            )
-            db.session.add(new_act)
-            db.session.flush()  # Get the activity ID
-            activity_map[act_no] = new_act.activity_id
-
     # Second pass to create activities and time slots
     for item in data.get('activities', []):
         act_no = item['activity_number']

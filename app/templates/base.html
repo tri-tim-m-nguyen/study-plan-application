@@ -29,11 +29,11 @@
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
-                                <li class="nav-item m-2"><a class="nav-link" aria-current="home" href="{{ url_for('home') }}">Home</a></li>
-                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('create') }}">Create Plan</a></li>
-                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('assessments') }}">Assessments</a></li>
-                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('compare') }}">Compare Plan</a></li>
-                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('analytics') }}">Analytics</a></li>
+                                <li class="nav-item m-2"><a class="nav-link" aria-current="home" href="{{ url_for('main.home') }}">Home</a></li>
+                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('main.create') }}">Create Plan</a></li>
+                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('main.assessments') }}">Assessments</a></li>
+                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('main.compare') }}">Compare Plan</a></li>
+                                <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('main.analytics') }}">Analytics</a></li>
                             </ul>
 
                             {% if session.username %}
@@ -50,7 +50,7 @@
                                     <span class="navbar-text">Logged in as {{ session.username }}</span>
                                 </li>
                                 <li class="nav-item mx-2">
-                                    <a class="nav-link" href="{{ url_for('logout') }}">
+                                    <a class="nav-link" href="{{ url_for('main.logout') }}">
                                         <i class="bi bi-box-arrow-right"></i> Logout
                                     </a>
                                 </li>
@@ -67,12 +67,12 @@
                                     </div>
                                 </li>
                                 <li class="nav-item mx-2">
-                                    <a class="nav-link" href="{{ url_for('login') }}">
+                                    <a class="nav-link" href="{{ url_for('main.login') }}">
                                         <i class="bi bi-box-arrow-in-right"></i> Login
                                     </a>
                                 </li>
                                 <li class="nav-item mx-2">
-                                    <a class="nav-link" href="{{ url_for('signup') }}">
+                                    <a class="nav-link" href="{{ url_for('main.signup') }}">
                                         <i class="bi bi-person"></i> Register
                                     </a>
                                 </li>

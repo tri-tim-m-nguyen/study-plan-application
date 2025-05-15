@@ -1,12 +1,17 @@
-from app import db
+from flask_login import UserMixin
+from app.extensions import login, db
 from datetime import datetime
 
-class UserDetails(db.Model):
+class UserDetails(db.Model, UserMixin):
     __tablename__ = 'user_details'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
     permission = db.Column(db.String(200), nullable=True)
+
+@login.user_loader
+def load_user(user_id):
+    return UserDetails.query.get(int(user_id))
 
 class UserActivity(db.Model):
     __tablename__ = 'user_activity'

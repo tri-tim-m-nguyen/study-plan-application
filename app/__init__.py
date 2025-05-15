@@ -1,14 +1,29 @@
-from flask import Flask, request, render_template, redirect, url_for
-from flask_migrate import Migrate
+from flask import Flask
+from flask_wtf import CSRFProtect
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_login import LoginManager
 from app.config import Config
-from flask_wtf.csrf import CSRFProtect
+from app.config import DeploymentConfig
+from app.extensions import db, login, migrate
+from app.blueprints import blueprint
 import os
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') # I have included a secret key to help run the login page
-csrf = CSRFProtect(app)
-from app import routes
+csrf = CSRFProtect()
+
+def create_app(config = DeploymentConfig):
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object(config)
+
+    from app.blueprints import blueprint
+    app.register_blueprint(blueprint)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+    csrf.init_app(app)
+    login.init_app(app)
+    login.login_view = 'main.index'
+
+    from app import routes, models
+
+    return app

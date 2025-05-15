@@ -88,6 +88,11 @@ def save_timetable():
     for activity in user_activities:
         ActivityTimeSlot.query.filter_by(activity_id=activity.activity_id).delete()
     UserActivity.query.filter_by(user_id=user.id).delete()
+
+    # Delete existing time slots for "full" and "partial" activities
+    ActivityTimeSlot.query.filter(
+        ActivityTimeSlot.user_id == user.id,
+        ActivityTimeSlot.activity_id == 0).delete()
     
     data = request.get_json()
     activity_map = {}

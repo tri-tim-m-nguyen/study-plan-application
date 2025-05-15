@@ -38,25 +38,17 @@
                             </ul>
                             
                             {% if session.username %}
-                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
-                                <button class="inbox-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#inboxDropdown">
-                                    <span class="inbox-icon"></span>
-                                </button>
-                                <div class="collapse inbox-collapse">
-                                    <ul class="inbox-lst ms-auto">
-                                        <li class="inbox-item dropdown">
-                                            <a class="nav-link dropdown-toggle position-relative" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="bi bi-envelope"></i> <!-- Inbox icon -->
-                                            <span id="pending-requests-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                                0
-                                            </span>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="inboxDropdown" id="pending-requests-dropdown">
-                                            <li><p class="dropdown-item text-muted">No pending requests</p></li>
-                                        </ul>
-                                        </li>
-                                    </ul>
-                                </div>"
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle position-relative" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-envelope"></i>
+                                    <span id="pending-requests-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        0
+                                    </span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="inboxDropdown" id="pending-requests-dropdown">
+                                    <li><p class="dropdown-item text-muted">No pending requests</p></li>
+                                </ul>
+                            </li>
                                 <li class="nav-item mx-2">
                                     <div class="theme-switch-wrapper">
                                         <input type="checkbox" id="theme-toggle" />

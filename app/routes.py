@@ -283,7 +283,7 @@ def check_requests():
     # Get pending requests
     pending_requests = []
     requests = TimetableRequest.query.filter_by(to_user_id=user_id, status='pending').all()
-    
+
     # Keep track of new requests (could check timestamp for this in a real app)
     new_requests = []
     

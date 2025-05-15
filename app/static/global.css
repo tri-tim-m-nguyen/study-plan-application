@@ -64,7 +64,6 @@ body.dark-mode .nav-link {
 }
 
 #pending-requests-badge {
-    display: none; /* Hidden by default */
     font-size: 0.75rem;
 }
 

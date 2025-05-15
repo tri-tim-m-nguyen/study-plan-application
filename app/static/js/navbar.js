@@ -1,5 +1,11 @@
+document.addEventListener('DOMContentLoaded', function() {
+    setupRequestButtons();
+    checkForNewRequests();
+    setInterval(checkForNewRequests, 30000);
+});
+
 function checkForNewRequests() {
-    if (!document.getElementById('pending-requests-list')) return;
+    if (!document.getElementById('pending-requests-badge')) return;
   
     safeFetch('/check_requests', {
         method: 'GET',
@@ -52,7 +58,7 @@ function updatePendingRequestsList(pendingRequests) {
     });
 
     dropdown.innerHTML = html;
-    setupRequestButtons(); // Reattach event listeners
+    setupRequestButtons();
 }
 
 function setupRequestButtons() {
@@ -102,4 +108,37 @@ function updateSharedTimetablesList(shared) {
     container.innerHTML = html;
     setupTimetableViewButtons();
     setupDelinkButtons();
+}
+
+function respondToRequest(requestId, action) {
+    safeFetch('/respond_to_request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            request_id: requestId,
+            action: action
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showNotification(`Request ${action === 'accept' ? 'accepted' : 'rejected'} successfully`, 'success');
+            checkForNewRequests();  // Refresh the lists
+            setupRequestButtons();
+
+            const dropdown = document.querySelector('#inboxDropdown');
+            if (dropdown) {
+                const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(dropdown);
+                dropdownInstance.hide();
+            }
+        } else {
+            showNotification(data.error || `Failed to ${action} request`, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'danger');
+    });
 }

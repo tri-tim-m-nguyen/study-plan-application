@@ -143,32 +143,6 @@ function delinkTimetable(username, sharingType) {
     });
 }
   
-function respondToRequest(requestId, action) {
-    safeFetch('/respond_to_request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-            request_id: requestId,
-            action: action
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            showNotification(`Request ${action === 'accept' ? 'accepted' : 'rejected'} successfully`, 'success');
-            checkForNewRequests();  // Refresh the lists
-        } else {
-            showNotification(data.error || `Failed to ${action} request`, 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred', 'danger');
-    });
-}
-  
 function loadUserTimetable(username) {
     safeFetch('/get_timetable', {
         method: 'POST',

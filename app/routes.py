@@ -25,8 +25,12 @@ def signup():
         new_user = UserDetails(username=form.username.data, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
-
-        flash('Registration successful!', 'success')
+        
+        # Automatically log the user in after registration
+        session['username'] = new_user.username
+        session['user_id'] = new_user.id
+        
+        flash('Registration successful! You have been automatically logged in.', 'success')
         users = UserDetails.query.all()
         for user in users:
             print(f"ID: {user.id}, Username: {user.username}, Password Hash: {user.password}")
@@ -159,6 +163,9 @@ def save_timetable():
 
 @app.route('/create')
 def create():
+    if 'user_id' not in session:
+        flash('Please login to create timetables.', 'warning')
+        return redirect(url_for('login'))
     user_activities = []
     
     # If user is logged in, fetch their saved activities
@@ -634,35 +641,39 @@ def reorder_assessments():
 
 @app.route('/analytics')
 def analytics():
+    if 'user_id' not in session:
+        flash('Please login to view analytics.', 'warning')
+        return redirect(url_for('login'))
+    
     user_activities = []
     assessment_averages = []
 
-    if 'user_id' in session:
-        user_id = session['user_id']
 
-        # Existing user activity processing...
-        activities = UserActivity.query.filter_by(user_id=user_id).all()
-        activity_colors = {act.activity_number: act.color for act in activities}
-        time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
+    user_id = session['user_id']
 
-        for slot in time_slots:
-            if slot.activity_number not in ["full", "partial"]:
-                user_activities.append({
-                    'activity_number': slot.activity_number,
-                    'day_of_week': slot.day_of_week,
-                    'start_time': slot.start_time,
-                    'end_time': slot.end_time,
-                    'color': activity_colors.get(slot.activity_number)
-                })
+    # Existing user activity processing...
+    activities = UserActivity.query.filter_by(user_id=user_id).all()
+    activity_colors = {act.activity_number: act.color for act in activities}
+    time_slots = ActivityTimeSlot.query.filter_by(user_id=user_id).all()
 
-        # NEW: Average scores per unit
-        results = (
-            db.session.query(Assessment.unit, func.avg(Assessment.score_obtained / Assessment.score_total * 100))
-            .filter(Assessment.user_id == user_id)
-            .group_by(Assessment.unit)
-            .all()
-        )
-        assessment_averages = [{'unit': unit, 'average': round(avg, 2)} for unit, avg in results]
+    for slot in time_slots:
+        if slot.activity_number not in ["full", "partial"]:
+            user_activities.append({
+                'activity_number': slot.activity_number,
+                'day_of_week': slot.day_of_week,
+                'start_time': slot.start_time,
+                'end_time': slot.end_time,
+                'color': activity_colors.get(slot.activity_number)
+            })
+
+    # NEW: Average scores per unit
+    results = (
+        db.session.query(Assessment.unit, func.avg(Assessment.score_obtained / Assessment.score_total * 100))
+        .filter(Assessment.user_id == user_id)
+        .group_by(Assessment.unit)
+        .all()
+    )
+    assessment_averages = [{'unit': unit, 'average': round(avg, 2)} for unit, avg in results]
 
     return render_template('analytics.html',
                            title='Analytics',

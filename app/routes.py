@@ -166,7 +166,7 @@ def save_timetable():
 def create():
     if 'user_id' not in session:
         flash('Please login to create timetables.', 'warning')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     user_activities = []
     
     # If user is logged in, fetch their saved activities
@@ -644,7 +644,7 @@ def reorder_assessments():
 def analytics():
     if 'user_id' not in session:
         flash('Please login to view analytics.', 'warning')
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
     
     user_activities = []
     assessment_averages = []

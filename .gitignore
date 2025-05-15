@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Function to delete and reset database
+delete.py
+
 # Distribution / packaging
 .Python
 build/

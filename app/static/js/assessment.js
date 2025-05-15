@@ -1,3 +1,66 @@
+// Add this at the beginning of assessment.js, make it globally accessible
+window.assessmentsData = {};
+
+document.addEventListener('DOMContentLoaded', function () {
+    const unitOptions = document.querySelectorAll('#UnitSelect option');
+    unitOptions.forEach(opt => {
+        const unit = opt.value;
+        window.assessmentsData[unit] = window.savedAssessments?.[unit] || [];
+    });
+
+    document.getElementById('UnitSelect').addEventListener('change', renderAssessments);
+    renderAssessments();
+});
+
+// Make renderAssessments globally accessible
+window.renderAssessments = function() {
+    const unit = document.getElementById('UnitSelect').value;
+    const container = document.getElementById('assessmentsContainer');
+    container.innerHTML = '';
+
+    const row = document.createElement('div');
+    row.className = 'row mb-2';
+    row.innerHTML = `
+        <div class="col">
+            <input type="text" placeholder="Assessment Name" class="form-control" id="assessmentName">
+            <div id="nameError" class="text-danger small mt-1"></div>
+        </div>
+        <div class="col">
+            <input type="number" placeholder="Obtained Score" class="form-control" id="assessmentScoreObtained" min="0" max="100" step="any">
+            <div id="obtainedError" class="text-danger small mt-1"></div>
+        </div>
+        <div class="col">
+            <input type="number" placeholder="Total Score" class="form-control" id="assessmentScoreTotal" min="0.01" max="100" step="any">
+            <div id="totalError" class="text-danger small mt-1"></div>
+        </div>
+        <div class="col">
+            <input type="number" placeholder="Weightage (%)" class="form-control" id="assessmentWeightage" min="0" max="100" step="any">
+            <div id="weightError" class="text-danger small mt-1"></div>
+        </div>
+    `;
+    container.appendChild(row);
+
+    renderSummary();
+}
+
+function addAssessment(){
+    const unit = document.getElementById('UnitSelect').value;
+    window.assessmentsData[unit].push({name: '', scoreObtained: '', scoreTotal: '', weightage: ''});
+    window.renderAssessments();
+}
+
+function updateAssessment(idx, field, value){
+    const unit = document.getElementById('UnitSelect').value;
+    window.assessmentsData[unit][idx][field] = value;
+    renderSummary();
+}
+
+function removeAssessment(idx){
+    const unit = document.getElementById('UnitSelect').value;
+    window.assessmentsData[unit].splice(idx, 1);
+    window.renderAssessments();
+}
+
 const assessmentsData = {};
 
 document.addEventListener('DOMContentLoaded', function () {

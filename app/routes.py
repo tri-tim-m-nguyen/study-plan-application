@@ -74,6 +74,10 @@ def save_timetable():
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
+    # Get the current activities before deletion (to compare later)
+    current_units = set([act.activity_number for act in UserActivity.query.filter_by(
+        user_id=user.id, activity_type='unit').all()])
+
     # Delete existing activities and time slots for this user
     user_activities = UserActivity.query.filter_by(user_id=user.id).all()
     for activity in user_activities:
@@ -97,6 +101,14 @@ def save_timetable():
             activity_colors[act_no] = item['color']
 
     unit_count = len(unit_activity_ids)
+    
+    # Find deleted units (units that existed before but are no longer present)
+    deleted_units = current_units - unit_activity_ids
+    
+    # Delete assessments associated with deleted unit activities
+    if deleted_units:
+        for unit in deleted_units:
+            Assessment.query.filter_by(user_id=user.id, unit=unit).delete()
     
     # Validate unit activity count
     if unit_count < 1 or unit_count > 4:

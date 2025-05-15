@@ -433,6 +433,40 @@ function saveTimeTable(showAlert = false) {
         if (showAlert) {
             if (data.status === 'success') {
                 alert('Timetable saved successfully!');
+                
+                // After successful save, update saved assessments to reflect deleted units
+                const activeUnits = new Set();
+                activityCellMap.forEach((cellSet, activityBox) => {
+                    if (activityBox.dataset.activityType === 'unit') {
+                        const activityName = activityBox.querySelector('.activity-text').textContent.trim();
+                        activeUnits.add(activityName);
+                    }
+                });
+                
+                // Clean up the savedAssessments for units that no longer exist
+                if (window.savedAssessments) {
+                    Object.keys(window.savedAssessments).forEach(unit => {
+                        if (!activeUnits.has(unit)) {
+                            delete window.savedAssessments[unit];
+                        }
+                    });
+                }
+                
+                // If we're on the assessments page with the proper functions
+                const assessmentsModule = window.assessmentsData || null;
+                const renderFn = window.renderAssessments || null;
+                
+                if (document.getElementById('UnitSelect') && typeof renderFn === 'function' && assessmentsModule) {
+                    // Update the assessments data structure
+                    Object.keys(assessmentsModule).forEach(unit => {
+                        if (!activeUnits.has(unit)) {
+                            assessmentsModule[unit] = [];
+                        }
+                    });
+                    
+                    // Call the render function from assessment.js
+                    renderFn();
+                }
             } else {
                 alert('Error saving timetable: ' + (data.error || 'Unknown error'));
             }

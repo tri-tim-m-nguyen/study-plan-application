@@ -28,6 +28,8 @@
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    
+                            {% if session.username %}
                             <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
                                 <li class="nav-item m-2"><a class="nav-link" aria-current="home" href="{{ url_for('home') }}">Home</a></li>
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('create') }}">Create Plan</a></li>
@@ -35,8 +37,6 @@
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('compare') }}">Compare Plan</a></li>
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('analytics') }}">Analytics</a></li>
                             </ul>
-
-                            {% if session.username %}
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
                                 <li class="nav-item mx-2">
                                     <div class="theme-switch-wrapper">
@@ -56,6 +56,9 @@
                                 </li>
                             </ul>
                             {% else %}
+                            <ul class="navbar-nav mb-2 mb-lg-0 me-auto">
+                                <li class="nav-item m-2"><a class="nav-link" aria-current="home" href="{{ url_for('home') }}">Home</a></li>
+                            </ul>
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
                                 <li class="nav-item mx-2">
                                     <div class="theme-switch-wrapper">

@@ -146,16 +146,24 @@
     cursor: pointer; /* Add cursor pointer to indicate it's clickable */
 }
 
-.timeslot.selected {
-    background-color: grey;
+.timeslot.Available {
+    background-color: green;
 }
 
-.timeslot.pselected {
-    background-color: lightblue;
+.timeslot.pAvailable {
+    background-color: gold;
 }
 
 .timeslot:hover {
     border: 3px dotted black;
+}
+
+.timeslot.full {
+    background-color: green; /* Color change on cell click */
+}
+
+.timeslot.partial {
+    background-color: gold; /* Color change on cell click */
 }
 
 .timeslot:active {

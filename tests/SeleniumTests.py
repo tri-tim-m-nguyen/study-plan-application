@@ -191,6 +191,57 @@ class SeleniumTests(unittest.TestCase):
             message="❌ unit1 not found after reload"
         )
         print("✅ Reload confirmed unit1 persisted")
+    
+    def test_6_create_assessment(self):
+        # Require signup, login, and at least one unit from earlier tests
+        if not SeleniumTests.created_username:
+            self.skipTest("No user session available")
+
+        # 1) Go to /assessments
+        self.driver.get(f"{BASE_URL}/assessments")
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, "UnitSelect"))
+        )
+
+        # 2) Pick our 'unit1' from the dropdown
+        unit_select = Select(self.driver.find_element(By.ID, "UnitSelect"))
+        unit_select.select_by_visible_text("unit1")
+        self.assertEqual(unit_select.first_selected_option.text, "unit1")
+
+        # 3) Fill in the assessment form
+        name_in = self.driver.find_element(By.ID, "assessmentName")
+        obtained_in = self.driver.find_element(By.ID, "assessmentScoreObtained")
+        total_in = self.driver.find_element(By.ID, "assessmentScoreTotal")
+        weight_in = self.driver.find_element(By.ID, "assessmentWeightage")
+
+        name_in.clear()
+        name_in.send_keys("Assessment1")
+        obtained_in.clear()
+        obtained_in.send_keys("85")
+        total_in.clear()
+        total_in.send_keys("100")
+        weight_in.clear()
+        weight_in.send_keys("20")
+
+        # 4) Click “Save Assessment”
+        save_btn = self.driver.find_element(By.CSS_SELECTOR, "button.add-btn")
+        save_btn.click()
+
+        # 5) Handle and verify the JS alert
+        WebDriverWait(self.driver, 5).until(EC.alert_is_present())
+        alert = self.driver.switch_to.alert
+        alert_text = alert.text
+        alert.accept()
+        self.assertIn("Assessment saved successfully", alert_text)
+
+        # 6) Wait for the new assessment row to appear in the summary table
+        #    We look for a row with class 'assessment-row' containing "Assessment1"
+        row_xpath = "//tr[contains(@class,'assessment-row') and .//td[contains(text(),'Assessment1')]]"
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, row_xpath)),
+            message="❌ New assessment 'Assessment1' did not appear in the summary"
+        )
+        print("✅ Successfully created and listed Assessment1 for unit1.")
 
     def _login(self, username):
         # Always kick off any existing session

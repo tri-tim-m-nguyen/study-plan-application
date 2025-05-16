@@ -7,6 +7,7 @@ from app.models import Assessment
 from sqlalchemy import func
 from app.blueprints import blueprint
 from app import db
+from flask import current_app
 
 @blueprint.route('/')
 @blueprint.route('/index')
@@ -604,7 +605,7 @@ def update_assessment():
     if not unit or not name or not new_data:
         return jsonify({'status': 'error', 'message': 'Incomplete data'}), 400
     
-    app.logger.info(f"Updating {name} in unit {unit} with data: {new_data}")
+    current_app.logger.info(f"Updating {name} in unit {unit} with data: {new_data}")
 
     assessment = Assessment.query.filter_by(user_id=user_id, unit=unit, name=name).first()
     if not assessment:

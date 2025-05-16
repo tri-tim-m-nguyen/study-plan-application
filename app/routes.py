@@ -1,3 +1,4 @@
+# ====== Imports ======
 from flask import render_template, flash, redirect, url_for, session, request, jsonify
 from app.models import UserDetails, UserActivity, ActivityTimeSlot, TimetableRequest
 from app.forms import LoginForm, SignUpForm
@@ -13,6 +14,7 @@ from app import db
 def home():
     return render_template('index.html', title='Home', show_auth_links=True)
 
+# Render signup form and handle user registration
 @blueprint.route('/signup', methods=['GET', 'POST'])
 def signup():
     if 'username' in session:
@@ -39,6 +41,7 @@ def signup():
 
     return render_template('signup.html', form=form, title='Sign Up')
 
+# Render login form and handle user login
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -60,6 +63,7 @@ def login():
             flash('Invalid username or password', 'danger')
     return render_template('login.html', title='Sign In', form=form)
 
+# Logout the current user by clearing session
 @blueprint.route('/logout')
 def logout():
     if 'username' in session:
@@ -70,6 +74,7 @@ def logout():
         flash('No user is currently logged in.', 'warning')
     return redirect(url_for('main.home'))
 
+# Save or update the timetable and related activities
 @blueprint.route('/save_timetable', methods=['POST'])
 def save_timetable():
     if 'username' not in session:
@@ -100,6 +105,7 @@ def save_timetable():
     activity_types = {}  
 
     unit_activity_ids = set()
+    # Collect unit activity info and validation
     for item in data.get('activities', []):
         act_no = item['activity_number']
         act_type = item.get('activity_type', 'normal')
@@ -167,6 +173,7 @@ def save_timetable():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Render the timetable creation page with any saved activities
 @blueprint.route('/create')
 def create():
     if 'user_id' not in session:
@@ -200,6 +207,7 @@ def create():
     
     return render_template('create.html', title='Create', user_activities=user_activities)
 
+# Render compare page with pending and shared timetable requests
 @blueprint.route('/compare')
 def compare():
     if 'user_id' not in session:
@@ -240,8 +248,10 @@ def compare():
                           pending_requests=pending_requests,
                           shared_timetables=shared_timetables)
 
+# Send a timetable sharing request to another user
 @blueprint.route('/request_timetable', methods=['POST'])
 def request_timetable():
+    # Logic for sending a request to view another user's timetable
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -287,8 +297,10 @@ def request_timetable():
     
     return jsonify({'status': 'success', 'message': 'Timetable request sent'})
 
+# Check for incoming and shared timetable requests
 @blueprint.route('/check_requests', methods=['GET'])
 def check_requests():
+    # Return pending and shared timetable requests
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -297,7 +309,7 @@ def check_requests():
     # Get pending requests
     pending_requests = []
     requests = TimetableRequest.query.filter_by(to_user_id=user_id, status='pending').all()
-    
+
     # Keep track of new requests (could check timestamp for this in a real app)
     new_requests = []
     
@@ -309,8 +321,6 @@ def check_requests():
         }
         pending_requests.append(request_data)
         
-        # In a real app, you'd check if this is a new request since last check
-        # For now, we'll consider all pending requests as new for demonstration
         new_requests.append(request_data)
     
     # Get shared timetables (accepted requests)
@@ -339,8 +349,10 @@ def check_requests():
         'new_requests': new_requests
     })
 
+# Accept or reject a pending timetable request
 @blueprint.route('/respond_to_request', methods=['POST'])
 def respond_to_request():
+    # Accept or reject incoming requests
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -370,8 +382,10 @@ def respond_to_request():
     
     return jsonify({'status': 'success', 'message': f'Request {action}ed successfully'})
 
+# Retrieve a user's timetable
 @blueprint.route('/get_timetable', methods=['POST'])
 def get_timetable():
+    # Return timetable data for comparison
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -441,8 +455,10 @@ def get_timetable():
         'username': username if username else session['username']
     })
 
+# Stop sharing timetable with a user
 @blueprint.route('/delink_timetable', methods=['POST'])
 def delink_timetable():
+    # Stop sharing timetable between users
     if 'user_id' not in session:
         return jsonify({'error': 'Not logged in'}), 403
     
@@ -464,16 +480,12 @@ def delink_timetable():
     
     # Determine the request to delete based on sharing type
     if sharing_type == 'received':
-        # The other user has shared with the current user
-        # So the request is from the other user to the current user
         timetable_request = TimetableRequest.query.filter_by(
             from_user_id=other_user_id,
             to_user_id=current_user_id,
             status='accepted'
         ).first()
-    else:  # 'sent'
-        # The current user has shared with the other user
-        # So the request is from the current user to the other user
+    else:  
         timetable_request = TimetableRequest.query.filter_by(
             from_user_id=current_user_id,
             to_user_id=other_user_id,
@@ -492,6 +504,7 @@ def delink_timetable():
         'message': f'Stopped sharing timetable with {username}'
     })
 
+# Retrieve user ID based on username (used for AJAX lookups)
 @blueprint.route('/get_userid', methods=['POST'])
 def get_userid():
     # Ensure the user is logged in
@@ -514,8 +527,10 @@ def get_userid():
     # Return the user_id
     return jsonify({'status': 'success', 'user_id': user.id})
 
+# Render and handle submission of assessment data per unit
 @blueprint.route('/assessments', methods=['GET', 'POST'])
 def assessments():
+    # View and add assessments by unit
     if 'user_id' not in session:
         flash('Please login to view assessments.', 'warning')
         return redirect(url_for('main.login'))
@@ -569,8 +584,10 @@ def assessments():
         saved_assessments=assessments_by_unit
     )
 
+# Delete an individual assessment entry
 @blueprint.route('/assessments/delete', methods=['POST'])
 def delete_assessment():
+    # Delete an assessment by name and unit
     if 'user_id' not in session:
         return jsonify({'status': 'unauthorized'}), 403
 
@@ -590,8 +607,10 @@ def delete_assessment():
 
     return jsonify({'status': 'not_found'}), 404
 
+# Update details of an existing assessment
 @blueprint.route('/assessments/update', methods=['POST'])
 def update_assessment():
+    # Update existing assessment data
     if 'user_id' not in session:
         return jsonify({'status': 'unauthorized'}), 403
 
@@ -625,8 +644,10 @@ def update_assessment():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Reorder assessment entries for a unit
 @blueprint.route('/assessments/reorder', methods=['POST'])
 def reorder_assessments():
+    # Reorder assessments based on position
     if 'user_id' not in session:
         return jsonify({'status': 'unauthorized'}), 403
 
@@ -645,6 +666,7 @@ def reorder_assessments():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Render analytics page showing activity usage and average assessment scores
 @blueprint.route('/analytics')
 def analytics():
     if 'user_id' not in session:

@@ -1,17 +1,27 @@
+{# Inherit base layout structure from base.html #}
 {% extends "base.html" %}
 
+{# ===== Include Required Scripts & Styles ===== #}
 {% block head_scripts %}
+  {# Include Chart.js library for rendering graphs #}
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  {# Include custom analytics logic script #}
   <script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+
+  {# Include styling specific to the analytics page #}
   <link rel="stylesheet" href="{{ url_for('static', filename='js/analytics.css') }}">
 {% endblock %}
 
+{# ===== Set the Page Title ===== #}
 {% block title %}Analytics{% endblock %}
 
+{# ===== Main Page Content ===== #}
 {% block content %}
 <div class="container">
   <h1 class="mb-4">Activity Time Analysis</h1>
   
+  {# ===== Activity Hours Chart Card ===== #}
   <div class="row">
     <div class="col-md-12">
       <div class="card">
@@ -19,12 +29,15 @@
           <h5>Time Spent on Activities (Hours)</h5>
         </div>
         <div class="card-body">
+
+          {# Chart canvas where activity hours bar graph will be rendered #}
           <canvas id="activityChart"></canvas>
         </div>
       </div>
     </div>
   </div>
   
+  {# ===== Activity Summary Table Card ===== #}
   <div class="row mt-4">
     <div class="col-md-12">
       <div class="card">
@@ -32,6 +45,7 @@
           <h5>Activity Summary</h5>
         </div>
         <div class="card-body">
+          {# Summary table dynamically filled via JS with totals and percentages #}
           <table class="table table-striped" id="activitySummaryTable">
             <thead>
               <tr>
@@ -48,6 +62,7 @@
       </div>
     </div>
   </div>
+  {# ===== Assessment Scores by Unit Chart Card ===== #}
   <div class="row mt-4">
     <div class="col-md-12">
       <div class="card">
@@ -55,6 +70,7 @@
           <h5>Average Assessment Scores by Unit (%)</h5>
         </div>
         <div class="card-body">
+          {# Chart canvas for displaying assessment average scores by unit #}
           <canvas id="assessmentChart"></canvas>
         </div>
       </div>
@@ -62,6 +78,7 @@
   </div>
 </div>
 
+{# ===== Pass Data from Backend to JavaScript ===== #}
 
 <!-- Pass user activities data to JavaScript -->
 {% if user_activities %}
@@ -73,6 +90,8 @@
   window.userSavedActivities = [];
 </script>
 {% endif %}
+
+{# Pass calculated assessment average scores to JavaScript #}
 <script>
   window.assessmentAverages = {{ assessment_averages | tojson }};
 </script>

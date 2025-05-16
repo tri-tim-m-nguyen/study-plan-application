@@ -1,24 +1,39 @@
+{# Extend the base layout from base.html to inherit the common structure #}
 {% extends "base.html" %}
 
+{# ===== HEAD SCRIPTS BLOCK ===== #}
 {% block head_scripts %}
+
+  {# JavaScript for base timetable functionality (grid, selection, etc.) #}
   <script src="{{ url_for('static', filename='js/timetable.js') }}"></script>
+
+  {# JavaScript specific to the create timetable page (activity creation, saving, etc.) #}
   <script src="{{ url_for('static', filename='js/create.js') }}"></script>
+
+  {# CSS styles for the timetable grid and cell visuals #}
   <link rel="stylesheet" href="{{ url_for('static', filename='timetable.css') }}">
 {% endblock %}
 
+{# ===== MAIN CONTENT BLOCK ===== #}
 {% block content %}
 
 <div class="row">
+  {# Include the timetable grid structure #}
   {% include 'timetable.html' %}
+
+  {# Right-hand control panel for activity creation and saving #}
   <div class="col-md-4">
     <button class="toggle" id="toggle-Available">Fully Available</button>
     
     <button class="toggle" id="toggle-pAvailable">Partially Available</button>
 
+    {# ===== Activity Management Section ===== #}
     <div id="activity-container">
       <!-- New activities will be added here -->
        <button id="add-button">+</button>
     </div>
+
+    {# Save button to persist all created activities and their time slots #}
     <button id="save-timetable" class="btn btn-primary mt-3">Save Timetable</button>
 
   </div>

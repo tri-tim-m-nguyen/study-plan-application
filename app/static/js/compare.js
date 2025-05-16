@@ -2,7 +2,7 @@ let displayedTimetables = []; // Array to hold all displayed timetables
 
 // compare.js - Specific JavaScript for compare.html page
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle request form submission
+    // Submit timetable request when form is submitted
     const requestForm = document.getElementById('request-timetable-form');
     if (requestForm) {
         requestForm.addEventListener('submit', function(e) {
@@ -12,20 +12,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
   
-    // Setup event listeners for accepting/rejecting requests
-    setupRequestButtons();
-  
     // Setup event listeners for viewing timetables
     setupTimetableViewButtons();
   
     // Setup event listeners for delinking timetables
-    setupDelinkButtons();
+    setupDelinkButtons();                               // Unshare timetable buttons
   
-    // Check for new requests periodically
+    // Check for new requests periodically (// Automatically check for new requests every 30 seconds)
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000); // Check every 30 seconds
 });
-  
+
+// Send timetable share request to another user
 function sendTimetableRequest(username) {
     safeFetch('/request_timetable', {
         method: 'POST',
@@ -46,104 +44,6 @@ function sendTimetableRequest(username) {
     .catch(error => {
         console.error('Error:', error);
         showNotification('An error occurred while sending the request', 'danger');
-    });
-}
-  
-function checkForNewRequests() {
-    if (!document.getElementById('pending-requests-list')) return;
-  
-    safeFetch('/check_requests', {
-        method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            updatePendingRequestsList(data.pending_requests);
-            updateSharedTimetablesList(data.shared_timetables);
-  
-            // Show notification if there are new requests
-            if (data.new_requests && data.new_requests.length > 0) {
-                data.new_requests.forEach(req => {
-                    showNotification(`New timetable request from ${req.from_username}`, 'info');
-                });
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error checking for requests:', error);
-    });
-}
-  
-function updatePendingRequestsList(requests) {
-    const container = document.getElementById('pending-requests-list');
-    if (!container) return;
-  
-    if (!requests || requests.length === 0) {
-        container.innerHTML = '<p>No pending requests</p>';
-        return;
-    }
-  
-    let html = '';
-    requests.forEach(request => {
-        html += `
-            <div class="pending-request mb-2">
-                <span>${request.from_username}</span>
-                <button class="btn btn-sm btn-success accept-request ms-2" data-request-id="${request.id}">Accept</button>
-                <button class="btn btn-sm btn-danger reject-request ms-1" data-request-id="${request.id}">Reject</button>
-            </div>
-        `;
-    });
-  
-    container.innerHTML = html;
-    setupRequestButtons();
-}
-  
-function updateSharedTimetablesList(shared) {
-    const container = document.getElementById('shared-timetables-list');
-    if (!container) return;
-  
-    if (!shared || shared.length === 0) {
-        container.innerHTML = '<p>No shared timetables</p>';
-        return;
-    }
-  
-    let html = '';
-    shared.forEach(item => {
-        html += `
-            <div class="shared-timetable-item mb-2">
-                <button class="btn btn-outline-primary view-timetable" data-username="${item.username}">
-                    ${item.username}
-                </button>
-                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" 
-                     class="delink-button" 
-                     data-username="${item.username}"
-                     data-sharing-type="${item.type}"
-                     alt="Remove sharing" 
-                     title="Stop sharing timetable">
-            </div>
-        `;
-    });
-  
-    container.innerHTML = html;
-    setupTimetableViewButtons();
-    setupDelinkButtons();
-}
-  
-function setupRequestButtons() {
-    // Set up accept buttons
-    document.querySelectorAll('.accept-request').forEach(button => {
-        button.addEventListener('click', function() {
-            const requestId = this.getAttribute('data-request-id');
-            respondToRequest(requestId, 'accept');
-        });
-    });
-  
-    // Set up reject buttons
-    document.querySelectorAll('.reject-request').forEach(button => {
-        button.addEventListener('click', function() {
-            const requestId = this.getAttribute('data-request-id');
-            respondToRequest(requestId, 'reject');
-        });
     });
 }
   
@@ -196,7 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-  
+
+
+// Set up click handler for removing shared timetable access
 function setupDelinkButtons() {
     // Setup delink/trash buttons
     document.querySelectorAll('.delink-button').forEach(button => {
@@ -210,7 +112,8 @@ function setupDelinkButtons() {
         });
     });
 }
-  
+
+// Send request to backend to revoke shared timetable access
 function delinkTimetable(username, sharingType) {
     safeFetch('/delink_timetable', {
         method: 'POST',
@@ -237,32 +140,6 @@ function delinkTimetable(username, sharingType) {
             }
         } else {
             showNotification(data.error || 'Failed to stop sharing timetable', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred', 'danger');
-    });
-}
-  
-function respondToRequest(requestId, action) {
-    safeFetch('/respond_to_request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-            request_id: requestId,
-            action: action
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            showNotification(`Request ${action === 'accept' ? 'accepted' : 'rejected'} successfully`, 'success');
-            checkForNewRequests();  // Refresh the lists
-        } else {
-            showNotification(data.error || `Failed to ${action} request`, 'danger');
         }
     })
     .catch(error => {
@@ -305,7 +182,8 @@ function loadUserTimetable(username) {
         showNotification('An error occurred while loading the timetable', 'danger');
     });
 }
-  
+
+// Render the timetable slots in the UI using provided data
 function displayTimetable(timetableData) {
     // Clear existing timetable
     const timeslots = document.querySelectorAll('.timeslot');
@@ -403,6 +281,7 @@ function removeUserTimetable(username) {
     });
 }
         
+// Utility to show Bootstrap alert-style notifications  
 function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;
@@ -417,7 +296,7 @@ function showNotification(message, type) {
 
     notificationsContainer.appendChild(notification);
 
-    // Auto-remove after 5 seconds
+    // Auto-remove notification after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {

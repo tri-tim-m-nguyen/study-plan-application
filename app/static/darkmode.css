@@ -1,3 +1,87 @@
+/* ===== GLOBAL DARK MODE STYLES ===== */
+
+/* Base Elements Dark Mode */
+body.dark-mode {
+  color: var(--light-text);                                            
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #1a1f2c 100%);
+}
+
+/* === Navbar Dark Mode === */
+body.dark-mode .navbar {
+  background-color: var(--dark-card-bg);                  
+  box-shadow: var(--shadow-dark);                         
+}
+
+body.dark-mode .nav-link {
+  color: var(--light-text) !important;                      
+}
+
+body.dark-mode .nav-link:hover {
+  color: var(--primary-dark) !important;                    
+}
+
+body.dark-mode .navbar-text {
+  color: var(--light-text);                                 
+}
+
+/* Dropdown styles in dark mode */
+body.dark-mode .navbar-nav .dropdown-menu {
+  background-color: var(--dark-card-bg);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .navbar-nav .dropdown-item {
+  color: var(--light-text);
+}
+
+body.dark-mode .navbar-nav .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* === Content Area Dark Mode === */
+body.dark-mode .container {
+  background-color: rgba(26, 32, 44, 0.85);
+}
+
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3 {
+  color: var(--primary-dark);                               
+}
+
+body.dark-mode h1 {
+  border-bottom-color: var(--primary-dark);                 
+}
+
+/* Card element in dark mode */
+body.dark-mode .info-card {
+  background: var(--dark-card-bg);
+  box-shadow: var(--shadow-dark);
+}
+
+/* === Buttons Dark Mode === */
+body.dark-mode .btn-primary {
+  background-color: var(--primary-dark);                        
+}
+
+body.dark-mode .btn-primary:hover {
+  background-color: #2d4aa3;                                 
+}
+
+/* === Footer Dark Mode === */
+body.dark-mode footer {
+  background-color: #1a1d20;                                 
+}
+
+/* ===== Theme Switch Button Dark Mode ===== */
+body.dark-mode .theme-switch {
+  background: var(--secondary-dark);                          
+}
+
+body.dark-mode #theme-toggle:checked + .theme-switch {
+  background: var(--primary-dark);                              
+}
+
 /* ===== TIMETABLE DARK MODE STYLES ===== */
 
 /* Timetable base color in dark mode */

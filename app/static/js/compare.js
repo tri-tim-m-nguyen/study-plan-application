@@ -49,7 +49,7 @@ function sendTimetableRequest(username) {
 function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function() {
             const username = this.getAttribute('data-username');
             // Check if the button is already active
             const isActive = this.classList.contains('btn-primary');
@@ -159,7 +159,7 @@ function loadUserTimetable(username) {
             // Add userid to each activity in timetableData
             const timetableDataWithUserId = data.timetable_data.map(activity => ({
                 ...activity,
-                userid: data.userid // Assuming the API returns a `userid` field
+                user_id: data.user_id
             }));
 
             // Update displayedTimetables
@@ -245,7 +245,6 @@ function removeUserTimetable(username) {
     }
 
     // Fetch the timetable to get the userid for the given username
-    console.log("Removing timetable for username:", username);
     safeFetch('/get_userid', {
         method: 'POST',
         headers: {
@@ -256,12 +255,11 @@ function removeUserTimetable(username) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Response from /get_userid:", data);
         if (data.status === 'success' && data.user_id) {
-            const useridToRemove = data.userid;
+            const useridToRemove = data.user_id;
             // Filter out the timetable for the specified userid
             displayedTimetables = displayedTimetables.filter(({ timetableData }) => {
-                return timetableData.every(activity => activity.userid !== useridToRemove);
+                return timetableData.every(activity => activity.user_id !== useridToRemove);
             });
 
             // Re-render the remaining timetables

@@ -264,6 +264,8 @@ function addActivity(name = null, color = null, type = 'normal') {
         saveTimeTable(false);
     });
 
+    const fullyAvailableToggle = document.getElementById('toggle-Available');
+    const partiallyAvailableToggle = document.getElementById('toggle-pAvailable');
     // Focus on activity box on click
     activityBox.addEventListener('click', (e) => {
         // Prevent triggering when clicking on delete icon, color box or color input
@@ -274,6 +276,11 @@ function addActivity(name = null, color = null, type = 'normal') {
             focusedActivity = null;
             activityBox.classList.remove('focused');
         } else {
+            availabilityState = null;
+            fullyAvailableToggle.classList.remove('active');
+            fullyAvailableToggle.style.backgroundColor = "";
+            partiallyAvailableToggle.classList.remove('active');
+            partiallyAvailableToggle.style.backgroundColor = "";
             // Set focus
             if (focusedActivity) {
                 focusedActivity.classList.remove('focused'); // Remove class from previously focused activity
@@ -323,9 +330,11 @@ function loadSavedActivities() {
             const cell = findCell(slot.day_of_week, slot.start_time);
             if (cell) {
                 if (slot.activity_number === "full") {
-                    cell.classList.add('full'); // Add the full class
+                    cell.classList.add('full'); 
+                    cell.dataset.availability = "full";
                 } else if (slot.activity_number === "partial") {
-                    cell.classList.add('partial'); // Add the partial class
+                    cell.classList.add('partial'); 
+                    cell.dataset.availability = "partial";
                 }
             }
         } else {
@@ -433,6 +442,40 @@ function saveTimeTable(showAlert = false) {
         if (showAlert) {
             if (data.status === 'success') {
                 alert('Timetable saved successfully!');
+                
+                // After successful save, update saved assessments to reflect deleted units
+                const activeUnits = new Set();
+                activityCellMap.forEach((cellSet, activityBox) => {
+                    if (activityBox.dataset.activityType === 'unit') {
+                        const activityName = activityBox.querySelector('.activity-text').textContent.trim();
+                        activeUnits.add(activityName);
+                    }
+                });
+                
+                // Clean up the savedAssessments for units that no longer exist
+                if (window.savedAssessments) {
+                    Object.keys(window.savedAssessments).forEach(unit => {
+                        if (!activeUnits.has(unit)) {
+                            delete window.savedAssessments[unit];
+                        }
+                    });
+                }
+                
+                // If we're on the assessments page with the proper functions
+                const assessmentsModule = window.assessmentsData || null;
+                const renderFn = window.renderAssessments || null;
+                
+                if (document.getElementById('UnitSelect') && typeof renderFn === 'function' && assessmentsModule) {
+                    // Update the assessments data structure
+                    Object.keys(assessmentsModule).forEach(unit => {
+                        if (!activeUnits.has(unit)) {
+                            assessmentsModule[unit] = [];
+                        }
+                    });
+                    
+                    // Call the render function from assessment.js
+                    renderFn();
+                }
             } else {
                 alert('Error saving timetable: ' + (data.error || 'Unknown error'));
             }

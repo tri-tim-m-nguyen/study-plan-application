@@ -1,6 +1,8 @@
-let displayedTimetables = []; // Array to hold all displayed timetables
-
 // compare.js - Specific JavaScript for compare.html page
+
+let displayedTimetables = []; // { username, timetableData, isUserTimetable }
+
+// Run once on DOM ready
 document.addEventListener('DOMContentLoaded', function() {
     // Submit timetable request when form is submitted
     const requestForm = document.getElementById('request-timetable-form');
@@ -12,27 +14,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
   
-    // Setup event listeners for viewing timetables
+    // Setup initial buttons
     setupTimetableViewButtons();
+    setupDelinkButtons();  // Unshare timetable buttons
   
-    // Setup event listeners for delinking timetables
-    setupDelinkButtons();                               // Unshare timetable buttons
-  
-    // Check for new requests periodically (// Automatically check for new requests every 30 seconds)
+    // Kick off periodic background checks + sync
     checkForNewRequests();
-    setInterval(checkForNewRequests, 30000); // Check every 30 seconds
+    syncDisplayedTimetables();
+    setInterval(() => {
+        checkForNewRequests();
+        syncDisplayedTimetables();
+    }, 5000);
 });
 
 // Send timetable share request to another user
 function sendTimetableRequest(username) {
     safeFetch('/request_timetable', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.status === 'success') {
             showNotification('Request sent successfully!', 'success');
@@ -41,266 +43,217 @@ function sendTimetableRequest(username) {
             showNotification(data.error || 'Failed to send request', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
+    .catch(() => {
         showNotification('An error occurred while sending the request', 'danger');
     });
 }
-  
+
+// --- VIEW / HIDE TIMETABLE BUTTONS ---
+
 function setupTimetableViewButtons() {
-    // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
         button.addEventListener('click', function() {
             const username = this.getAttribute('data-username');
-            // Check if the button is already active
             const isActive = this.classList.contains('btn-primary');
 
             if (isActive) {
-                // If active, remove only this user's timetable and reset the button
-                this.classList.remove('btn-primary');
-                this.classList.add('btn-outline-primary');
-                removeUserTimetable(username); // Remove only this user's timetable
+                // Turn *off* this user’s view
+                this.classList.replace('btn-primary','btn-outline-primary');
+                removeUserTimetable(username);
             } else {
-                // If not active, load the timetable and highlight the button
+                // Turn *on* this user’s view
                 loadUserTimetable(username);
-
-                // Highlight the active button
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('btn-primary');
+                this.classList.replace('btn-outline-primary','btn-primary');
             }
         });
     });
 }
 
+// Handle your own timetable button
 document.addEventListener('DOMContentLoaded', function() {
-    // View own timetable
-    const ownTimetableBtn = document.getElementById('view-own-timetable');
-    if (ownTimetableBtn) {
-        ownTimetableBtn.addEventListener('click', function () {
-            // Check if the button is already active
-            const isActive = this.classList.contains('btn-secondary');
+    const ownBtn = document.getElementById('view-own-timetable');
+    if (!ownBtn) return;
 
-            if (isActive) {
-                // If active, remove the user's timetable but keep the button highlighted
-                removeUserTimetable(''); // Remove the current user's timetable
-                this.classList.remove('btn-secondary');
-                this.classList.add('btn-outline-secondary');
-            } else {
-                // If not active, load the timetable and highlight the button
-                loadUserTimetable(''); // Empty username means load current user's timetable
+    ownBtn.addEventListener('click', function () {
+        const isActive = this.classList.contains('btn-secondary');
 
-                // Highlight own button
-                this.classList.remove('btn-outline-secondary');
-                this.classList.add('btn-secondary');
-            }
-        });
-    }
+        if (isActive) {
+            // Turn off
+            this.classList.replace('btn-secondary','btn-outline-secondary');
+            removeUserTimetable('');
+        } else {
+            // Turn on
+            this.classList.replace('btn-outline-secondary','btn-secondary');
+            loadUserTimetable('');
+        }
+    });
 });
 
+// --- UNLINK BUTTONS (stop sharing) ---
 
-// Set up click handler for removing shared timetable access
 function setupDelinkButtons() {
-    // Setup delink/trash buttons
     document.querySelectorAll('.delink-button').forEach(button => {
         button.addEventListener('click', function() {
             const username = this.getAttribute('data-username');
             const sharingType = this.getAttribute('data-sharing-type');
             
-            if (confirm(`Are you sure you want to stop sharing timetables with ${username}?`)) {
+            if (confirm(`Stop sharing timetables with ${username}?`)) {
                 delinkTimetable(username, sharingType);
             }
         });
     });
 }
 
-// Send request to backend to revoke shared timetable access
 function delinkTimetable(username, sharingType) {
     safeFetch('/delink_timetable', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-            username: username,
-            sharing_type: sharingType
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, sharing_type: sharingType }),
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.status === 'success') {
-            showNotification(`Timetable sharing with ${username} has been stopped`, 'success');
-            // Refresh the shared timetables list
-            checkForNewRequests();
-            
-            // If currently viewing that user's timetable, switch to own timetable
-            removeUserTimetable(username)
-            const activeButton = document.querySelector('.view-timetable.btn-primary');
-            if (activeButton && activeButton.getAttribute('data-username') === username) {
+            showNotification(`Stopped sharing with ${username}`, 'success');
+            checkForNewRequests();        // refresh sidebar
+            removeUserTimetable(username); 
+            // If they were active, fall back to your own
+            const activeBtn = document.querySelector('.view-timetable.btn-primary');
+            if (activeBtn?.getAttribute('data-username') === username) {
                 document.getElementById('view-own-timetable').click();
             }
         } else {
-            showNotification(data.error || 'Failed to stop sharing timetable', 'danger');
+            showNotification(data.error || 'Failed to stop sharing', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
+    .catch(() => {
         showNotification('An error occurred', 'danger');
     });
 }
-  
+
+// --- LOADING & RENDERING TIMETABLES ---
+
 function loadUserTimetable(username) {
     safeFetch('/get_timetable', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.status === 'success') {
-            const isUserTimetable = !username;
-
-            // Add userid to each activity in timetableData
-            const timetableDataWithUserId = data.timetable_data.map(activity => ({
-                ...activity,
+            const isOwn = (username === '');
+            const withUserId = data.timetable_data.map(a => ({
+                ...a,
                 user_id: data.user_id
             }));
 
-            // Update displayedTimetables
-            displayedTimetables.push({ timetableData: timetableDataWithUserId, isUserTimetable });
+            // Store username to allow sync pruning
+            displayedTimetables.push({
+                username, 
+                timetableData: withUserId, 
+                isUserTimetable: isOwn
+            });
 
-            // Render the updated timetables
             displayTimetable();
-            showNotification(`Viewing ${username ? username + "'s" : 'your'} timetable`, 'info');
+            showNotification(`Viewing ${username? username + "'s": 'your'} timetable`, 'info');
         } else {
             showNotification(data.error || 'Failed to load timetable', 'danger');
         }
     })
-    .catch(error => {
-        console.error('Error:', error);
+    .catch(() => {
         showNotification('An error occurred while loading the timetable', 'danger');
     });
 }
 
-// Render the timetable slots in the UI using provided data
-function displayTimetable(timetableData) {
-    // Clear existing timetable
-    const timeslots = document.querySelectorAll('.timeslot');
-    timeslots.forEach(slot => {
-        slot.style.backgroundColor = '';
-        slot.classList.remove('full', 'partial');
+function displayTimetable() {
+    // Clear all slots
+    document.querySelectorAll('.timeslot').forEach(cell => {
+        cell.style.backgroundColor = '';
+        cell.classList.remove('full','partial');
     });
-  
-    // Display all timetables in light gray
+
+    // Draw all shared/others in light gray
     displayedTimetables.forEach(({ timetableData }) => {
         timetableData.forEach(slot => {
-            const key = `${slot.day_of_week}-${slot.start_time}`;
-            const id = `${slot.activity_id}`;
-            const number = `${slot.activity_number}`;
             const cell = findCell(slot.day_of_week, slot.start_time);
-            if (cell) {
-                if (id != 0) {
-                    cell.style.backgroundColor = 'lightgray'; // Default to light gray for all timetables
-                } else if (number==="partial") {
-                    if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
-                        cell.style.backgroundColor = 'gold'; // Use gold for partial slots
-                    }
-                }
-                else if (number==="full") {
-                    if (cell.style.backgroundColor === '') {
-                        cell.style.backgroundColor = 'green'; // Use green for partial slots
-                    }
-                }
+            if (!cell) return;
+            if (slot.activity_id != 0) {
+                cell.style.backgroundColor = 'lightgray';
+            } else if (slot.activity_number === "partial" && 
+                       ['','green'].includes(cell.style.backgroundColor)) {
+                cell.style.backgroundColor = 'gold';
+            } else if (slot.activity_number === "full" && cell.style.backgroundColor === '') {
+                cell.style.backgroundColor = 'green';
             }
         });
     });
 
-    // Overlay the current user's timetable in its assigned color
-    displayedTimetables.forEach(({ timetableData, isUserTimetable }) => {
-        if (isUserTimetable) {
-            timetableData.forEach(slot => {
-                const id = `${slot.activity_id}`;
-                const number = `${slot.activity_number}`;
-                const cell = findCell(slot.day_of_week, slot.start_time);
-                if (cell) {
-                    if (id != 0) {
-                        cell.style.backgroundColor = slot.color; // Use the current user's color
-                    } else if (number==="partial") {
-                        if (cell.style.backgroundColor === '' || cell.style.backgroundColor === 'green') {
-                            cell.style.backgroundColor = 'gold'; // Use gold for partial slots
-                        }
-                    }
-                    else if (number==="full") {
-                        if (cell.style.backgroundColor === '') {
-                            cell.style.backgroundColor = 'green'; // Use green for partial slots
-                        }
-                    }
-                }
-            });
-        }
+    // Overlay your own in color
+    displayedTimetables
+      .filter(e => e.isUserTimetable)
+      .forEach(({ timetableData }) => {
+        timetableData.forEach(slot => {
+            const cell = findCell(slot.day_of_week, slot.start_time);
+            if (!cell) return;
+            if (slot.activity_id != 0) {
+                cell.style.backgroundColor = slot.color;
+            } else if (slot.activity_number === "partial" && 
+                       ['','green'].includes(cell.style.backgroundColor)) {
+                cell.style.backgroundColor = 'gold';
+            } else if (slot.activity_number === "full" && cell.style.backgroundColor === '') {
+                cell.style.backgroundColor = 'green';
+            }
+        });
     });
 }
 
 function removeUserTimetable(username) {
-    if (!username) {
-        // Remove the current user's timetable
-        displayedTimetables = displayedTimetables.filter(({ isUserTimetable }) => !isUserTimetable);
+    if (username === '') {
+        // drop your own
+        displayedTimetables = displayedTimetables.filter(e => !e.isUserTimetable);
         displayTimetable();
         return;
     }
 
-    // Fetch the timetable to get the userid for the given username
-    safeFetch('/get_userid', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username: username }),
-        credentials: 'include'
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success' && data.user_id) {
-            const useridToRemove = data.user_id;
-            // Filter out the timetable for the specified userid
-            displayedTimetables = displayedTimetables.filter(({ timetableData }) => {
-                return timetableData.every(activity => activity.user_id !== useridToRemove);
-            });
-
-            // Re-render the remaining timetables
-            displayTimetable();
-        } else {
-            console.error(`Failed to find timetable for username: ${username}`);
-            showNotification(`Failed to remove timetable for ${username}`, 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error while fetching timetable:', error);
-        showNotification('An error occurred while removing the timetable', 'danger');
-    });
+    // find their user_id then drop by matching username tag
+    displayedTimetables = displayedTimetables.filter(e => e.username !== username);
+    displayTimetable();
 }
-        
-// Utility to show Bootstrap alert-style notifications  
-function showNotification(message, type) {
-    const notificationsContainer = document.getElementById('notifications');
-    if (!notificationsContainer) return;
 
-    const notification = document.createElement('div');
-    notification.className = `alert alert-${type} alert-dismissible fade show`;
-    notification.role = 'alert';
-    notification.innerHTML = `
+// --- KEEP displayedTimetables IN SYNC WITH ACTIVE BUTTONS ---
+
+function syncDisplayedTimetables() {
+    // gather active usernames
+    const actives = Array.from(
+        document.querySelectorAll('.view-timetable.btn-primary')
+    ).map(b => b.getAttribute('data-username'));
+    const ownBtn = document.getElementById('view-own-timetable');
+    if (ownBtn?.classList.contains('btn-secondary')) {
+        actives.push('');
+    }
+
+    displayedTimetables = displayedTimetables.filter(e => {
+        return actives.includes(e.username);
+    });
+
+    displayTimetable();
+}
+
+// --- NOTIFICATIONS ---
+
+function showNotification(message, type) {
+    const container = document.getElementById('notifications');
+    if (!container) return;
+    const note = document.createElement('div');
+    note.className = `alert alert-${type} alert-dismissible fade show`;
+    note.role = 'alert';
+    note.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
-
-    notificationsContainer.appendChild(notification);
-
-    // Auto-remove notification after 5 seconds
+    container.appendChild(note);
     setTimeout(() => {
-        notification.classList.remove('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 150);
+        note.classList.remove('show');
+        setTimeout(() => note.remove(), 150);
     }, 5000);
 }

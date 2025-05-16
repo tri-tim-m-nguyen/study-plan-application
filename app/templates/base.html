@@ -118,7 +118,7 @@
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div id="notifications" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
+                <div id="notify" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
                 {% for category, message in messages %}
                     <div class="alert alert-{{ category }} alert-dismissible fade show shadow rounded" role="alert">
                     {{ message }}

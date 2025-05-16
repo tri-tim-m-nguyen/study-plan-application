@@ -30,12 +30,6 @@ body {
   transition: background-color 0.3s, color 0.3s;                       
 }
 
-/* Dark mode base */
-body.dark-mode {
-  color: var(--light-text);                                            
-  background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #1a1f2c 100%);
-}
-
 /* === Navbar Customization === */
 .navbar {
   /* Light mode navbar */
@@ -69,20 +63,10 @@ body.dark-mode {
     transition: background 0.2s, color 0.2s;
 }
 
-body.dark-mode .navbar {
-  /* Dark mode navbar */
-  background-color: var(--dark-card-bg);                  
-  box-shadow: var(--shadow-dark);                         
-}
-
 .nav-link {
   font-weight: 500;
   color: var(--secondary-color) !important;
   transition: all 0.3s ease;
-}
-
-body.dark-mode .nav-link {
-  color: var(--light-text) !important;                      
 }
 
 .nav-link:hover {
@@ -100,14 +84,6 @@ body.dark-mode .nav-link {
     overflow-y: auto;
 }
 
-body.dark-mode .nav-link:hover {
-  color: var(--primary-dark) !important;                    
-}
-
-body.dark-mode .navbar-text {
-  color: var(--light-text);                                 
-}
-
 /* === Content Area === */
 .container {
   padding: 2rem;
@@ -120,10 +96,6 @@ body.dark-mode .navbar-text {
   backdrop-filter: blur(10px);
 }
 
-body.dark-mode .container {
-  background-color: rgba(26, 32, 44, 0.85);
-}
-
 h1, h2, h3 {
   font-weight: 600;
   margin-bottom: 1.5rem;
@@ -131,20 +103,10 @@ h1, h2, h3 {
   transition: color 0.3s;
 }
 
-body.dark-mode h1, 
-body.dark-mode h2, 
-body.dark-mode h3 {
-  color: var(--primary-dark);                               
-}
-
 h1 {
   border-bottom: 2px solid var(--primary-color);            
   padding-bottom: 0.5rem;
   transition: border-color 0.3s;
-}
-
-body.dark-mode h1 {
-  border-bottom-color: var(--primary-dark);                 
 }
 
 /* Card element used in info sections */
@@ -156,11 +118,6 @@ body.dark-mode h1 {
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease, background-color 0.3s, box-shadow 0.3s;
   cursor: pointer; 
-}
-
-body.dark-mode .info-card {
-  background: var(--dark-card-bg);
-  box-shadow: var(--shadow-dark);
 }
 
 .info-card:hover {
@@ -180,17 +137,9 @@ body.dark-mode .info-card {
   transition: background-color 0.3s, transform 0.3s;
 }
 
-body.dark-mode .btn-primary {
-  background-color: var(--primary-dark);                        
-}
-
 .btn-primary:hover {
   background-color: #3a5ccc;                                 
   transform: translateY(-2px);
-}
-
-body.dark-mode .btn-primary:hover {
-  background-color: #2d4aa3;                                 
 }
 
 /* === Footer (add to base.html if needed) === */
@@ -201,10 +150,6 @@ footer {
   padding: 1rem 0;
   margin-top: auto;
   transition: background-color 0.3s;
-}
-
-body.dark-mode footer {
-  background-color: #1a1d20;                                 
 }
 
 /* ===== Theme Switch Button ===== */
@@ -223,10 +168,6 @@ body.dark-mode footer {
   border-radius: 50px;                                       
   cursor: pointer;
   transition: background 0.3s ease;
-}
-
-body.dark-mode .theme-switch {
-  background: var(--secondary-dark);                          
 }
 
 /* Common styles for sun/moon icons inside toggle */
@@ -263,51 +204,12 @@ body.dark-mode .theme-switch {
   background: var(--primary-color);
 }
 
-body.dark-mode #theme-toggle:checked + .theme-switch {
-  background: var(--primary-dark);                              
-}
-
 #theme-toggle:checked + .theme-switch .moon {
   opacity: 1;                                                   
 }
 
 #theme-toggle:checked + .theme-switch .sun {
   opacity: 0;                                                   
-}
-
-/* Additional dark mode form styling */
-body.dark-mode .form-control {
-  background-color: var(--dark-card-bg);
-  color: var(--light-text);
-  border-color: var(--dark-border);
-}
-
-body.dark-mode .form-control:focus {
-  border-color: var(--primary-dark);
-  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);           
-}
-
-body.dark-mode .form-label,
-body.dark-mode label {
-  color: var(--light-text);
-}
-
-/* === Card and Alert Dark Mode === */
-body.dark-mode .card {
-  background-color: var(--dark-card-bg);
-  border-color: var(--dark-border);
-}
-
-body.dark-mode .card-header {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-color: var(--dark-border);
-}
-
-/* Alert styles in dark mode */
-body.dark-mode .alert {
-  background-color: var(--dark-card-bg);
-  color: var(--light-text);
-  border-color: var(--dark-border);
 }
 
 /* Responsive styles */
@@ -325,13 +227,29 @@ body.dark-mode .alert {
 }
 
 #notifications {
+  position: fixed;
+  top: 1rem;         /* Reduce or change as needed */
+  right: 1rem;
+  z-index: 1050;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+}
+
+#notifications .alert {
+  pointer-events: auto;
+  margin-bottom: 0.5rem;
+  min-width: 250px;
+}
+
+#notify {
   max-width: 400px;
   margin-top: 60px;
   margin-right: 20px;
   pointer-events: none; /* Allows clicks to pass through if no notification */
 }
 
-#notifications .alert {
+#notify .alert {
   pointer-events: auto;
   opacity: 0.95;
   backdrop-filter: blur(5px);

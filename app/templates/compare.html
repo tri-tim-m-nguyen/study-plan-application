@@ -45,27 +45,6 @@
       </div>
     </div>
 
-    <!-- Pending requests section -->
-    <div class="card mt-3 mb-3">
-      <div class="card-header">Pending Requests</div>
-      <div class="card-body">
-        <div id="pending-requests-list">
-          <!-- Pending requests will be loaded here -->
-          {% if pending_requests %}
-            {% for request in pending_requests %}
-              <div class="pending-request">
-                <span>{{ request.from_username }}</span>
-                <button class="btn btn-sm btn-success accept-request" data-request-id="{{ request.id }}">Accept</button>
-                <button class="btn btn-sm btn-danger reject-request" data-request-id="{{ request.id }}">Reject</button>
-              </div>
-            {% endfor %}
-          {% else %}
-            <p>No pending requests</p>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-
     <!-- Shared timetables section -->
     <div class="card mt-3">
       <div class="card-header">Shared Timetables</div>

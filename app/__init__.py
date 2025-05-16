@@ -1,26 +1,37 @@
-# ========== Import Required Modules ==========
-from flask import Flask, request, render_template, redirect, url_for               
-from flask_migrate import Migrate                                                  
-from flask_sqlalchemy import SQLAlchemy                                            
-from app.config import Config                                                       
-from flask_wtf.csrf import CSRFProtect                                              
-import os                                                                           
+# ========== Import Required Modules ===========
+from flask import Flask
+from flask_wtf import CSRFProtect
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_login import LoginManager
+from app.config import Config
+from app.config import DeploymentConfig
+from app.extensions import db, login, migrate
+from app.blueprints import blueprint
+import os
 
-# ===== Initialize Flask App =====
-app = Flask(__name__)
+# Enable CSRF protection for form submissions
+csrf = CSRFProtect()
 
-# Load configuration settings from config class
-app.config.from_object(Config)
+# Function to create and configure a Flask application
+def create_app(config = DeploymentConfig):
+    # Create the Flask app instance
+    app = Flask(__name__, instance_relative_config=True)
 
-# ===== Database and Migration Setup =====
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+    # Load configuration from the specified config class (e.g., DeploymentConfig)
+    app.config.from_object(config)
 
-# ===== Security Configuration =====
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key') 
+    from app.blueprints import blueprint
+    app.register_blueprint(blueprint)
 
-# Enable CSRF protection for all forms across the app
-csrf = CSRFProtect(app)
+    # Initialize extensions with the app instance
+    db.init_app(app)
+    migrate.init_app(app, db)
+    csrf.init_app(app)
+    login.init_app(app)
+    login.login_view = 'main.index'
 
-# ===== Import Routes After Initialization =====
-from app import routes
+    # Import routes and models so they are registered with the app
+    from app import routes, models
+
+    return app

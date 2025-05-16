@@ -1,4 +1,5 @@
 /* ===== GLOBAL STYLES ===== */
+/* Define color variables for both light and dark themes using CSS custom properties */
 :root {
   --primary-color: #4e73df;       
   --secondary-color: #858796;     
@@ -37,13 +38,39 @@ body.dark-mode {
 
 /* === Navbar Customization === */
 .navbar {
+  /* Light mode navbar */
   background-color: white;                                        
   box-shadow: var(--shadow-sm);                                     
   padding: 0.5rem 1rem;
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
+.navbar-nav .nav-item.dropdown {
+    list-style: none; /* Remove any list marker */
+    position: relative;
+}
+
+.navbar-nav .dropdown-menu {
+    /* Dropdown styling */
+    min-width: 220px;
+    box-shadow: var(--shadow-sm);
+    border-radius: 0.5rem;
+    border: none;
+    margin-top: 0.5rem;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.navbar-nav .dropdown-item {
+    /* Dropdown item styling */
+    color: var(--secondary-color);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+    transition: background 0.2s, color 0.2s;
+}
+
 body.dark-mode .navbar {
+  /* Dark mode navbar */
   background-color: var(--dark-card-bg);                  
   box-shadow: var(--shadow-dark);                         
 }
@@ -59,8 +86,18 @@ body.dark-mode .nav-link {
 }
 
 .nav-link:hover {
+  /* Hover effect */
   color: var(--primary-color) !important;                   
   transform: translateY(-2px);                              
+}
+
+#pending-requests-badge {
+    font-size: 0.75rem;               /* Small badge */
+}
+
+#pending-requests-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
 }
 
 body.dark-mode .nav-link:hover {
@@ -245,7 +282,7 @@ body.dark-mode label {
   color: var(--light-text);
 }
 
-/* Card styles in dark mode */
+/* === Card and Alert Dark Mode === */
 body.dark-mode .card {
   background-color: var(--dark-card-bg);
   border-color: var(--dark-border);

@@ -1,19 +1,19 @@
-from app import db
+from flask_login import UserMixin
+from app.extensions import login, db
 from datetime import datetime
 
-# ======= UserDetails Table =======
-class UserDetails(db.Model):
+# ===== User Table =====
+class UserDetails(db.Model, UserMixin):
     __tablename__ = 'user_details'
-    id = db.Column(db.Integer, primary_key=True)                           
-    username = db.Column(db.String(200), nullable=False, unique=True)       
-    password = db.Column(db.String(200), nullable=False)                    
-    permission = db.Column(db.String(200), nullable=True)                  
-    # Relationships:
-    # - activities: One-to-many with UserActivity
-    # - time_slots: One-to-many with ActivityTimeSlot
-    # - assessments: One-to-many with Assessment
-    # - sent_requests: One-to-many with TimetableRequest (from_user)
-    # - received_requests: One-to-many with TimetableRequest (to_user)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(200), nullable=False, unique=True)
+    password = db.Column(db.String(200), nullable=False)
+    permission = db.Column(db.String(200), nullable=True)
+
+# Flask-Login: Load user by ID for session management
+@login.user_loader
+def load_user(user_id):
+    return UserDetails.query.get(int(user_id))
 
 # ===== User Activity Table =====
 class UserActivity(db.Model):
@@ -24,6 +24,7 @@ class UserActivity(db.Model):
     activity_type = db.Column(db.String(20), default='normal')                              
     color = db.Column(db.String(20), nullable=True)  
 
+    # Relationships
     user = db.relationship('UserDetails', backref=db.backref('activities', lazy=True))
     time_slots = db.relationship('ActivityTimeSlot', backref='activity', lazy=True)
 

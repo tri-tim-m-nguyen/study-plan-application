@@ -11,9 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
             sendTimetableRequest(username);
         });
     }
-    // Set up buttons and interaction handlers
-    // Setup event listeners for accepting/rejecting requests
-    setupRequestButtons();
   
     // Setup event listeners for viewing timetables
     setupTimetableViewButtons();
@@ -49,105 +46,7 @@ function sendTimetableRequest(username) {
         showNotification('An error occurred while sending the request', 'danger');
     });
 }
-// Poll the backend to check for pending and shared timetable updates  
-function checkForNewRequests() {
-    if (!document.getElementById('pending-requests-list')) return;
   
-    safeFetch('/check_requests', {
-        method: 'GET',
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            updatePendingRequestsList(data.pending_requests);
-            updateSharedTimetablesList(data.shared_timetables);
-  
-            // Show notification if there are new requests
-            if (data.new_requests && data.new_requests.length > 0) {
-                data.new_requests.forEach(req => {
-                    showNotification(`New timetable request from ${req.from_username}`, 'info');
-                });
-            }
-        }
-    })
-    .catch(error => {
-        console.error('Error checking for requests:', error);
-    });
-}
-// Display the list of pending timetable requests  
-function updatePendingRequestsList(requests) {
-    const container = document.getElementById('pending-requests-list');
-    if (!container) return;
-  
-    if (!requests || requests.length === 0) {
-        container.innerHTML = '<p>No pending requests</p>';
-        return;
-    }
-  
-    let html = '';
-    requests.forEach(request => {
-        html += `
-            <div class="pending-request mb-2">
-                <span>${request.from_username}</span>
-                <button class="btn btn-sm btn-success accept-request ms-2" data-request-id="${request.id}">Accept</button>
-                <button class="btn btn-sm btn-danger reject-request ms-1" data-request-id="${request.id}">Reject</button>
-            </div>
-        `;
-    });
-  
-    container.innerHTML = html;
-    setupRequestButtons();
-}
-// Display list of currently shared timetables  
-function updateSharedTimetablesList(shared) {
-    const container = document.getElementById('shared-timetables-list');
-    if (!container) return;
-  
-    if (!shared || shared.length === 0) {
-        container.innerHTML = '<p>No shared timetables</p>';
-        return;
-    }
-  
-    let html = '';
-    shared.forEach(item => {
-        html += `
-            <div class="shared-timetable-item mb-2">
-                <button class="btn btn-outline-primary view-timetable" data-username="${item.username}">
-                    ${item.username}
-                </button>
-                <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" 
-                     class="delink-button" 
-                     data-username="${item.username}"
-                     data-sharing-type="${item.type}"
-                     alt="Remove sharing" 
-                     title="Stop sharing timetable">
-            </div>
-        `;
-    });
-  
-    container.innerHTML = html;
-    setupTimetableViewButtons();                // Rebind view handlers
-    setupDelinkButtons();                       // Rebind delink handlers
-}
-// Set up click handlers for Accept/Reject buttons on each request  
-function setupRequestButtons() {
-    // Set up accept buttons
-    document.querySelectorAll('.accept-request').forEach(button => {
-        button.addEventListener('click', function() {
-            const requestId = this.getAttribute('data-request-id');
-            respondToRequest(requestId, 'accept');
-        });
-    });
-  
-    // Set up reject buttons
-    document.querySelectorAll('.reject-request').forEach(button => {
-        button.addEventListener('click', function() {
-            const requestId = this.getAttribute('data-request-id');
-            respondToRequest(requestId, 'reject');
-        });
-    });
-}
-// Configure buttons to load the appropriate timetable  
 function setupTimetableViewButtons() {
     // View other user's timetable
     document.querySelectorAll('.view-timetable').forEach(button => {
@@ -247,35 +146,7 @@ function delinkTimetable(username, sharingType) {
         showNotification('An error occurred', 'danger');
     });
 }
-
-// Accept or reject a pending timetable request  
-function respondToRequest(requestId, action) {
-    safeFetch('/respond_to_request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-            request_id: requestId,
-            action: action
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            showNotification(`Request ${action === 'accept' ? 'accepted' : 'rejected'} successfully`, 'success');
-            checkForNewRequests();  // Refresh the lists
-        } else {
-            showNotification(data.error || `Failed to ${action} request`, 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('An error occurred', 'danger');
-    });
-}
-
-// Load a specific user's timetable (or own if username is blank)
+  
 function loadUserTimetable(username) {
     safeFetch('/get_timetable', {
         method: 'POST',
@@ -292,7 +163,7 @@ function loadUserTimetable(username) {
             // Add userid to each activity in timetableData
             const timetableDataWithUserId = data.timetable_data.map(activity => ({
                 ...activity,
-                userid: data.userid
+                user_id: data.user_id
             }));
 
             // Update displayedTimetables
@@ -379,7 +250,6 @@ function removeUserTimetable(username) {
     }
 
     // Fetch the timetable to get the userid for the given username
-    console.log("Removing timetable for username:", username);
     safeFetch('/get_userid', {
         method: 'POST',
         headers: {
@@ -390,12 +260,11 @@ function removeUserTimetable(username) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Response from /get_userid:", data);
         if (data.status === 'success' && data.user_id) {
-            const useridToRemove = data.userid;
+            const useridToRemove = data.user_id;
             // Filter out the timetable for the specified userid
             displayedTimetables = displayedTimetables.filter(({ timetableData }) => {
-                return timetableData.every(activity => activity.userid !== useridToRemove);
+                return timetableData.every(activity => activity.user_id !== useridToRemove);
             });
 
             // Re-render the remaining timetables

@@ -57,7 +57,6 @@
 
 /* Toggle button when active (selected state) */
 .toggle.active {
-    background-color: lightgreen;
     color: white;
     border-color: black;
 }
@@ -146,21 +145,18 @@
     cursor: pointer; /* Add cursor pointer to indicate it's clickable */
 }
 
-.timeslot.selected {
-    background-color: grey;
-}
-
-.timeslot.pselected {
-    background-color: lightblue;
-}
-
 .timeslot:hover {
     border: 3px dotted black;
 }
 
-.timeslot:active {
-    background-color: lightgray; /* Color change on cell click */
+.timeslot.full {
+    background-color: green;
 }
+
+.timeslot.partial {
+    background-color: gold;
+}
+
 .activity-box select {
     margin-right: 5px;
 }

@@ -200,7 +200,7 @@ class SeleniumTests(unittest.TestCase):
         )
         print("✅ Reload confirmed unit1 persisted")
     
-    def test_6_create_assessment(self):
+    def test_5_create_assessment(self):
         # Require signup, login, and at least one unit from earlier tests
         if not SeleniumTests.created_username:
             self.skipTest("No user session available")

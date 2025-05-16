@@ -36,35 +36,36 @@
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('compare') }}">Compare Plan</a></li>
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('analytics') }}">Analytics</a></li>
                             </ul>
-                            
+
                             {% if session.username %}
+                            <ul class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle position-relative" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-envelope"></i>
-                                    <span id="pending-requests-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <span id="pending-requests-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle">
                                         0
                                     </span>
                                 </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="inboxDropdown" id="pending-requests-dropdown">
-                                    <li><p class="dropdown-item text-muted">No pending requests</p></li>
+                                <ul class="dropdown-menu" aria-labelledby="inboxDropdown" id="pending-requests-dropdown">
+                                    <li><p class="dropdown-item">No pending requests</p></li>
                                 </ul>
                             </li>
-                                <li class="nav-item mx-2">
-                                    <div class="theme-switch-wrapper">
-                                        <input type="checkbox" id="theme-toggle" />
-                                        <label for="theme-toggle" class="theme-switch">
-                                            <span class="icon sun"><i class="bi bi-sun-fill"></i></span>
-                                            <span class="icon moon"><i class="bi bi-moon-fill"></i></span>
-                                        </label>
-                                    </div>
-                                <li class="nav-item mx-2">
-                                    <span class="navbar-text">Logged in as {{ session.username }}</span>
-                                </li>
-                                <li class="nav-item mx-2">
-                                    <a class="nav-link" href="{{ url_for('logout') }}">
-                                        <i class="bi bi-box-arrow-right"></i> Logout
-                                    </a>
-                                </li>
+                            <li class="nav-item mx-2">
+                                <div class="theme-switch-wrapper">
+                                    <input type="checkbox" id="theme-toggle" />
+                                    <label for="theme-toggle" class="theme-switch">
+                                        <span class="icon sun"><i class="bi bi-sun-fill"></i></span>
+                                        <span class="icon moon"><i class="bi bi-moon-fill"></i></span>
+                                    </label>
+                                </div>
+                            <li class="nav-item mx-2">
+                                <span class="navbar-text">Logged in as {{ session.username }}</span>
+                            </li>
+                            <li class="nav-item mx-2">
+                                <a class="nav-link" href="{{ url_for('logout') }}">
+                                    <i class="bi bi-box-arrow-right"></i> Logout
+                                </a>
+                            </li>
                             </ul>
                             {% else %}
                             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">

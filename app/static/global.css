@@ -43,6 +43,28 @@ body.dark-mode {
   transition: background-color 0.3s, box-shadow 0.3s;
 }
 
+.navbar-nav .nav-item.dropdown {
+    list-style: none; /* Remove any list marker */
+    position: relative;
+}
+
+.navbar-nav .dropdown-menu {
+    min-width: 220px;
+    box-shadow: var(--shadow-sm);
+    border-radius: 0.5rem;
+    border: none;
+    margin-top: 0.5rem;
+    background-color: #fff;
+    transition: background-color 0.3s;
+}
+
+.navbar-nav .dropdown-item {
+    color: var(--secondary-color);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.25rem;
+    transition: background 0.2s, color 0.2s;
+}
+
 body.dark-mode .navbar {
   background-color: var(--dark-card-bg);
   box-shadow: var(--shadow-dark);

@@ -133,7 +133,7 @@
 
 /* Highlight border for selected/focused activity */
 .activity-box.focused {
-    border: 2px solid blue;  
+    border: 2px solid blue !important;  
 }
 
 .timeslot {
@@ -150,11 +150,11 @@
 }
 
 .timeslot.full {
-    background-color: green;
+    background-color: green !important;
 }
 
 .timeslot.partial {
-    background-color: gold;
+    background-color: gold !important;
 }
 
 .activity-box select {

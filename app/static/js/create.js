@@ -79,6 +79,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Remove from cell-to-activity mapping
                     cellActivityMap.delete(slot);
                 } else {
+                    slot.classList.remove('full', 'partial');
+                    slot.dataset.availability = "";
                     // Check if slot is already assigned to another activity
                     if (cellActivityMap.has(slot)) {
                         const previousActivity = cellActivityMap.get(slot);

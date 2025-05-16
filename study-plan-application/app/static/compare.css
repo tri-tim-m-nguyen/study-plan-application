@@ -1,0 +1,28 @@
+/* ===== Shared Timetable Item Wrapper ===== */
+
+/* Container for each shared timetable user button and its delink icon */
+.shared-timetable-item {
+    position: relative;                 
+    display: inline-block;              
+    margin-bottom: 10px;               
+  }
+
+  /* ===== Delink (Unshare) Button Styling ===== */
+  
+  /* Icon button to remove sharing (e.g., a trash/bin icon) */
+  .delink-button {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Show the delink button when hovering over the shared item */
+  .shared-timetable-item:hover .delink-button {
+    opacity: 1;
+  }

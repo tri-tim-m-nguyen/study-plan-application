@@ -1,0 +1,162 @@
+/* ===== Timetable Table Styling ===== */
+
+/* Main timetable table layout */
+.timetable {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    justify-self: left;
+}
+
+/* Table header cells */
+.timetable th {
+    border: 1px solid #ddd;
+    background-color: lightgreen;
+    border: 1px solid black;
+    height: 40px;
+    text-align: center;
+}
+
+/* Table data cells */
+.timetable td {
+    border: 1px solid black;
+}
+
+.timeslot {
+    width: 10%;
+    background-color: #fff;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+    height: 20px;
+}
+
+.timeslot.selected {
+    background-color: grey;
+}
+
+.timeslot.pselected {
+    background-color: lightblue;
+}
+
+.timeslot:hover {
+    border: 3px dotted black; /* Change border to dotted on hover */
+}
+
+/* ===== Toggle Button Styling ===== */
+
+/* Default toggle button */
+.toggle {
+    margin: 5px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    border-radius: 5px;
+    height: 30px;
+    width: 40%;
+}
+
+/* Toggle button when active (selected state) */
+.toggle.active {
+    color: white;
+    border-color: black;
+}
+
+.toggle-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
+/* ===== Activity Box (Sidebar Panel) ===== */
+
+/* Container for each activity */
+.activity-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: #f0f0f0;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    gap: 8px; /* Add spacing between elements */
+}
+
+/* Activity name text inside activity box */
+.activity-text {
+    flex-grow: 1;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+/* Color indicator box for each activity */
+.activity-color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+}
+
+/* "+" Add activity button */
+#add-button {
+    display: block;
+    width: 30px;
+    height: 30px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 20px;
+    text-align: center;
+    line-height: 26px;
+    padding: 0;
+}
+
+.hidden-color-input {
+    display: none;
+}
+
+/* Delete icon inside activity box (trash can) */
+.delete-icon {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    display: none;
+    transition: opacity 0.2s ease;
+    margin-right: 8px;
+  }
+
+/* Show delete icon on hover */
+.activity-box:hover .delete-icon {
+    display: inline;
+  }
+
+/* Highlight border for selected/focused activity */
+.activity-box.focused {
+    border: 2px solid blue;  
+}
+
+.timeslot {
+    width: 10%;
+    background-color: #fff;
+    transition: background-color 0.3s;
+    border: 1px solid black;
+    height: 20px;
+    cursor: pointer; /* Add cursor pointer to indicate it's clickable */
+}
+
+.timeslot:hover {
+    border: 3px dotted black;
+}
+
+.timeslot.full {
+    background-color: green;
+}
+
+.timeslot.partial {
+    background-color: gold;
+}
+
+.activity-box select {
+    margin-right: 5px;
+}

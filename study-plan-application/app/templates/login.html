@@ -1,0 +1,57 @@
+{# Extend the shared base layout (includes nav, styles, etc.) #}
+{% extends "base.html" %}
+
+{# ===== MAIN CONTENT BLOCK ===== #}
+{% block content %}
+<div class="auth-form-container">
+    <div class="auth-form-card">
+
+        {# Page title #}
+        <h1 class="auth-form-title">Sign In</h1>
+
+        {# ===== Login Form ===== #}
+        <form class="auth-form" action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+
+            {# ===== Username Field ===== #}
+            <div class="form-group">
+                {# Render label for username #}
+                {{ form.username.label(class="form-label") }}
+
+                {# Render input for username #}
+                {{ form.username(class="form-control", size=32) }}
+
+                {# Display validation errors for username #}
+                {% for error in form.username.errors %}
+                    <div class="error-message text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {# ===== Password Field ===== #}
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control", size=32) }}
+                {% for error in form.password.errors %}
+                    <div class="error-message text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            {# ===== Remember Me Checkbox ===== #}
+            <div class="form-group form-check">
+                {{ form.remember_me(class="form-check-input") }}
+                {{ form.remember_me.label(class="form-check-label") }}
+            </div>
+
+            {# ===== Submit Button and Link to Sign Up ===== #}
+            <div class="form-group">
+                {{ form.submit(class="btn btn-submit") }}
+
+                {# Link to signup page for new users #}
+                <div class="text-center mt-3">
+                    <a href="{{ url_for('main.signup') }}" class="account-link">Don't have an account?</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

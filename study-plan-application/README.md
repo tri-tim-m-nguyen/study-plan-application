@@ -71,6 +71,7 @@ pip install -r requirements.txt
 flask run
 
 # Run unit tests
+ing
 python3 -m unittest tests.UnitTests
 
 # Run Selenium tests

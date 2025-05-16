@@ -1,0 +1,516 @@
+/* ===== GLOBAL DARK MODE STYLES ===== */
+
+/* Base Elements Dark Mode */
+body.dark-mode {
+  color: var(--light-text);                                            
+  background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #1a1f2c 100%);
+}
+
+/* === Navbar Dark Mode === */
+body.dark-mode .navbar {
+  background-color: var(--dark-card-bg);                  
+  box-shadow: var(--shadow-dark);                         
+}
+
+body.dark-mode .nav-link {
+  color: var(--light-text) !important;                      
+}
+
+body.dark-mode .nav-link:hover {
+  color: var(--primary-dark) !important;                    
+}
+
+body.dark-mode .navbar-text {
+  color: var(--light-text);                                 
+}
+
+/* Dropdown styles in dark mode */
+body.dark-mode .navbar-nav .dropdown-menu {
+  background-color: var(--dark-card-bg);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .navbar-nav .dropdown-item {
+  color: var(--light-text);
+}
+
+body.dark-mode .navbar-nav .dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* === Content Area Dark Mode === */
+body.dark-mode .container {
+  background-color: rgba(26, 32, 44, 0.85);
+}
+
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3 {
+  color: var(--primary-dark);                               
+}
+
+body.dark-mode h1 {
+  border-bottom-color: var(--primary-dark);                 
+}
+
+/* Card element in dark mode */
+body.dark-mode .info-card {
+  background: var(--dark-card-bg);
+  box-shadow: var(--shadow-dark);
+}
+
+/* === Buttons Dark Mode === */
+body.dark-mode .btn-primary {
+  background-color: var(--primary-dark);                        
+}
+
+body.dark-mode .btn-primary:hover {
+  background-color: #2d4aa3;                                 
+}
+
+/* === Footer Dark Mode === */
+body.dark-mode footer {
+  background-color: #1a1d20;                                 
+}
+
+/* ===== Theme Switch Button Dark Mode ===== */
+body.dark-mode .theme-switch {
+  background: var(--secondary-dark);                          
+}
+
+body.dark-mode #theme-toggle:checked + .theme-switch {
+  background: var(--primary-dark);                              
+}
+
+/* ===== TIMETABLE DARK MODE STYLES ===== */
+
+/* Timetable base color in dark mode */
+body.dark-mode .timetable {
+    color: var(--light-text);
+}
+
+/* Timetable headers styled for dark background */
+body.dark-mode .timetable th {
+    background-color: #2c613b; 
+    color: var(--light-text);
+    border-color: var(--dark-border);
+}
+
+/* Timetable cell borders in dark mode */
+body.dark-mode .timetable td {
+    border-color: var(--dark-border);
+}
+
+/* Base timeslot appearance in dark mode */
+body.dark-mode .timeslot {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+    color: var(--light-text);
+}
+
+/* Selected and partially selected cell coloring */
+body.dark-mode .timeslot.selected {
+    background-color: #555555;
+}
+
+body.dark-mode .timeslot.pselected {
+    background-color: #1a617a; 
+}
+
+/* Hover effect for timetable slots */
+body.dark-mode .timeslot:hover {
+    border: 3px dotted var(--light-text);
+}
+
+/* Toggle buttons for availability settings */
+body.dark-mode .toggle {
+    background-color: #555555;
+    color: var(--light-text);
+    border-color: var(--light-text);
+}
+
+/* Active state for toggle buttons */
+body.dark-mode .toggle.active {
+    background-color: #2c613b; 
+    border-color: var(--light-text);
+}
+
+/* Activity cards in timetable */
+body.dark-mode .activity-box {
+    background: var(--dark-card-bg);
+    color: var(--light-text);
+    border: 1px solid var(--dark-border);
+}
+
+/* Color selector boxes within activity cards */
+body.dark-mode .activity-color-box {
+    border-color: var(--light-text);
+}
+
+/* "+" Add button */
+body.dark-mode #add-button {
+    background-color: var(--dark-border);
+    color: var(--light-text);
+}
+
+/* Input fields in assessment form */
+body.dark-mode .assessment-form input {
+    background-color: var(--dark-card-bg);
+    color: var(--light-text);
+    border-color: var(--dark-border);
+}
+
+/* Focus state for form inputs */
+body.dark-mode .assessment-form input:focus {
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.6);
+}
+
+/* Label text in assessment form */
+body.dark-mode .assessment-form label {
+    color: var(--light-text);
+}
+
+/* ===== COMPARE PAGE DARK MODE STYLES ===== */
+
+/* Card container appearance */
+body.dark-mode .card {
+    background-color: var(--dark-card-bg);
+    color: var(--light-text);
+    border-color: var(--dark-border);
+}
+
+/* Card headers */
+body.dark-mode .card-header {
+    background-color: #2c3136;
+    border-color: var(--dark-border);
+    color: var(--light-text);
+}
+
+/* Compare page: pending request & shared item containers */
+body.dark-mode .pending-request,
+body.dark-mode .shared-timetable-item {
+    background-color: #2c3136;
+    color: var(--light-text);
+    border-color: var(--dark-border);
+}
+
+/* Outline primary button in dark mode */
+body.dark-mode .btn-outline-primary {
+    color: #9ec5fe;
+    border-color: #9ec5fe;
+}
+
+body.dark-mode .btn-outline-primary:hover {
+    background-color: #9ec5fe;
+    color: var(--dark-card-bg);
+}
+
+/* Outline secondary button in dark mode */
+body.dark-mode .btn-outline-secondary {
+    color: #e2e3e5;
+    border-color: #e2e3e5;
+}
+
+body.dark-mode .btn-outline-secondary:hover {
+    background-color: #e2e3e5;
+    color: var(--dark-card-bg);
+}
+
+/* Invert trash icon in dark mode */
+body.dark-mode .delink-button {
+    filter: invert(1);
+}
+
+/* ===== STYLE.CSS DARK MODE STYLES ===== */
+
+/* Custom header background (styled with class .container-fluid_h1) */
+body.dark-mode .container-fluid_h1 {
+    background-color: #1a617a; 
+    color: var(--light-text);
+    border-color: var(--light-text);
+}
+
+/* Main body background override */
+body.dark-mode div.body {
+    background-color: #3b3b2b; 
+    color: var(--light-text);
+    border-color: var(--light-text);
+}
+
+/* ===== FORMS DARK MODE STYLES ===== */
+
+/* Form input base styling */
+body.dark-mode .form-control {
+    background-color: var(--dark-card-bg) !important;
+    color: var(--light-text) !important;
+    border-color: var(--dark-border) !important;
+}
+
+/* Highlight focused form input */
+body.dark-mode .form-control:focus {
+    border-color: var(--primary-dark) !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.6) !important;
+}
+
+/* Label text in dark forms */
+body.dark-mode .form-label,
+body.dark-mode label {
+    color: var(--light-text);
+}
+
+/* Primary button styling in dark mode */
+body.dark-mode .btn-primary {
+    background-color: var(--primary-dark);
+    color: #fff;
+}
+
+body.dark-mode .btn-primary:hover {
+    background-color: #2d4aa3;
+}
+
+/* General button styles in dark mode (Success and Danger buttons for accept/reject) */
+body.dark-mode .btn-success {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+body.dark-mode .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+body.dark-mode .btn-success:hover {
+    background-color: #157347;
+    border-color: #146c43;
+}
+
+body.dark-mode .btn-danger:hover {
+    background-color: #bb2d3b;
+    border-color: #b02a37;
+}
+
+/* ===== ALERT / NOTIFICATION STYLES ===== */
+
+/* General alert box base style */
+body.dark-mode .alert {
+    background-color: var(--dark-card-bg);
+    color: var(--light-text);
+    border-color: var(--dark-border);
+}
+
+/* Success alert */
+body.dark-mode .alert-success {
+    background-color: #051b11;
+    color: #75b798;
+    border-color: #75b798;
+}
+
+/* Error alert */
+body.dark-mode .alert-danger {
+    background-color: #2c0b0e;
+    color: #ea868f;
+    border-color: #ea868f;
+}
+
+/* Warning alert */
+body.dark-mode .alert-warning {
+    background-color: #332701;
+    color: #ffda6a;
+    border-color: #ffda6a;
+}
+
+/* Info alert */
+body.dark-mode .alert-info {
+    background-color: #032830;
+    color: #6edff6;
+    border-color: #6edff6;
+}
+
+/* ===== TABLE DARK MODE ===== */
+
+/* Additional styles for table elements */
+body.dark-mode table {
+    color: var(--light-text);
+    border-color: var(--dark-border);
+}
+
+body.dark-mode .table {
+    color: var(--light-text);
+}
+
+/* Stripe alternate rows with subtle contrast */
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Hover effect for rows */
+body.dark-mode .table-hover > tbody > tr:hover {
+    background-color: rgba(255, 255, 255, 0.075);
+}
+
+/* ===== DROPDOWN MENU DARK MODE ===== */
+
+/* Dropdown menus in dark mode */
+body.dark-mode .dropdown-menu {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+}
+
+/* Dropdown item text */
+body.dark-mode .dropdown-item {
+    color: var(--light-text);
+}
+
+/* Hover effect for dropdown items */
+body.dark-mode .dropdown-item:hover,
+body.dark-mode .dropdown-item:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--light-text);
+}
+
+/* ===== MODALS DARK MODE ===== */
+
+body.dark-mode .modal-content {
+    background-color: var(--dark-card-bg);
+    border-color: var(--dark-border);
+}
+
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer {
+    border-color: var(--dark-border);
+}
+
+body.dark-mode .modal-title {
+    color: var(--light-text);
+}
+
+body.dark-mode .close {
+    color: var(--light-text);
+    text-shadow: none;
+}
+
+/* ===== NAVBAR TOGGLER ICON ===== */
+
+/* Invert hamburger icon for dark navbar */
+body.dark-mode .navbar-toggler-icon {
+    filter: invert(1);
+}
+
+/* ===== ASSESSMENTS PAGE DARK MODE ===== */
+body.dark-mode .assessment-flex .container {
+  background-color: rgba(26, 32, 44, 0.9);
+}
+
+body.dark-mode .input-container,
+body.dark-mode .summary-container {
+  background: var(--dark-card-bg) !important;
+  border: 1px solid var(--dark-border);
+}
+
+body.dark-mode .assessment-table {
+  background: var(--dark-card-bg);
+}
+
+body.dark-mode .assessment-table th {
+  background: #2c3136;
+  color: var(--light-text);
+  border-bottom-color: var(--dark-border);
+}
+
+body.dark-mode .assessment-table td {
+  color: var(--light-text);
+  border-bottom-color: var(--dark-border);
+}
+
+body.dark-mode .assessment-table tr:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .assessment-table .score-cell {
+  color: #9ec5fe;
+}
+
+body.dark-mode .assessment-table .percent-cell {
+  color: #75b798;
+}
+
+body.dark-mode .add-btn {
+  background: linear-gradient(90deg, #375bc8 0%, #2a6f8f 100%);
+}
+
+body.dark-mode .add-btn:hover {
+  background: linear-gradient(90deg, #2d4aa3 0%, #1a617a 100%);
+}
+
+/* Input fields - generic */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="email"],
+body.dark-mode select {
+  background-color: var(--dark-card-bg) !important;
+  color: var(--light-text) !important;
+  border-color: var(--dark-border) !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode select option {
+  color: #a0aec0 !important;
+}
+
+/* ===== LOGIN/SIGNUP DARK MODE ===== */
+body.dark-mode .auth-form-container {
+  background: var(--dark-bg) !important;
+}
+
+body.dark-mode .auth-form-card {
+  background: var(--dark-card-bg);
+  border: 1px solid var(--dark-border);
+  color: var(--light-text);
+}
+
+body.dark-mode .auth-form-title {
+  color: var(--light-text);
+  border-color: var(--primary-dark);
+}
+
+/* Specific login/signup form styling */
+body.dark-mode .auth-form input {
+  background-color: var(--dark-card-bg) !important;
+  color: var(--light-text) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+body.dark-mode .auth-form input:focus {
+  border-color: var(--primary-dark) !important;
+  box-shadow: 0 0 0 0.2rem rgba(55, 91, 200, 0.25) !important;
+}
+
+body.dark-mode .account-link {
+  color: #9ec5fe;
+}
+
+body.dark-mode .account-link:hover {
+  color: #7aa6d6;
+}
+
+body.dark-mode .btn-submit {
+  background-color: var(--primary-dark);
+  color: var(--light-text);
+}
+
+body.dark-mode .form-check-label {
+  color: var(--light-text);
+}
+
+/* === Card and Alert Dark Mode === */
+body.dark-mode .card {
+  background-color: var(--dark-card-bg);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: var(--dark-border);
+}

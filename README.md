@@ -51,28 +51,49 @@ Welcome to our Study Plan Application! This website helps university students ba
 ```bash
 # Clone repository
 https://github.com/tri-tim-m-nguyen/study-plan-application.git
+```
 
-# Create a virtual environment for windows (command prompt)
+```bash
+# Create a virtual environment for Windows (command prompt)
 python -m venv venv
 venv\Scripts\activate
 
-# Create a virtual environment for windows (power shell)
+# Create a virtual environment for Windows (powershell)
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
 # Create a virtual environment for mac/linux
 python3 -m venv venv
 source venv/bin/activate
+```
 
+```bash
 # Install dependencies
 pip install -r requirements.txt
+```
 
+```bash
+# Set Environment Variable for Windows (command prompt)
+set SECRET_KEY=Greatest study plan creater
+
+# Set Environment Variable for Windows (powershell)
+$env:SECRET_KEY = "Greatest study plan creater"
+
+# Set Environment Variable for Windows (command prompt)
+export SECRET_KEY="Greatest study plan creater"
+```
+
+```bash
 # Run the Flask application
 flask run
+```
 
+```bash
 # Run unit tests
 python3 -m unittest tests.UnitTests
+```
 
+```bash
 # Run Selenium tests
 python3 -m unittest tests.SeleniumTests
 ```

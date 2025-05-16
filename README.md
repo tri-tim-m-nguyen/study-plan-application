@@ -1,5 +1,10 @@
 # study-plan-application
 
+Group 37
+UWA ID | Name | Github Username
+--- | --- | ---
+23897304 | Tri Nguyen | Tri-tim-m-nguyen
+
 Welcome to our website.
 
 EXPLANATION ON HOW THE WEBSITE WORKS AND ALL PAGES:

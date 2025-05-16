@@ -133,6 +133,7 @@ function delinkTimetable(username, sharingType) {
             checkForNewRequests();
             
             // If currently viewing that user's timetable, switch to own timetable
+            removeUserTimetable(username)
             const activeButton = document.querySelector('.view-timetable.btn-primary');
             if (activeButton && activeButton.getAttribute('data-username') === username) {
                 document.getElementById('view-own-timetable').click();

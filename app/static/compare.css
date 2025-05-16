@@ -11,13 +11,13 @@
   
   /* Icon button to remove sharing (e.g., a trash/bin icon) */
   .delink-button {
-    position: absolute;                  
-    right: -30px;                        
-    top: 50%;                            
-    transform: translateY(-50%);         
-    opacity: 0;                          
-    transition: opacity 0.2s ease;       
-    cursor: pointer;                     
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    cursor: pointer;
     width: 20px;
     height: 20px;
   }

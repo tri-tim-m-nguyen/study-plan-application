@@ -158,15 +158,15 @@ body.dark-mode div.body {
 
 /* Form input base styling */
 body.dark-mode .form-control {
-    background-color: var(--dark-card-bg);
-    color: var(--light-text);
-    border-color: var(--dark-border);
+    background-color: var(--dark-card-bg) !important;
+    color: var(--light-text) !important;
+    border-color: var(--dark-border) !important;
 }
 
 /* Highlight focused form input */
 body.dark-mode .form-control:focus {
-    border-color: var(--primary-dark);
-    box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.6);
+    border-color: var(--primary-dark) !important;
+    box-shadow: 0 0 0 0.2rem rgba(102, 175, 233, 0.6) !important;
 }
 
 /* Label text in dark forms */
@@ -284,6 +284,7 @@ body.dark-mode .dropdown-item:focus {
     background-color: rgba(255, 255, 255, 0.1);
     color: var(--light-text);
 }
+
 /* ===== MODALS DARK MODE ===== */
 
 body.dark-mode .modal-content {
@@ -304,9 +305,128 @@ body.dark-mode .close {
     color: var(--light-text);
     text-shadow: none;
 }
+
 /* ===== NAVBAR TOGGLER ICON ===== */
 
 /* Invert hamburger icon for dark navbar */
 body.dark-mode .navbar-toggler-icon {
     filter: invert(1);
+}
+
+/* ===== ASSESSMENTS PAGE DARK MODE ===== */
+body.dark-mode .assessment-flex .container {
+  background-color: rgba(26, 32, 44, 0.9);
+}
+
+body.dark-mode .input-container,
+body.dark-mode .summary-container {
+  background: var(--dark-card-bg) !important;
+  border: 1px solid var(--dark-border);
+}
+
+body.dark-mode .assessment-table {
+  background: var(--dark-card-bg);
+}
+
+body.dark-mode .assessment-table th {
+  background: #2c3136;
+  color: var(--light-text);
+  border-bottom-color: var(--dark-border);
+}
+
+body.dark-mode .assessment-table td {
+  color: var(--light-text);
+  border-bottom-color: var(--dark-border);
+}
+
+body.dark-mode .assessment-table tr:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dark-mode .assessment-table .score-cell {
+  color: #9ec5fe;
+}
+
+body.dark-mode .assessment-table .percent-cell {
+  color: #75b798;
+}
+
+body.dark-mode .add-btn {
+  background: linear-gradient(90deg, #375bc8 0%, #2a6f8f 100%);
+}
+
+body.dark-mode .add-btn:hover {
+  background: linear-gradient(90deg, #2d4aa3 0%, #1a617a 100%);
+}
+
+/* Input fields - generic */
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"],
+body.dark-mode input[type="password"],
+body.dark-mode input[type="email"],
+body.dark-mode select {
+  background-color: var(--dark-card-bg) !important;
+  color: var(--light-text) !important;
+  border-color: var(--dark-border) !important;
+}
+
+body.dark-mode input::placeholder,
+body.dark-mode select option {
+  color: #a0aec0 !important;
+}
+
+/* ===== LOGIN/SIGNUP DARK MODE ===== */
+body.dark-mode .auth-form-container {
+  background: var(--dark-bg) !important;
+}
+
+body.dark-mode .auth-form-card {
+  background: var(--dark-card-bg);
+  border: 1px solid var(--dark-border);
+  color: var(--light-text);
+}
+
+body.dark-mode .auth-form-title {
+  color: var(--light-text);
+  border-color: var(--primary-dark);
+}
+
+/* Specific login/signup form styling */
+body.dark-mode .auth-form input {
+  background-color: var(--dark-card-bg) !important;
+  color: var(--light-text) !important;
+  border: 1px solid var(--dark-border) !important;
+}
+
+body.dark-mode .auth-form input:focus {
+  border-color: var(--primary-dark) !important;
+  box-shadow: 0 0 0 0.2rem rgba(55, 91, 200, 0.25) !important;
+}
+
+body.dark-mode .account-link {
+  color: #9ec5fe;
+}
+
+body.dark-mode .account-link:hover {
+  color: #7aa6d6;
+}
+
+body.dark-mode .btn-submit {
+  background-color: var(--primary-dark);
+  color: var(--light-text);
+}
+
+body.dark-mode .form-check-label {
+  color: var(--light-text);
+}
+
+/* === Card and Alert Dark Mode === */
+body.dark-mode .card {
+  background-color: var(--dark-card-bg);
+  border-color: var(--dark-border);
+}
+
+body.dark-mode .card-header {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: var(--dark-border);
 }

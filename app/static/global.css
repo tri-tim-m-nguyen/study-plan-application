@@ -275,41 +275,6 @@ body.dark-mode #theme-toggle:checked + .theme-switch {
   opacity: 0;                                                   
 }
 
-/* Additional dark mode form styling */
-body.dark-mode .form-control {
-  background-color: var(--dark-card-bg);
-  color: var(--light-text);
-  border-color: var(--dark-border);
-}
-
-body.dark-mode .form-control:focus {
-  border-color: var(--primary-dark);
-  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);           
-}
-
-body.dark-mode .form-label,
-body.dark-mode label {
-  color: var(--light-text);
-}
-
-/* === Card and Alert Dark Mode === */
-body.dark-mode .card {
-  background-color: var(--dark-card-bg);
-  border-color: var(--dark-border);
-}
-
-body.dark-mode .card-header {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-color: var(--dark-border);
-}
-
-/* Alert styles in dark mode */
-body.dark-mode .alert {
-  background-color: var(--dark-card-bg);
-  color: var(--light-text);
-  border-color: var(--dark-border);
-}
-
 /* Responsive styles */
 @media (max-width: 768px) {
   .theme-switch {

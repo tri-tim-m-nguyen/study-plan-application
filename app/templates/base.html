@@ -15,6 +15,7 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='global.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='darkmode.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='accounts_log.css') }}">
+        <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
         {% block head_scripts %}{% endblock %}
 
     </head>
@@ -37,7 +38,19 @@
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('main.compare') }}">Compare Plan</a></li>
                                 <li class="nav-item m-2"><a class="nav-link" href="{{ url_for('main.analytics') }}">Analytics</a></li>
                             </ul>
-                            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
+
+                            <ul class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle position-relative" href="#" id="inboxDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-envelope"></i>
+                                        <span id="pending-requests-badge" class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                                            0
+                                        </span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="inboxDropdown" id="pending-requests-dropdown">
+                                        <li><p class="dropdown-item">No pending requests</p></li>
+                                    </ul>
+                                </li>
                                 <li class="nav-item mx-2">
                                     <div class="theme-switch-wrapper">
                                         <input type="checkbox" id="theme-toggle" />

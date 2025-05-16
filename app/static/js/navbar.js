@@ -15,13 +15,6 @@ function checkForNewRequests() {
         if (data.status === 'success') {
             updatePendingRequestsList(data.pending_requests);
             updateSharedTimetablesList(data.shared_timetables);
-  
-            // Show notification if there are new requests
-            if (data.new_requests && data.new_requests.length > 0) {
-                data.new_requests.forEach(req => {
-                    showNotification(`New timetable request from ${req.from_username}`, 'info');
-                });
-            }
         }
     })
     .catch(error => {

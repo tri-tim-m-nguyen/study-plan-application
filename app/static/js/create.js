@@ -264,6 +264,8 @@ function addActivity(name = null, color = null, type = 'normal') {
         saveTimeTable(false);
     });
 
+    const fullyAvailableToggle = document.getElementById('toggle-Available');
+    const partiallyAvailableToggle = document.getElementById('toggle-pAvailable');
     // Focus on activity box on click
     activityBox.addEventListener('click', (e) => {
         // Prevent triggering when clicking on delete icon, color box or color input
@@ -274,6 +276,11 @@ function addActivity(name = null, color = null, type = 'normal') {
             focusedActivity = null;
             activityBox.classList.remove('focused');
         } else {
+            availabilityState = null;
+            fullyAvailableToggle.classList.remove('active');
+            fullyAvailableToggle.style.backgroundColor = "";
+            partiallyAvailableToggle.classList.remove('active');
+            partiallyAvailableToggle.style.backgroundColor = "";
             // Set focus
             if (focusedActivity) {
                 focusedActivity.classList.remove('focused'); // Remove class from previously focused activity
@@ -323,9 +330,11 @@ function loadSavedActivities() {
             const cell = findCell(slot.day_of_week, slot.start_time);
             if (cell) {
                 if (slot.activity_number === "full") {
-                    cell.classList.add('full'); // Add the full class
+                    cell.classList.add('full'); 
+                    cell.dataset.availability = "full";
                 } else if (slot.activity_number === "partial") {
-                    cell.classList.add('partial'); // Add the partial class
+                    cell.classList.add('partial'); 
+                    cell.dataset.availability = "partial";
                 }
             }
         } else {

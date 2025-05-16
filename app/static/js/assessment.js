@@ -250,6 +250,10 @@ function saveAssessments() {
         document.getElementById('weightError').textContent = 'Weightage must be between 0 and 100.';
         hasError = true;
     }
+    if (scoreObtained > scoreTotal) {
+        document.getElementById('obtainedError').textContent = 'Obtained score cannot exceed total score.';
+        hasError = true;
+    }
 
     if (hasError) return;
 

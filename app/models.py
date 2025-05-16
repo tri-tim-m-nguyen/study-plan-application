@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from app.extensions import login, db
 from datetime import datetime
 
+# ===== User Table =====
 class UserDetails(db.Model, UserMixin):
     __tablename__ = 'user_details'
     id = db.Column(db.Integer, primary_key=True)
@@ -9,21 +10,25 @@ class UserDetails(db.Model, UserMixin):
     password = db.Column(db.String(200), nullable=False)
     permission = db.Column(db.String(200), nullable=True)
 
+# Flask-Login: Load user by ID for session management
 @login.user_loader
 def load_user(user_id):
     return UserDetails.query.get(int(user_id))
 
+# ===== User Activity Table =====
 class UserActivity(db.Model):
     __tablename__ = 'user_activity'
-    activity_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)
-    activity_number = db.Column(db.String(200), nullable=False)
-    activity_type = db.Column(db.String(20), default='normal') 
-    color = db.Column(db.String(20), nullable=True)  # Store the hex color code
+    activity_id = db.Column(db.Integer, primary_key=True)                                   
+    user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)       
+    activity_number = db.Column(db.String(200), nullable=False)                             
+    activity_type = db.Column(db.String(20), default='normal')                              
+    color = db.Column(db.String(20), nullable=True)  
 
+    # Relationships
     user = db.relationship('UserDetails', backref=db.backref('activities', lazy=True))
     time_slots = db.relationship('ActivityTimeSlot', backref='activity', lazy=True)
 
+# ===== Time Slots Table =====
 class ActivityTimeSlot(db.Model):
     __tablename__ = 'activity_time_slot'
     id = db.Column(db.Integer, primary_key=True)
@@ -36,6 +41,7 @@ class ActivityTimeSlot(db.Model):
 
     user = db.relationship('UserDetails', backref=db.backref('time_slots', lazy=True))
 
+# ===== Timetable Request Table =====
 class TimetableRequest(db.Model):
     __tablename__ = 'timetable_request'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,15 +55,16 @@ class TimetableRequest(db.Model):
     from_user = db.relationship('UserDetails', foreign_keys=[from_user_id], backref='sent_requests')
     to_user = db.relationship('UserDetails', foreign_keys=[to_user_id], backref='received_requests')
 
+# ===== Assessments Table =====
 class Assessment(db.Model):
     __tablename__='assessments'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user_details.id'), nullable=False)
-    unit = db.Column(db.String(100), nullable=False)
-    name = db.Column(db.String(100), nullable=False)
-    score_obtained = db.Column(db.Float, nullable=False)
-    score_total = db.Column(db.Float, nullable=False)
-    weightage = db.Column(db.Float, nullable=False)
-    position = db.Column(db.Integer, nullable=False, default=0)
+    unit = db.Column(db.String(100), nullable=False)                                  
+    name = db.Column(db.String(100), nullable=False)                                    
+    score_obtained = db.Column(db.Float, nullable=False)                               
+    score_total = db.Column(db.Float, nullable=False)                                   
+    weightage = db.Column(db.Float, nullable=False)                                     
+    position = db.Column(db.Integer, nullable=False, default=0)                         
 
     user = db.relationship('UserDetails', backref=db.backref('assessments', lazy=True))

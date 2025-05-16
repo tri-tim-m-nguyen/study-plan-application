@@ -1,21 +1,34 @@
+/* ===== Layout Spacing ===== */
+
+/* Adds spacing from the top for the main content container */
 .container {
   margin-top: 20px;
 }
 
+/* ===== Card Styling ===== */
+
+/* Adds a subtle shadow and bottom margin to cards for visual separation */
 .card {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
 
+/* Styles the header section of cards */
 .card-header {
-  background-color: #f8f9fa;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  background-color: #f8f9fa;        
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);        
 }
 
+/* ===== Chart Display ===== */
+
+/* Restricts canvas height for responsive chart rendering */
 canvas {
-  max-height: 400px;
+  max-height: 400px;        
 }
 
+/* ===== Table Styling ===== */
+
+/* Removes default top border on table headers */
 .table th {
   border-top: none;
 }

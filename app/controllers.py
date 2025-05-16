@@ -7,6 +7,7 @@ from app import db
 from sqlalchemy import func
 
 # --- Auth Controllers ---
+# Handles user registration
 def try_signup_user(form):
     if 'username' in session:
         flash('Logout before creating a new account.', 'warning')
@@ -25,7 +26,7 @@ def try_signup_user(form):
         flash('Registration successful!', 'success')
         return redirect(url_for('main.home'))
 
-
+# Manages login by checking credentials and initiating a user session
 def try_login_user(form):
     if 'username' in session:
         flash('Another user is already logged in. Please log out first.', 'warning')
@@ -40,7 +41,7 @@ def try_login_user(form):
             return redirect(url_for('main.home'))
         flash('Invalid username or password', 'danger')
 
-
+# Logs out the user by clearing session data.
 def logout_user_controller():
     session.pop('username', None)
     session.pop('user_id', None)
@@ -48,6 +49,7 @@ def logout_user_controller():
     return redirect(url_for('main.home'))
 
 # --- Timetable ---
+# Renders the timetable creation view with existing activity data
 def create_controller():
     user_activities = []
     if 'user_id' in session:
@@ -67,7 +69,7 @@ def create_controller():
             })
     return render_template('create.html', title='Create', user_activities=user_activities)
 
-
+# Saves the full timetable by clearing old data and inserting the new schedule.
 def save_timetable_controller():
     if 'username' not in session:
         return jsonify({'error': 'Not logged in'}), 403
@@ -109,6 +111,7 @@ def save_timetable_controller():
     return jsonify({'status': 'success'})
 
 # --- Compare ---
+# Displays pending and accepted timetable requests for the user.
 def compare_controller():
     uid = session['user_id']
     pending = TimetableRequest.query.filter_by(to_user_id=uid, status='pending').all()
@@ -122,7 +125,7 @@ def compare_controller():
 
     return render_template('compare.html', title='Compare', pending_requests=pending_requests, shared_timetables=shared)
 
-
+# Sends a timetable request to another user if one doesn't already exist.
 def request_timetable_controller():
     uid = session['user_id']
     username = request.get_json().get('username')
@@ -146,6 +149,7 @@ def request_timetable_controller():
     return jsonify({'status': 'success'})
 
 # --- Additional Controllers ---
+# Returns pending and accepted timetable sharing statuses
 def check_requests_controller():
     uid = session['user_id']
     requests = TimetableRequest.query.filter_by(to_user_id=uid, status='pending').all()
@@ -168,6 +172,7 @@ def check_requests_controller():
         'new_requests': new_requests
     })
 
+# Accepts or rejects a timetable sharing request.
 def respond_to_request_controller():
     uid = session['user_id']
     data = request.get_json()
@@ -185,6 +190,7 @@ def respond_to_request_controller():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Returns timetable data for the user or shared users with access.
 def get_timetable_controller():
     uid = session['user_id']
     data = request.get_json()
@@ -220,6 +226,7 @@ def get_timetable_controller():
 
     return jsonify({'status': 'success', 'timetable_data': timetable_data, 'user_id': user_id, 'username': username})
 
+# Removes timetable sharing between users.
 def delink_timetable_controller():
     uid = session['user_id']
     data = request.get_json()
@@ -242,6 +249,7 @@ def delink_timetable_controller():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Prepares and renders visual analytics on activity and assessment performance.
 def analytics_controller():
     activities = []
     if 'user_id' in session:
@@ -263,6 +271,7 @@ def analytics_controller():
     averages = [{'unit': unit, 'average': round(avg, 2)} for unit, avg in results]
     return render_template('analytics.html', title='Analytics', user_activities=activities, assessment_averages=averages)
 
+# Renders assessment page
 def assessments_controller():
     uid = session['user_id']
     units = sorted(set([a.activity_number for a in UserActivity.query.filter_by(user_id=uid, activity_type='unit').all()]))
@@ -295,6 +304,7 @@ def assessments_controller():
         })
     return render_template('assessments.html', title='Assessment', units=units, saved_assessments=assessments_by_unit)
 
+# Deletes an assessment based on name and unit.
 def delete_assessment_controller():
     uid = session['user_id']
     data = request.get_json()
@@ -306,6 +316,7 @@ def delete_assessment_controller():
         return jsonify({'status': 'success'})
     return jsonify({'status': 'not_found'}), 404
 
+# Updates an existing assessment with new data
 def update_assessment_controller():
     uid = session['user_id']
     data = request.get_json()
@@ -323,6 +334,7 @@ def update_assessment_controller():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Reorders assessments in a unit for consistent display
 def reorder_assessments_controller():
     uid = session['user_id']
     data = request.get_json()
@@ -334,6 +346,7 @@ def reorder_assessments_controller():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+# Returns user ID based on username
 def get_userid_controller():
     data = request.get_json()
     username = data.get('username')
@@ -342,6 +355,7 @@ def get_userid_controller():
         return jsonify({'error': 'User not found'}), 404
     return jsonify({'status': 'success', 'user_id': user.id})
 
+# Creates a new user with a hashed password.
 def register_user(username, password):
     from werkzeug.security import generate_password_hash
     user = UserDetails(username=username, password=generate_password_hash(password))
@@ -349,13 +363,16 @@ def register_user(username, password):
     db.session.commit()
     return user
 
+# Verifies credentials
 def login_user(username, password):
     user = UserDetails.query.filter_by(username=username).first()
     return user if user and check_password_hash(user.password, password) else None
 
+# Clears the session.
 def logout_user():
     session.clear()
 
+# Function to save timetable data in bulk
 def save_timetable(user_id, activities):
     UserActivity.query.filter_by(user_id=user_id).delete()
     db.session.commit()
@@ -377,6 +394,7 @@ def save_timetable(user_id, activities):
     db.session.commit()
     return {'status': 'success'}
 
+# Function to create and store an assessment entry.
 def create_assessment(user_id, unit, name, score_obtained, score_total, weightage):
     assessment = Assessment(
         user_id=user_id,

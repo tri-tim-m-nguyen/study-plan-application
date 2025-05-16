@@ -1,19 +1,34 @@
+{# Extend the base layout template #}
 {% extends "base.html" %}
 
+{# ===== HEAD BLOCK: Include JS and CSS specific to timetable and comparison features ===== #}
 {% block head_scripts %}
+  
+  {# JavaScript for interactive timetable selection #}
   <script src="{{ url_for('static', filename='js/timetable.js') }}"></script>
+
+  {# JavaScript for handling comparison-related logic (requests, sharing, etc.) #}
   <script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+
+  {# CSS styles for timetable layout #}
   <link rel="stylesheet" href="{{ url_for('static', filename='timetable.css') }}">
+
+  {# CSS styles for compare page UI components #}
   <link rel="stylesheet" href="{{ url_for('static', filename='compare.css') }}">
 {% endblock %}
 
+{# Set the page title in the browser tab #}
 {% block title %}Compare Timetables{% endblock %}
 
+{# ===== MAIN CONTENT BLOCK ===== #}
 {% block content %}
 
 <div class="row">
+
+  {# Include the base timetable grid structure from timetable.html #}
   {% include 'timetable.html' %}
 
+  {# Sidebar column for controls, forms, and shared data #}
   <div class="col-md-4">
 
     <!-- Request timetable form -->
@@ -42,6 +57,8 @@
                 <button class="btn btn-outline-primary view-timetable" data-username="{{ shared.username }}">
                   {{ shared.username }}
                 </button>
+                
+                {# Icon to remove/unshare timetable #}
                 <img src="https://cdn-icons-png.flaticon.com/512/1214/1214428.png" 
                      class="delink-button" 
                      data-username="{{ shared.username }}"

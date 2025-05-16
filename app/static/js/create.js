@@ -90,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                     
+                    // Assign slot to current activity
                     // Set the new color
                     slot.style.backgroundColor = activityColor;
                     
@@ -127,6 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    // Add activity when "+" button is clicked
     // Add button click handler
     if (addButton) {
         addButton.addEventListener('click', () => {
@@ -145,6 +147,10 @@ document.addEventListener('DOMContentLoaded', function () {
     loadSavedActivities();
 });
 
+/**
+ * Adds a new activity block to the UI.
+ * Supports two types: 'normal' and 'unit'.
+ */
 function addActivity(name = null, color = null, type = 'normal') {
     if (activityCount >= 10) return null;
 
@@ -164,6 +170,7 @@ function addActivity(name = null, color = null, type = 'normal') {
     activityBox.dataset.activityName = activityId;
     activityBox.dataset.activityType = type; // Stores the type of activity
 
+    // Delete icon for removing an activity
     const deleteIcon = document.createElement('img');
     deleteIcon.src = 'https://cdn-icons-png.flaticon.com/512/1214/1214428.png'; // red bin icon
     deleteIcon.alt = 'Delete';
@@ -206,12 +213,13 @@ function addActivity(name = null, color = null, type = 'normal') {
         // Automatically save the timetable to update the database
         saveTimeTable();
     };
-
+    // Editable activity name
     const activityText = document.createElement('div');
     activityText.className = 'activity-text';
     activityText.contentEditable = false;
     activityText.textContent = activityId;
 
+    // Dropdown to select activity type (normal/unit)
     const typeSelector = document.createElement('select');
     typeSelector.className = 'form-select form-select-sm';
     typeSelector.style.width = '90px';
@@ -234,7 +242,7 @@ function addActivity(name = null, color = null, type = 'normal') {
         }
         activityBox.dataset.activityType = typeSelector.value;  
     });
-
+    // Color box and input
     const colorBox = document.createElement('div');
     colorBox.className = 'activity-color-box';
     colorBox.style.backgroundColor = color || getRandomColor();
@@ -297,7 +305,7 @@ function addActivity(name = null, color = null, type = 'normal') {
     activityText.addEventListener('blur', () => {
         activityText.contentEditable = false;
     });
-
+    // Add activity to DOM
     activityBox.appendChild(activityText);
     activityBox.appendChild(deleteIcon);
     activityBox.appendChild(typeSelector);
@@ -315,6 +323,9 @@ function addActivity(name = null, color = null, type = 'normal') {
     return activityBox;
 }
 
+/**
+ * Load previously saved activities (from database) and recreate them on screen.
+ */
 // Function to load saved activities from database
 function loadSavedActivities() {
     // Use window.userSavedActivities instead of savedActivities
@@ -371,7 +382,9 @@ function loadSavedActivities() {
         });
     }
 }
-
+/**
+ * Gather all activity + time slot mappings into an array for saving to backend.
+ */
 function collectTimetableData() {
     const data = [];
     const activityColors = {}; // Store colors for each activity

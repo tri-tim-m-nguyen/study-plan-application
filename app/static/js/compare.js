@@ -2,7 +2,7 @@ let displayedTimetables = []; // Array to hold all displayed timetables
 
 // compare.js - Specific JavaScript for compare.html page
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle request form submission
+    // Submit timetable request when form is submitted
     const requestForm = document.getElementById('request-timetable-form');
     if (requestForm) {
         requestForm.addEventListener('submit', function(e) {
@@ -16,13 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
     setupTimetableViewButtons();
   
     // Setup event listeners for delinking timetables
-    setupDelinkButtons();
+    setupDelinkButtons();                               // Unshare timetable buttons
   
-    // Check for new requests periodically
+    // Check for new requests periodically (// Automatically check for new requests every 30 seconds)
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000); // Check every 30 seconds
 });
-  
+
+// Send timetable share request to another user
 function sendTimetableRequest(username) {
     safeFetch('/request_timetable', {
         method: 'POST',
@@ -95,7 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-  
+
+
+// Set up click handler for removing shared timetable access
 function setupDelinkButtons() {
     // Setup delink/trash buttons
     document.querySelectorAll('.delink-button').forEach(button => {
@@ -109,7 +112,8 @@ function setupDelinkButtons() {
         });
     });
 }
-  
+
+// Send request to backend to revoke shared timetable access
 function delinkTimetable(username, sharingType) {
     safeFetch('/delink_timetable', {
         method: 'POST',
@@ -177,7 +181,8 @@ function loadUserTimetable(username) {
         showNotification('An error occurred while loading the timetable', 'danger');
     });
 }
-  
+
+// Render the timetable slots in the UI using provided data
 function displayTimetable(timetableData) {
     // Clear existing timetable
     const timeslots = document.querySelectorAll('.timeslot');
@@ -275,6 +280,7 @@ function removeUserTimetable(username) {
     });
 }
         
+// Utility to show Bootstrap alert-style notifications  
 function showNotification(message, type) {
     const notificationsContainer = document.getElementById('notifications');
     if (!notificationsContainer) return;
@@ -289,7 +295,7 @@ function showNotification(message, type) {
 
     notificationsContainer.appendChild(notification);
 
-    // Auto-remove after 5 seconds
+    // Auto-remove notification after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => {

@@ -1,44 +1,46 @@
 /* ===== GLOBAL STYLES ===== */
+/* Define color variables for both light and dark themes using CSS custom properties */
 :root {
-  --primary-color: #4e73df;       /* Bootstrap primary blue */
-  --secondary-color: #858796;     /* Bootstrap gray */
-  --light-bg: #f8f9fa;            /* Light background */
-  --dark-bg: #212529;             /* Dark background */
-  --dark-text: #212529;           /* Dark text for readability */
-  --light-text: #f8f9fa;          /* Light text for dark mode */
+  --primary-color: #4e73df;       
+  --secondary-color: #858796;     
+  --light-bg: #f8f9fa;            
+  --dark-bg: #212529;             
+  --dark-text: #212529;           
+  --light-text: #f8f9fa;         
   --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
   --shadow-dark: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
   
   /* Dark mode colors */
-  --primary-dark: #375bc8;        /* Darker primary */
-  --secondary-dark: #6c757d;      /* Darker secondary */
-  --dark-card-bg: #343a40;        /* Card background in dark mode */
-  --dark-border: #495057;         /* Border color in dark mode */
+  --primary-dark: #375bc8;       
+  --secondary-dark: #6c757d;       
+  --dark-card-bg: #343a40;        
+  --dark-border: #495057;         
 }
 
 /* === Base Elements === */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--dark-text);
-  background-color: var(--light-bg);
+  color: var(--dark-text);                                             
+  background-color: var(--light-bg);                                   
   line-height: 1.6;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s;                       
 }
 
 /* Dark mode base */
 body.dark-mode {
-  color: var(--light-text);
-  background-color: var(--dark-bg);
+  color: var(--light-text);                                            
+  background-color: var(--dark-bg);                                    
 }
 
 /* === Navbar Customization === */
 .navbar {
-  background-color: white;
-  box-shadow: var(--shadow-sm);
+  /* Light mode navbar */
+  background-color: white;                                        
+  box-shadow: var(--shadow-sm);                                     
   padding: 0.5rem 1rem;
   transition: background-color 0.3s, box-shadow 0.3s;
 }
@@ -49,6 +51,7 @@ body.dark-mode {
 }
 
 .navbar-nav .dropdown-menu {
+    /* Dropdown styling */
     min-width: 220px;
     box-shadow: var(--shadow-sm);
     border-radius: 0.5rem;
@@ -59,6 +62,7 @@ body.dark-mode {
 }
 
 .navbar-nav .dropdown-item {
+    /* Dropdown item styling */
     color: var(--secondary-color);
     padding: 0.75rem 1.25rem;
     border-radius: 0.25rem;
@@ -66,8 +70,9 @@ body.dark-mode {
 }
 
 body.dark-mode .navbar {
-  background-color: var(--dark-card-bg);
-  box-shadow: var(--shadow-dark);
+  /* Dark mode navbar */
+  background-color: var(--dark-card-bg);                  
+  box-shadow: var(--shadow-dark);                         
 }
 
 .nav-link {
@@ -77,16 +82,17 @@ body.dark-mode .navbar {
 }
 
 body.dark-mode .nav-link {
-  color: var(--light-text) !important;
+  color: var(--light-text) !important;                      
 }
 
 .nav-link:hover {
-  color: var(--primary-color) !important;
-  transform: translateY(-2px);
+  /* Hover effect */
+  color: var(--primary-color) !important;                   
+  transform: translateY(-2px);                              
 }
 
 #pending-requests-badge {
-    font-size: 0.75rem;
+    font-size: 0.75rem;               /* Small badge */
 }
 
 #pending-requests-dropdown {
@@ -95,17 +101,17 @@ body.dark-mode .nav-link {
 }
 
 body.dark-mode .nav-link:hover {
-  color: var(--primary-dark) !important;
+  color: var(--primary-dark) !important;                    
 }
 
 body.dark-mode .navbar-text {
-  color: var(--light-text);
+  color: var(--light-text);                                 
 }
 
 /* === Content Area === */
 .container {
   padding: 2rem;
-  flex: 1;
+  flex: 1;                                         
 }
 
 h1, h2, h3 {
@@ -118,19 +124,20 @@ h1, h2, h3 {
 body.dark-mode h1, 
 body.dark-mode h2, 
 body.dark-mode h3 {
-  color: var(--primary-dark);
+  color: var(--primary-dark);                               
 }
 
 h1 {
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);            
   padding-bottom: 0.5rem;
   transition: border-color 0.3s;
 }
 
 body.dark-mode h1 {
-  border-bottom-color: var(--primary-dark);
+  border-bottom-color: var(--primary-dark);                 
 }
 
+/* Card element used in info sections */
 .info-card {
   background: white;
   border-radius: 0.5rem;
@@ -138,7 +145,7 @@ body.dark-mode h1 {
   margin-bottom: 2rem;
   box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease, background-color 0.3s, box-shadow 0.3s;
-  cursor: pointer; /* optional: makes it feel clickable */
+  cursor: pointer; 
 }
 
 body.dark-mode .info-card {
@@ -147,7 +154,7 @@ body.dark-mode .info-card {
 }
 
 .info-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-5px);                              
   box-shadow: var(--shadow-md);
 }
 
@@ -164,21 +171,21 @@ body.dark-mode .info-card {
 }
 
 body.dark-mode .btn-primary {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-dark);                        
 }
 
 .btn-primary:hover {
-  background-color: #3a5ccc;
+  background-color: #3a5ccc;                                 
   transform: translateY(-2px);
 }
 
 body.dark-mode .btn-primary:hover {
-  background-color: #2d4aa3;
+  background-color: #2d4aa3;                                 
 }
 
 /* === Footer (add to base.html if needed) === */
 footer {
-  background-color: var(--dark-text);
+  background-color: var(--dark-text);                           
   color: white;
   text-align: center;
   padding: 1rem 0;
@@ -187,7 +194,7 @@ footer {
 }
 
 body.dark-mode footer {
-  background-color: #1a1d20;
+  background-color: #1a1d20;                                 
 }
 
 /* ===== Theme Switch Button ===== */
@@ -196,21 +203,23 @@ body.dark-mode footer {
   align-items: center;
 }
 
+/* Toggle track */
 .theme-switch {
   position: relative;
   display: inline-block;
   width: 60px;
   height: 30px;
   background: var(--secondary-color);
-  border-radius: 50px;
+  border-radius: 50px;                                       
   cursor: pointer;
   transition: background 0.3s ease;
 }
 
 body.dark-mode .theme-switch {
-  background: var(--secondary-dark);
+  background: var(--secondary-dark);                          
 }
 
+/* Common styles for sun/moon icons inside toggle */
 .theme-switch .icon {
   position: absolute;
   top: 50%;
@@ -227,32 +236,33 @@ body.dark-mode .theme-switch {
 
 .theme-switch .moon {
   right: 2px;
-  opacity: 0;
+  opacity: 0;                                     
 }
 
 .theme-switch .sun {
   left: 2px;
-  opacity: 1;
+  opacity: 1;                                    
 }
 
 #theme-toggle {
-  display: none;
+  display: none;                                  
 }
 
+/* When theme is toggled on (dark mode) */
 #theme-toggle:checked + .theme-switch {
   background: var(--primary-color);
 }
 
 body.dark-mode #theme-toggle:checked + .theme-switch {
-  background: var(--primary-dark);
+  background: var(--primary-dark);                              
 }
 
 #theme-toggle:checked + .theme-switch .moon {
-  opacity: 1;
+  opacity: 1;                                                   
 }
 
 #theme-toggle:checked + .theme-switch .sun {
-  opacity: 0;
+  opacity: 0;                                                   
 }
 
 /* Additional dark mode form styling */
@@ -264,7 +274,7 @@ body.dark-mode .form-control {
 
 body.dark-mode .form-control:focus {
   border-color: var(--primary-dark);
-  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);           
 }
 
 body.dark-mode .form-label,
@@ -272,7 +282,7 @@ body.dark-mode label {
   color: var(--light-text);
 }
 
-/* Card styles in dark mode */
+/* === Card and Alert Dark Mode === */
 body.dark-mode .card {
   background-color: var(--dark-card-bg);
   border-color: var(--dark-border);

@@ -1,5 +1,7 @@
+{# Extend the base layout (header, nav, theme, etc.) #}
 {% extends "base.html" %}
 
+{# ===== MAIN CONTENT BLOCK ===== #}
 {% block content %}
     <!-- Work In Progress -->
     <div id = "Header">
@@ -7,9 +9,12 @@
         <p>This is a tool to help you create and manage your study plans.</p>
     </div>
 
+    <!-- ===== About Section (click to expand/collapse) ===== -->
     <div class="info-card" id="About" onclick="toggleAbout()">
         <h1><b>About</b></h1>
         <p>A helpful website for students to help plan out their schedule...</p>
+
+        <!-- Hidden content shown when About section is expanded -->
         <div id="about-details" style="display: none; margin-top: 1rem;">
             <p>This website will help you:</p>
             <ul>
@@ -23,9 +28,12 @@
         </div>
     </div>
 
+    <!-- ===== Purpose Section (click to expand/collapse) ===== -->
     <div class="info-card" id="Purpose" onclick="togglePurpose()">
         <h1><b>Purpose</b></h1>
         <p>The purpose of this application is to help students manage their study time effectively and efficiently ... </p>
+
+        <!-- Hidden content shown when Purpose section is expanded -->
         <div id="purpose-details" style="display: none; margin-top: 1rem;">
             <ul>
                 <li>Manage their study time effectively and efficiently</li>
@@ -36,9 +44,12 @@
         </div>
     </div>
 
+    <!-- ===== How to Start Section (click to expand/collapse) ===== -->
     <div class="info-card" id="HowToStart" onclick="toggleHowToStart()">
         <h1><b>How to Start</b></h1>
         <p>Click to learn how to begin using the Study Plan Tool...</p>
+
+        <!-- Step-by-step instructions for new users -->
         <div id="howtostart-details" style="display: none; margin-top: 1rem;">
             <p>Getting started is easy! Follow these steps:</p>
             <ol>
@@ -58,7 +69,9 @@
         </div>
     </div>
     
+    <!-- ===== JavaScript for Expand/Collapse Sections ===== -->
     <script>
+        // Toggle visibility for About section
         function toggleAbout() {
             var details = document.getElementById('about-details');
             if (details.style.display === 'none') {
@@ -68,6 +81,7 @@
             }
         }
 
+        // Toggle visibility for Purpose section
         function togglePurpose() {
             var details = document.getElementById('purpose-details');
             if (details.style.display === 'none') {
@@ -77,6 +91,7 @@
             }
         }
 
+        // Toggle visibility for How to Start section
         function toggleHowToStart() {
             var details = document.getElementById('howtostart-details');
             details.style.display = (details.style.display === 'none') ? 'block' : 'none';

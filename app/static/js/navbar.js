@@ -1,12 +1,16 @@
+// Run this once the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     setupRequestButtons();
     checkForNewRequests();
     setInterval(checkForNewRequests, 30000);
 });
 
+// Function to fetch and update pending requests and shared timetables
 function checkForNewRequests() {
+    // If the badge element doesn't exist, it stops 
     if (!document.getElementById('pending-requests-badge')) return;
-  
+
+    // Make a GET request to check for new requests
     safeFetch('/check_requests', {
         method: 'GET',
     })
@@ -22,6 +26,7 @@ function checkForNewRequests() {
     });
 }
 
+// Updates the pending requests badge and dropdown list
 function updatePendingRequestsList(pendingRequests) {
     const badge = document.getElementById('pending-requests-badge');
     const dropdown = document.getElementById('pending-requests-dropdown');
@@ -37,6 +42,7 @@ function updatePendingRequestsList(pendingRequests) {
         return;
     }
 
+    //build HTML for each request entry
     let html = '';
     pendingRequests.forEach(request => {
         html += `
@@ -54,6 +60,7 @@ function updatePendingRequestsList(pendingRequests) {
     setupRequestButtons();
 }
 
+// Attaches click handlers for dynamically created Accept/Reject buttons
 function setupRequestButtons() {
     // Set up accept buttons
     document.querySelectorAll('.accept-request').forEach(button => {
@@ -72,15 +79,18 @@ function setupRequestButtons() {
     });
 }
 
+// Updates the "Shared Timetables" list on the sidebar or page
 function updateSharedTimetablesList(shared) {
     const container = document.getElementById('shared-timetables-list');
     if (!container) return;
-  
+
+    // If no shared timetables, display a placeholder message
     if (!shared || shared.length === 0) {
         container.innerHTML = '<p>No shared timetables</p>';
         return;
     }
-  
+
+    // Build and insert HTML for each shared user
     let html = '';
     shared.forEach(item => {
         html += `
@@ -99,10 +109,13 @@ function updateSharedTimetablesList(shared) {
     });
   
     container.innerHTML = html;
+
+    // Attach event listeners to view and delink buttons
     setupTimetableViewButtons();
     setupDelinkButtons();
 }
 
+// Responds to a request by sending an accept/reject action to the server
 function respondToRequest(requestId, action) {
     safeFetch('/respond_to_request', {
         method: 'POST',
@@ -117,16 +130,19 @@ function respondToRequest(requestId, action) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            // Show a success message and refresh request list
             showNotification(`Request ${action === 'accept' ? 'accepted' : 'rejected'} successfully`, 'success');
             checkForNewRequests();  // Refresh the lists
             setupRequestButtons();
 
+            // Close the dropdown menu if open
             const dropdown = document.querySelector('#inboxDropdown');
             if (dropdown) {
                 const dropdownInstance = bootstrap.Dropdown.getOrCreateInstance(dropdown);
                 dropdownInstance.hide();
             }
         } else {
+            // Display error message from server
             showNotification(data.error || `Failed to ${action} request`, 'danger');
         }
     })

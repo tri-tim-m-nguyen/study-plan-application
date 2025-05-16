@@ -12,9 +12,11 @@ from selenium.common.exceptions import ElementClickInterceptedException
 from app import create_app, db
 from app.config import TestingConfig
 
+# Base URL of the Flask test server
 BASE_URL = "http://127.0.0.1:5000"
 LOGIN_PASSWORD = "Test@123"
 
+# Function to run the Flask app in a separate thread for testing
 def run_app(app):
     with app.app_context():
         db.create_all()
@@ -25,12 +27,14 @@ class SeleniumTests(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
+        # Set up the Flask test app and run it in a separate thread
         cls.app = create_app(TestingConfig)
         cls.server_thread = Thread(target=run_app, args=(cls.app,))
         cls.server_thread.daemon = True
         cls.server_thread.start()
         time.sleep(2)
 
+        # Set Chrome options for headless browser
         chrome_options = Options()
         chrome_options.add_argument("--headless=new")
         # Add window size to ensure elements are visible
@@ -39,14 +43,18 @@ class SeleniumTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        # Close the browser and drop the database after all tests
         cls.driver.quit()
         with cls.app.app_context():
             db.session.remove()
             db.drop_all()
 
     def test_1_signup(self):
+        # Test the signup process with a unique username
         self.driver.get(f"{BASE_URL}/signup")
         username = f"selenium{int(time.time())}"
+
+        # Wait for the signup form to load and fill it out
         WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.NAME, "username")))
         self.driver.find_element(By.NAME, "username").send_keys(username)
         self.driver.find_element(By.NAME, "password").send_keys(LOGIN_PASSWORD)

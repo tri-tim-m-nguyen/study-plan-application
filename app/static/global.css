@@ -325,13 +325,29 @@ body.dark-mode .alert {
 }
 
 #notifications {
+  position: fixed;
+  top: 1rem;         /* Reduce or change as needed */
+  right: 1rem;
+  z-index: 1050;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+}
+
+#notifications .alert {
+  pointer-events: auto;
+  margin-bottom: 0.5rem;
+  min-width: 250px;
+}
+
+#notify {
   max-width: 400px;
   margin-top: 60px;
   margin-right: 20px;
   pointer-events: none; /* Allows clicks to pass through if no notification */
 }
 
-#notifications .alert {
+#notify .alert {
   pointer-events: auto;
   opacity: 0.95;
   backdrop-filter: blur(5px);

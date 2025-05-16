@@ -9,7 +9,7 @@ body {
 
 /* Central content wrapper with constrained width and spacing */
 .container {
-  max-width: 1000px;
+  max-width: 1150px;
   margin: 40px auto;
   padding: 2rem;
   background-color: rgba(255, 255, 255, 0.85);
